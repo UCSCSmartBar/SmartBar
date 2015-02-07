@@ -4,9 +4,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".LoginActivity">
+    tools:context=".WelcomeActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -27,9 +25,7 @@
             android:paddingRight="20dp"
             android:text="@string/welcome"
             android:textStyle="bold"
-            android:textAlignment="center"
-            android:textSize="25sp"
-            android:typeface="serif" />
+            android:textSize="25sp" />
 
         <TextView
             android:id="@+id/welcome_prompt"
@@ -37,7 +33,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
-            android:paddingLeft="50dp"
             android:text="@string/welcome_prompt"
             android:textSize="20sp"
             android:typeface="serif" />

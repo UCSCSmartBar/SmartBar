@@ -6,14 +6,38 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class LibraryBrowseActivity extends ActionBarActivity {
+public class LibraryBrowseActivity extends ActionBarActivity implements View.OnClickListener,
+AdapterView.OnItemClickListener {
+
+    ListView drinkList;
+    ArrayList<String> drinkLibrary = new ArrayList<>();
+    ArrayAdapter drinkAdapter;
+    String drinkOrder;
+    EditText drinkOrderTyped;
+    boolean isMan = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library_browse);
+        populateLibrary();
+
+        isMan = true;
+
+        drinkList = (ListView)findViewById(R.id.drinkList);
+        drinkAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, drinkLibrary);
+        drinkList.setAdapter(drinkAdapter);
+
+        drinkList.setOnItemClickListener(this);
     }
 
 
@@ -39,8 +63,49 @@ public class LibraryBrowseActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void populateLibrary() {
+        drinkLibrary.add("Adios Motherfucker");
+        drinkLibrary.add("Bloody Mary");
+        drinkLibrary.add("Cosmopolitan");
+        drinkLibrary.add("Incredible Hulk");
+        drinkLibrary.add("Lemon Drop");
+        drinkLibrary.add("Long Island Iced Tea");
+        drinkLibrary.add("Mai Tai");
+        drinkLibrary.add("Manhattan");
+        drinkLibrary.add("Margarita");
+        drinkLibrary.add("Martini");
+        drinkLibrary.add("Mojito");
+        drinkLibrary.add("Old Fashioned");
+        drinkLibrary.add("Rum and Coke");
+        drinkLibrary.add("Screaming Orgasm");
+        drinkLibrary.add("Screwdriver");
+        drinkLibrary.add("Sex on the Beach");
+        drinkLibrary.add("Vodka Soda");
+        drinkLibrary.add("Whiskey Ginger");
+        drinkLibrary.add("Whiskey Sour");
+        drinkLibrary.add("White Russian");
+    }
+
     public void libraryBrowseToConfirmation(View view) {
+        if (isMan) {
+            drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
+            drinkOrder = drinkOrderTyped.getText().toString();
+        }
         Intent intent = new Intent(this, ConfirmationActivity.class);
+        intent.putExtra("drinkOrder", drinkOrder);
         startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        drinkOrder = drinkLibrary.get(position);
+        drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
+        drinkOrderTyped.setText(drinkOrder);
+        isMan = false;
     }
 }

@@ -6,14 +6,26 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 public class NewUserActivity extends ActionBarActivity {
+
+    EditText newUsernameText, newPasswordText;
+    String usernameString, passwordString;
+    ArrayList<String> usernameDB = new ArrayList<>();
+    ArrayList<String> passwordDB = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
+
+        newUsernameText = (EditText)findViewById(R.id.type_email);
+        newPasswordText = (EditText)findViewById(R.id.type_password);
     }
 
 
@@ -39,7 +51,36 @@ public class NewUserActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void newUserToWelcome(View view) {
+    public void checkUserLogin(View view) {
+        usernameString = newUsernameText.getText().toString();
+        passwordString = newPasswordText.getText().toString();
+
+        if ((usernameString.equals("")) || (passwordString.equals(""))) {
+            Toast.makeText(this, "You must enter a valid login and password", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!checkExists(usernameString, passwordString)) {
+            newUserToWelcome(view, usernameString, passwordString);
+        } else {
+            Toast.makeText(this, "Username taken. Please try again.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean checkExists(String username, String password) {
+        int index = 0;
+        for ( ; index < usernameDB.size(); index++) {
+            if (username.equals(usernameDB.get(index))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void newUserToWelcome(View view, String username, String password) {
+        usernameDB.add(username);
+        passwordDB.add(password);
+
         Intent intent = new Intent(this, WelcomeActivity.class);
         startActivity(intent);
     }

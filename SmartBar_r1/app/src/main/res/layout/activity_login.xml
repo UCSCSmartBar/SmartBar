@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".LoginActivity">
 
     <LinearLayout
@@ -16,27 +14,6 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/login_actionbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:text="@string/login_actionbar"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textColor="#ffffff"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <View
-            android:id="@+id/bar_separator"
-            android:layout_width="fill_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="10dp"
-            android:background="#C0C0C0"/>
 
         <TextView
             android:id="@+id/login_welcome_back"
@@ -52,6 +29,13 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="25sp"
             android:typeface="serif" />
+
+        <View
+            android:id="@+id/bar_separator"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:background="#C0C0C0"/>
 
         <TextView
             android:id="@+id/enter_email"
@@ -95,9 +79,7 @@
             android:text="@string/login_button"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:onClick="loginToWelcome"
+            android:onClick="checkLogin"
             />
 
     </LinearLayout>

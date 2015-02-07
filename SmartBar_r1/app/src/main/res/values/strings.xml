@@ -37,7 +37,9 @@
 
     <!-- Confirmation Activity -->
     <string name="confirmation_actionbar">Order</string>
-    <string name="order_confirmation">So, you\'d like to order a {drink_order}, is this correct?</string>
+    <string name="order_confirmation1">So, you\'d like to order a</string>
+    <string name="order_confirmation">{drink_order}</string>
+    <string name="order_confirmation2">is this correct?</string>
     <string name="order_drink_button">Yes, Order Drink</string>
     <string name="change_order_button">Change Order</string>
     <string name="title_activity_drink_ordered">DrinkOrderedActivity</string>
@@ -45,8 +47,7 @@
     <!-- Order Confirmed Activity -->
     <string name="done">done</string>
     <string name="drink_sent">Your order has been sent to the Smart Bar!
-        When you\'re ready, enter this pin # into the touch screen interface and proceed
-        to identity and BAC verification.</string>
+        When you\'re ready, enter this pin # into the touch screen interface.</string>
     <string name="thank_you">Thank you!</string>
     <string name="back_to_library_button">Back to Drink Library</string>
 

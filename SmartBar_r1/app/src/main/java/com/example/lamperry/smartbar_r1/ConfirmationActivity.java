@@ -6,14 +6,24 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 
 public class ConfirmationActivity extends ActionBarActivity {
+
+    String drinkOrder;
+    TextView displayDrink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmation);
+
+        Intent intent = getIntent();
+        drinkOrder = intent.getStringExtra("drinkOrder");
+        displayDrink = (TextView)findViewById(R.id.drinkOrder);
+        displayDrink.setText(drinkOrder);
     }
 
 

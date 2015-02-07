@@ -6,9 +6,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class LoginActivity extends ActionBarActivity {
+
+    EditText usernameText, passwordText;
+    String usernameString, passwordString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,21 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void checkLogin(View view) {
+        usernameText = (EditText)findViewById(R.id.type_email);
+        passwordText = (EditText)findViewById(R.id.type_password);
+
+        usernameString = usernameText.getText().toString();
+        passwordString = passwordText.getText().toString();
+
+        if ((usernameString.equals("")) || (passwordString.equals(""))) {
+            Toast.makeText(this, "You must enter a valid username and password.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        loginToWelcome(view);
     }
 
     public void loginToWelcome(View view) {

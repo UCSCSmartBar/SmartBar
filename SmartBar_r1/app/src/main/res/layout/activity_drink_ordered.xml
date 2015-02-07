@@ -4,9 +4,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".LoginActivity">
+    tools:context=".DrinkOrderedActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -18,33 +16,13 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/drinkOrderedActionbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/done"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textColor="#ffffff"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <View
-            android:id="@+id/bar_separator"
-            android:layout_width="fill_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="10dp"
-            android:background="#C0C0C0"/>
-
-        <TextView
             android:id="@+id/drink_sent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
             android:text="@string/drink_sent"
-            android:textSize="20sp"
-            android:typeface="serif" />
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/backToLibrary"
@@ -54,8 +32,6 @@
             android:text="@string/back_to_library_button"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
             android:onClick="drinkOrderedToLibraryBrowse"
             />
 
