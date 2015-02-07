@@ -51,5 +51,8 @@
     <string name="thank_you">Thank you!</string>
     <string name="back_to_library_button">Back to Drink Library</string>
 
+    <!-- ActionBar Menu -->
+    <string name="action_logout">Logout</string>
+
 
 </resources>

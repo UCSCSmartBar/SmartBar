@@ -23,7 +23,6 @@ AdapterView.OnItemClickListener {
     ArrayAdapter drinkAdapter;
     String drinkOrder;
     EditText drinkOrderTyped;
-    boolean isMan = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +30,12 @@ AdapterView.OnItemClickListener {
         setContentView(R.layout.activity_library_browse);
         populateLibrary();
 
-        isMan = true;
-
         drinkList = (ListView)findViewById(R.id.drinkList);
         drinkAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, drinkLibrary);
         drinkList.setAdapter(drinkAdapter);
 
         drinkList.setOnItemClickListener(this);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,7 +56,17 @@ AdapterView.OnItemClickListener {
             return true;
         }
 
+        if (id == R.id.action_logout) {
+            logout();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        ((MyApplication)this.getApplication()).setLoggedIn(false);
+        Intent intent = new Intent(this, StartupActivity.class);
+        startActivity(intent);
     }
 
     private void populateLibrary() {
@@ -87,10 +93,8 @@ AdapterView.OnItemClickListener {
     }
 
     public void libraryBrowseToConfirmation(View view) {
-        if (isMan) {
-            drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
-            drinkOrder = drinkOrderTyped.getText().toString();
-        }
+        drinkOrder = drinkOrderTyped.getText().toString();
+
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
         startActivity(intent);
@@ -103,9 +107,8 @@ AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        drinkOrder = drinkLibrary.get(position);
         drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
+        drinkOrder = drinkLibrary.get(position);
         drinkOrderTyped.setText(drinkOrder);
-        isMan = false;
     }
 }

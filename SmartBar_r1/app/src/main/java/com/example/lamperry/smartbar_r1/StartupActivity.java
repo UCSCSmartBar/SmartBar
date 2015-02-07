@@ -15,6 +15,8 @@ public class StartupActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
+
+        ((MyApplication)this.getApplication()).setLoggedIn(false);
     }
 
 

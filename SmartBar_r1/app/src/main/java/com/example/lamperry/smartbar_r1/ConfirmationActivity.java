@@ -46,7 +46,17 @@ public class ConfirmationActivity extends ActionBarActivity {
             return true;
         }
 
+        if (id == R.id.action_logout) {
+            logout();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        ((MyApplication)this.getApplication()).setLoggedIn(false);
+        Intent intent = new Intent(this, StartupActivity.class);
+        startActivity(intent);
     }
 
     public void confirmationToDrinkOrdered(View view) {

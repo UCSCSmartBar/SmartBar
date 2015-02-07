@@ -24,6 +24,9 @@ public class NewUserActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
 
+        usernameDB = ((MyApplication)this.getApplication()).getUsernameDB();
+        passwordDB = ((MyApplication)this.getApplication()).getPasswordDB();
+
         newUsernameText = (EditText)findViewById(R.id.type_email);
         newPasswordText = (EditText)findViewById(R.id.type_password);
     }
@@ -79,7 +82,8 @@ public class NewUserActivity extends ActionBarActivity {
 
     public void newUserToWelcome(View view, String username, String password) {
         usernameDB.add(username);
-        passwordDB.add(password);
+        passwordDB.add((password));
+        ((MyApplication)this.getApplication()).setLoggedIn(true);
 
         Intent intent = new Intent(this, WelcomeActivity.class);
         startActivity(intent);
