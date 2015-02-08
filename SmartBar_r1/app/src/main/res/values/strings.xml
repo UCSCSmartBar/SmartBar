@@ -53,6 +53,8 @@
 
     <!-- ActionBar Menu -->
     <string name="action_logout">Logout</string>
+    <string name="action_pin">Get Pin</string>
+    <string name="dismiss">Dismiss</string>
 
 
 </resources>

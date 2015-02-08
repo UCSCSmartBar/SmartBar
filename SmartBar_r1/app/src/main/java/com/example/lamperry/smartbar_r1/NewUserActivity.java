@@ -12,6 +12,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 
+// this class defines the behavior of the new user screen
+// namely takes user input to create account, parses through login/password DB to authorize new
+// account, and logs user in
+// throws user prompt if login already created
 public class NewUserActivity extends ActionBarActivity {
 
     EditText newUsernameText, newPasswordText;
@@ -54,6 +58,8 @@ public class NewUserActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // makes sure user input is valid; has entered something for username and password
+    // and throws user prompt if login already taken
     public void checkUserLogin(View view) {
         usernameString = newUsernameText.getText().toString();
         passwordString = newPasswordText.getText().toString();
@@ -70,6 +76,7 @@ public class NewUserActivity extends ActionBarActivity {
         }
     }
 
+    // parses through DB to check if login account already exists
     private boolean checkExists(String username, String password) {
         int index = 0;
         for ( ; index < usernameDB.size(); index++) {
@@ -80,10 +87,13 @@ public class NewUserActivity extends ActionBarActivity {
         return false;
     }
 
+    // starts welcome activity and sets all relevant global variables
     public void newUserToWelcome(View view, String username, String password) {
         usernameDB.add(username);
         passwordDB.add((password));
         ((MyApplication)this.getApplication()).setLoggedIn(true);
+        ((MyApplication)this.getApplication()).setMyUsername(usernameString);
+        ((MyApplication)this.getApplication()).setMyPassword(passwordString);
 
         Intent intent = new Intent(this, WelcomeActivity.class);
         startActivity(intent);

@@ -6,16 +6,31 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 
+// this class defines all the activity within the drink ordered screen
+// generates random number for user, displays random number for user, allows access to drink
+// library screen
 public class DrinkOrderedActivity extends ActionBarActivity {
+
+    TextView pinDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drink_ordered);
-    }
+        pinDisplay = (TextView) findViewById(R.id.displayPin);
 
+        // if this is users first time ordering a drink, generate random pin and display
+        // this will set the random pin to the user login index in the pin array list
+        if (((MyApplication)this.getApplication()).isFirst()) {
+            ((MyApplication) this.getApplication()).setPin(generatePin());
+            ((MyApplication)this.getApplication()).notFirst();
+        }
+        pinDisplay.setText(String.format("%04d", ((MyApplication) this.getApplication()).getPin()));
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -36,21 +51,42 @@ public class DrinkOrderedActivity extends ActionBarActivity {
             return true;
         }
 
+        // adds logout button to action bar
         if (id == R.id.action_logout) {
             logout();
+        }
+        
+        // adds get pin button to action bar
+        if (id == R.id.action_pin) {
+            int pin = getPin();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private int getPin() {
+        return ((MyApplication)this.getApplication()).getPin();
+    }
+
+    // logs user out of account and returns to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
+        ((MyApplication)this.getApplication()).setMyUsername("");
+        ((MyApplication)this.getApplication()).setMyPassword("");
+        ((MyApplication)this.getApplication()).setPin(0);
+        ((MyApplication)this.getApplication()).setFirst();
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
 
+    // starts Library Browse activity
     public void drinkOrderedToLibraryBrowse(View view) {
         Intent intent = new Intent(this, LibraryBrowseActivity.class);
         startActivity(intent);
+    }
+
+    // generate random user pin
+    private int generatePin() {
+        return ((MyApplication)this.getApplication()).addPin();
     }
 }

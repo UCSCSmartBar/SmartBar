@@ -24,6 +24,14 @@
             android:text="@string/drink_sent"
             android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/displayPin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:textSize="40sp" />
+
         <Button
             android:id="@+id/backToLibrary"
             android:layout_width="wrap_content"

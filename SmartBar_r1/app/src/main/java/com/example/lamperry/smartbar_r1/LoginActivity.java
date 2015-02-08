@@ -13,6 +13,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
+// this class defines all activity within the login screen
+// takes user login/password input and parses through DB to authorize account
+// throws user prompt to try again if account not authorized
 public class LoginActivity extends ActionBarActivity {
 
     EditText usernameText, passwordText;
@@ -25,6 +28,7 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // grabs databases from global class
         usernameDB = ((MyApplication)this.getApplication()).getUsernameDB();
         passwordDB = ((MyApplication)this.getApplication()).getPasswordDB();
     }
@@ -52,11 +56,13 @@ public class LoginActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // parses through database to verify account information
     public void checkLogin(View view) {
         int index;
         usernameText = (EditText)findViewById(R.id.type_email);
         passwordText = (EditText)findViewById(R.id.type_password);
 
+        // grab username and password from EditText
         usernameString = usernameText.getText().toString();
         passwordString = passwordText.getText().toString();
 
@@ -82,8 +88,11 @@ public class LoginActivity extends ActionBarActivity {
         Toast.makeText(this, "Username/password not found. Please try again", Toast.LENGTH_SHORT).show();
     }
 
+    // starts welcome activity
     public void loginToWelcome(View view) {
         ((MyApplication)this.getApplication()).setLoggedIn(true);
+        ((MyApplication)this.getApplication()).setMyUsername(usernameString);
+        ((MyApplication)this.getApplication()).setMyPassword(passwordString);
         Intent intent = new Intent(this, WelcomeActivity.class);
         startActivity(intent);
     }
