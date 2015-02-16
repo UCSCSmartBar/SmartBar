@@ -15,13 +15,16 @@
     <string name="welcome_back">Welcome Back!</string>
     <string name="enter_login">User Login</string>
     <string name="enter_password">Password</string>
-    <string name="email_hint">Email Address</string>
+    <string name="email_hint">Username</string>
 
     <!-- New User Activity -->
     <string name="new_user_actionbar">Create Account</string>
     <string name="welcome_new_user1">Welcome to Smart Bar!</string>
     <string name="welcome_new_user2">Please enter a user login and password.</string>
-    <string name="verify_button">Verify</string>
+    <string name="verify_button">Register</string>
+    <string name="enter_age">Age</string>
+    <string name="enter_weight">Weight</string>
+    <string name="enter_sex">Sex</string>
 
     <!-- Welcome Activity -->
     <string name="welcome">Hello!</string>

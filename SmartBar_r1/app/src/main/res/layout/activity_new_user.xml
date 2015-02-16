@@ -76,6 +76,58 @@
             android:hint="@string/enter_password"
             />
 
+        <TextView
+            android:id="@+id/enter_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_age"
+            android:layout_marginTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/type_age"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/enter_age"
+            />
+
+        <TextView
+            android:id="@+id/enter_weight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_weight"
+            android:layout_marginTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/type_weight"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/enter_weight"
+            />
+
+        <TextView
+            android:id="@+id/enter_sex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_sex"
+            android:layout_marginTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/type_sex"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/enter_sex"
+            />
+
+
         <Button
             android:id="@+id/login_button"
             android:layout_width="wrap_content"
