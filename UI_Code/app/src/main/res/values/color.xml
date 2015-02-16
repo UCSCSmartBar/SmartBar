@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="magnum">#ff7166ac</color>
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="SmartBarTextColor">#ffffffff</color>
+    <color name="Bronze">#CD7F32</color>
+    <color name="textBoxColor">#ffb3b3ae</color>
+</resources>
