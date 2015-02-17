@@ -34,7 +34,6 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
     private Button mRegister;                       // Register Button
     private ProgressDialog pDialog;                 // Progress Dialog
     JSONParser jsonParser = new JSONParser();       // JSON parser class
-    int myPin;
 
     //PHP login script:
     //UCSC Smartbar Server:
@@ -58,8 +57,6 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
 
         mRegister = (Button)findViewById(R.id.login_button);
         mRegister.setOnClickListener(this);
-
-        myPin = ((MyApplication)this.getApplication()).addPin();
     }
 
     // generated activity method

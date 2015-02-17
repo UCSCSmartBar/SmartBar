@@ -62,16 +62,6 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
     public void onClick(View v) {
         if (v.getId() == R.id.login_button)
             new AttemptLogin().execute();
-        /*
-        switch (v.getId()) {
-            case R.id.login_button:
-                new AttemptLogin().execute();
-                break;
-
-            default:
-                break;
-        }
-        */
     }
 
     // generated activity method
@@ -152,6 +142,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                 success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
                     Log.d("Login Successful!", json.toString());
+                    ((MyApplication)LoginActivity.this.getApplication()).setMyUsername(username);
                     Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
                     finish();
                     startActivity(intent);

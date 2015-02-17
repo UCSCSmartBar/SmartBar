@@ -25,8 +25,6 @@ public class MyApplication extends Application {
     public void setPin(int pin) { myPin = pin; }
     public int getPin() { return myPin; }
 
-    public boolean isFirst() { return first; }
-    public void notFirst() { first = false; }
     public void setFirst() { first = true; }
 
     public void setLoggedIn(boolean setLogIn) {
@@ -34,7 +32,7 @@ public class MyApplication extends Application {
     }
 
     public int addPin() {
-        myPin = random.nextInt((int) System.currentTimeMillis() % 1000);
+        myPin = random.nextInt((int)System.currentTimeMillis() % 1000);
         return myPin;
     }
 }

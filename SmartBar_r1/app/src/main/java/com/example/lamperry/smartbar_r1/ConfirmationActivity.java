@@ -1,6 +1,5 @@
 package com.example.lamperry.smartbar_r1;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -9,9 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -31,6 +28,7 @@ public class ConfirmationActivity extends ActionBarActivity {
     // Initializations
     String drinkOrder;
     TextView displayDrink;
+    int pin;
 
     JSONParser jsonParser = new JSONParser();       // JSON parser class
 
@@ -52,6 +50,7 @@ public class ConfirmationActivity extends ActionBarActivity {
         drinkOrder = intent.getStringExtra("drinkOrder");
         displayDrink = (TextView)findViewById(R.id.drinkOrder);
         displayDrink.setText(drinkOrder);
+        pin = ((MyApplication)this.getApplication()).addPin();
     }
 
     // generated activity method to display action bar menu
@@ -117,7 +116,6 @@ public class ConfirmationActivity extends ActionBarActivity {
             // Check for success tag
             int success;
             String username = ((MyApplication)ConfirmationActivity.this.getApplication()).myUsername;
-            int pin = ((MyApplication)ConfirmationActivity.this.getApplication()).myPin;
             String drink = drinkOrder;
             try {
                 // Building Parameters
