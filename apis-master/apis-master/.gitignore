@@ -1,0 +1,13 @@
+notes
+.DS_Store
+rebel.xml
+.classpath
+.project
+.settings
+.idea
+*.iml
+*.ipr
+*.iws
+target
+bin
+.sass-cache

@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="1024dp"
+    android:layout_height="600dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:textColor="@color/white"
+    android:background="@drawable/smart_bar_background"
+    android:orientation="vertical"
+    tools:context="com.example.tylerrider.raspgui.NewUser"
+    android:weightSum="1">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Welcome, Please Enter Your Four Digit Pin"
+        android:textColor="@color/black"
+        android:textSize="30dp"
+        android:id="@+id/textView4"
+        />
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="50dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Drink Order:\n"
+        android:id="@+id/drinkView" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/findUserProgress"
+        android:layout_marginLeft="375dp" />
+
+    <EditText
+        android:id="@+id/txtPin"
+        android:layout_width="250dp"
+        android:layout_marginLeft="300dp"
+        android:layout_height="wrap_content"
+        android:hint="Pin Number"
+        android:textSize="40dp"
+        android:inputType="numberPassword"
+        android:maxLength="4">
+        <requestFocus/>
+    </EditText>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="300dp"
+        android:hint="Password"
+        android:text="Enter"
+        android:textSize="40dp"
+        android:id="@+id/button9"
+        android:onClick="CheckPin"/>
+
+</LinearLayout>
