@@ -38,7 +38,7 @@ class SmartBar_Dispenser():
     
     ReceoveDrinkOrder_Fail = -1
     ProcessDrinkOrder_Fail = -2
-
+    FindDrinkComponent_Fail = -3
     # Success Codes: Allow dispensing functions to progress, DispenseDrink_Success returned upon successful dispense
     
     ReceiveDrinkOrder_Success = 1
@@ -75,40 +75,43 @@ class SmartBar_Dispenser():
 
     # Functions
 
-    def ReceiveSystemCommand(self, incoming_command):
+    def ReceiveCommand(self, incoming_command):
 
-        self.CommandPacket = incoming_command
+        self.CommandPacket = incoming_command # store incoming command packet
 
-        self.CommandData = incoming_command.split("@")[0].split(".")[0] # break up the order into rows to be processed
+        self.CommandType = incoming_command.split("@")[0].split(".")[0] # get the incoming command
 
-        SmartBar_Dispenser.PrintFilter.System("Received Command : "+self.CommandData+" Input String : "+self.CommandPacket,SmartBar_Dispenser.PrintFilter.SubTitle)
-                
-        #self.Command = self.incoming_command.split(".") # get the general drink info - $DO.X.Y where $DO is the drink order command, X is the number of alcohol components, and Y is the number of conentrate components
-    
+        SmartBar_Dispenser.PrintFilter.System(("Received Command : "+self.CommandType+" Input String : "+self.CommandPacket),SmartBar_Dispenser.PrintFilter.SubTitle)
+        
+        if (self.CommandType == "$DO"):
+
+            self.CommandStatus = self.DispenseDrinkOrder(self.CommandPacket)
+
+
+
+
+
+
 
     def DispenseDrinkOrder(self,incoming_drink_order): # recieve order from tablet, then analyze and dispense - main function call of this module
 
-        OrderStatus = self.ReceiveDrinkOrder(incoming_drink_order)
+        self.OrderStatus = self.ReceiveDrinkOrder(incoming_drink_order)
 
-        
-##        if (self.CurrentDrink.Status == 1):
-##
-##            self.CurrentDrink.Status = self.ProcessDrinkOrder()
-##
-##            if (self.CurrentDrink.Status == 2):
-##
-##                self.StartDispense()
-##
-##            else:
-##
-##                return self.CurrentDrink.Status
+        if (self.OrderStatus == 1):
 
-        
-    def DispenseDrinkOrder_Test(self,incoming_drink_order):
-        
-        self.CurrentDrink = SmartBar_DrinkOrder(0,0)
+            self.OrderStatus = self.ProcessDrinkOrder()
+##
+      #      if (self.CurrentDrink.Status == 2):
+##
 
-        self.CurrentDrink.Status = self.ReceiveDrinkOrder(incoming_drink_order)
+        self.StartDispense()
+        
+
+
+          
+        return self.OrderStatus
+
+
 
 
 
@@ -137,13 +140,13 @@ class SmartBar_Dispenser():
                 
                 self.GeneralDrinkInfo = self.OrderPacket[0].split(".") # get the general drink info - $DO.X.Y where $DO is the drink order command, X is the number of alcohol components, and Y is the number of conentrate components
 
-                self.NumOfAlcoholComponents = int(GeneralDrinkInfo[1]) # number of alcohol components
+                self.NumOfAlcoholComponents = int(self.GeneralDrinkInfo[1]) # number of alcohol components
 
-                self.NumOfMixerComponents = int(GeneralDrinkInfo[2]) # number of Mixer components
+                self.NumOfMixerComponents = int(self.GeneralDrinkInfo[2]) # number of Mixer components
 
                 SmartBar_Dispenser.PrintFilter.Debug("Number of Alcohol Components : "+str(self.NumOfAlcoholComponents)+" Number of Mixer Components : "+str(self.NumOfMixerComponents)+" Packet Length : "+str(len(self.OrderPacket)),SmartBar_Dispenser.PrintFilter.Standard)
     
-                if ((NumberOfAlcoholComponents + NumberOfMixerComponents) == (len(self.OrderPacket) - 1)): # if the packet is the right size continue
+                if ((self.NumOfAlcoholComponents + self.NumOfMixerComponents) == (len(self.OrderPacket) - 1)): # if the packet is the right size continue
 
                     self.CurrentDrink = SmartBar_DrinkOrder(self.NumOfAlcoholComponents,self.NumOfMixerComponents) # create a new drink order
 
@@ -153,15 +156,13 @@ class SmartBar_Dispenser():
 
                 for i in range(self.NumOfMixerComponents): # store all Mixer drink components
 
-                    self.CurrentDrink.StoreMixerComponent(i,self.OrderPacket[i+1+NumberOfAlcoholComponents]) # store individual Mixer drink component
+                    self.CurrentDrink.StoreMixerComponent(i,self.OrderPacket[i+1+self.NumOfAlcoholComponents]) # store individual Mixer drink component
 
-                if SmartBar_Dispenser.DispenserDebug == 1: # print debugging information if enabled
+                print('\n<<<<< Start: Receive Drink Order Debug: Storing Drink Order>>>>>> \n'+'\nInput String: '+drink_order+'\n')
 
-                    print('\n<<<<< Start: Receive Drink Order Debug: Storing Drink Order>>>>>> \n'+'\nInput String: '+drink_order+'\n')
+                self.CurrentDrink.PrintDrinkOrderData() # print the order currently stored
 
-                    self.CurrentDrink.PrintDrinkOrderData() # print the order currently stored
-
-                    print('\n<<<<< End: Receive Drink Order Debug: Storing Drink Order>>>>> \n')
+                print('\n<<<<< End: Receive Drink Order Debug: Storing Drink Order>>>>> \n')
 
                 RecieveOrderStatus = 1 # recieve drink order successful    
 
@@ -179,126 +180,127 @@ class SmartBar_Dispenser():
 
     def ProcessDrinkOrder(self):
 
+
+        
+        for i in range(self.CurrentDrink.NumberOfAlcoholComponents): # scan through all alcohol components of current drink
+           
+            Drink_Category = 0
+
+            AlcoholType = self.CurrentDrink.Alcohols[i].Type
+
+            AlcoholBrand = self.CurrentDrink.Alcohols[i].Brand
+
+            DispenseVolume = self.CurrentDrink.Alcohols[i].Volume
+
+            self.ProcessStatus = self.SetupValve(Drink_Category,AlcoholType,AlcoholBrand,0,DispenseVolume)
+
+            if (self.ProcessStatus != 1):
+
+                return -1
+
+
+        for i in range(self.CurrentDrink.NumberOfMixerComponents): # scan through all alcohol components of current drink
+           
+            Drink_Category = 1
+
+            MixerType = self.CurrentDrink.Mixers[i].Type
+
+            MixerBrand = self.CurrentDrink.Mixers[i].Brand
+
+            MixerCarbonation = self.CurrentDrink.Mixers[i].Carbonated
+
+            DispenseVolume = self.CurrentDrink.Mixers[i].Volume
+
+            self.ProcessStatus = self.SetupValve(Drink_Category,MixerType,MixerBrand,MixerCarbonation,DispenseVolume)
+
+            if (self.ProcessStatus != 1):
+
+                return -1
+
+        
+        return 2
+    
+
+    def SetupValve(self,item_category,item_type,item_brand,item_carbonation,item_volume):
+
         WaterValveNumber = 18
 
         CarbonatedWaterValveNumber = 19
-
-        SmartBar_Dispenser.ValvesToOpen = [] # list to store all of the valves that need to be opened and their respective timings
-
-        print('\n<<<<< Start: Dispenser Initialization >>>>>\n')
-        print('\n<<<<< Start: Dispenser Initialization >>>>>\n')
-        print('\n<<<<< Start: Dispenser Initialization >>>>>\n')
-        print('\n<<<<< Start: Dispenser Initialization >>>>>\n')
-
-        self.Available = 0
-
-        self.Delay = 0
         
-        for i in range(self.CurrentDrink.NumberOfAlcoholComponents): # scan through all alcohol components of current drink 
+        self.MaximumValveTime = 0
+        if (item_category == 0):
 
-            for j in range(len(SmartBar_Dispenser.InventoryManager.Alcohols)): # scan through all alcohol in inventory
-            
-                if (self.CurrentDrink.Alcohols[i].Type == self.InventoryManager.Alcohols[j].Type): # if the alcohol type matches continue
-                    print(i)
-                    print(j)
+            for i in range(len(SmartBar_Dispenser.InventoryManager.Alcohols)): # scan through all alcohol in inventory
 
-                    if (self.CurrentDrink.Alcohols[i].Brand == SmartBar_Dispenser.InventoryManager.Alcohols[j].Brand): # if the brand also matches, the component is confirmed
+                if (item_type == SmartBar_Dispenser.InventoryManager.Alcohols[i].Type): # if the alcohol type matches continue
 
-                        if (SmartBar_Dispenser.InventoryManager.Alcohols[j].Active == 1): # if the container is currently in use valve info can be added to the list
-                        
-                            ValveTime = (self.CurrentDrink.Alcohols[i].Volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.AlcoholDispenseTimePerOz # calculating valve open time
+                        if (item_brand == SmartBar_Dispenser.InventoryManager.Alcohols[i].Brand): # if the brand also matches, the component is confirmed
 
-                            SmartBar_Dispenser.ValvesToOpen.append(ValveDispenseData(SmartBar_Dispenser.InventoryManager.Alcohols[j].ValveNumber,ValveTime,Delay)) # storing valve info
-                            print('word')
-                            Available = 1
-                            print('word')
+                            if (SmartBar_Dispenser.InventoryManager.Alcohols[i].Active == 1): # if the container is currently in use valve info can be added to the list
+                            
+                                self.ValveTime = ((item_volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.AlcoholDispenseTimePerOz) # calculating valve open time
 
-                            self.Delay = self.Delay + ValveTime
+                                ValveNumber = SmartBar_Dispenser.InventoryManager.Alcohols[i].ValveNumber
 
-                            break
+                                Status = SmartBar_Dispenser.ValveManager.SetValveTime(ValveNumber,self.ValveTime)
 
-                if (self.Available == 0):
-                
-                    return  -2
-                
-                else:
-                    
-                    self.Available = 0
+                                if (self.ValveTime > self.MaximumValveTime):
+
+                                    self.MaximumValveTime = self.ValveTime
+                                return Status
+
+            SmartBar_Dispenser.PrintFilter.Error("Drink Component Not Found",SmartBar_Dispenser.PrintFilter.Title)
+
+            return SmartBar_Dispenser.FindDrinkComponent_Fail
 
 
-        for i in range(self.CurrentDrink.NumberOfMixerComponents): # scan through all Mixer components of current drink
+        if (item_category == 1):
+                            
+            for i in range(len(SmartBar_Dispenser.InventoryManager.Mixers)): # scan through all alcohol in inventory
 
-                Available = 0
+                    if (item_type == SmartBar_Dispenser.InventoryManager.Mixers[i].Type): # if the alcohol type matches continue
 
-                Delay = 0
+                            if (item_brand == SmartBar_Dispenser.InventoryManager.Mixers[i].Brand): # if the brand also matches, the component is confirmed
 
-                while(Available == 0): 
+                                if (SmartBar_Dispenser.InventoryManager.Mixers[i].Active == 1): # if the container is currently in use valve info can be added to the list
 
-                    for j in range(len(SmartBar_Dispenser.InventoryManager.Mixers)): # scan through all Mixer in inventory
-                    
-                        if (self.CurrentDrink.Mixers[i].Type == SmartBar_Dispenser.InventoryManager.Mixers[j].Type): # if the Mixer type matches continue
+                                    self.ValveTime = ((item_volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.MixerDispenseTimePerOz) # calculating valve open time
 
-                            if (self.CurrentDrink.Mixers[i].Brand == SmartBar_Dispenser.InventoryManager.Mixers[j].Brand): # if the brand also matches, the component is confirmed
+                                    ValveNumber = SmartBar_Dispenser.InventoryManager.Mixers[i].ValveNumber
 
-                                if (SmartBar_Dispenser.InventoryManager.Mixers[j].Active == 1): # if the container is currently in use valve info can be added to the list
-                                
-                                    ValveTime = (self.CurrentDrink.Mixers[i].Volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.MixerDispenseTimePerOz # calculating valve open time
+                                    if (self.ValveTime > self.MaximumValveTime):
 
-                                    SmartBar_Dispenser.ValvesToOpen.append(ValveDispenseData(SmartBar_Dispenser.InventoryManager.Mixers[j].ValveNumber,ValveTime,Delay)) # storing valve info
+                                        self.MaximumValveTime = self.ValveTime
 
-                                    if (self.CurrentDrink.Mixers[i].Carbonated == 1):
-                                    
-                                        SmartBar_Dispenser.ValvesToOpen.append(ValveDispenseData(SmartBar_Dispenser.CarbonatedWaterValveNumber,ValveTime,Delay)) # storing valve info
+                                    Status = SmartBar_Dispenser.ValveManager.SetValveTime(ValveNumber,self.ValveTime)
 
-                                    if (self.CurrentDrink.Mixers[i].Carbonated == 0):
-                                    
-                                        SmartBar_Dispenser.ValvesToOpen.append(ValveDispenseData(SmartBar_Dispenser.WaterValveNumber,ValveTime,Delay)) # storing valve info
+                                    if (item_carbonation == 1 & Status == 1):
 
-                                    self.Available = 1
+                                        Status = SmartBar_Dispenser.ValveManager.SetValveTime(CarbonatedWaterValveNumber,self.ValveTime)
 
-                                    self.Delay = self.Delay + self.ValveTime
+                                    if (item_carbonation == 1 & Status == 1):
+                                        
 
-                                    break
+                                        Status = SmartBar_Dispenser.ValveManager.SetValveTime(WaterValveNumber,self.ValveTime)
 
-                    if (self.Available == 0):
-                    
-                        return  -2           
+                                    return Status
 
-                    
 
-        return 2
+            SmartBar_Dispenser.PrintFilter.Error("Drink Component Not Found",SmartBar_Dispenser.PrintFilter.Title)
 
-                                                        
+            return SmartBar_Dispenser.FindDrinkComponent_Fail
+                                                       
 
     def StartDispense(self):
 
-        DispensePacket = ''
-        print((len(SmartBar_Dispenser.ValvesToOpen)))
-        for i in range((len(SmartBar_Dispenser.ValvesToOpen))):
-
-            DispensePacket = string.join([DispensePacket,str(SmartBar_Dispenser.ValvesToOpen[i].Number),'.',str(SmartBar_Dispenser.ValvesToOpen[i].OpenTime)])
-
-
-        print('packet: '+DispensePacket)
         
-        SmartBar_Dispenser.ValveManager.OpenValvesTimed(DispensePacket)
+        SmartBar_Dispenser.ValveManager.OpenSetValves()
         
         thread = threading.Thread(target=self.TimerThread)
 
         thread.start()
 
-            
-
-        
-
-
-
-
-
-
-
-
-        
+         
 
         
     
@@ -345,10 +347,8 @@ class SmartBar_Dispenser():
     def TimerThread(self):
         
         DispenseTime = self.MaximumValveTime
-        
-        if (SmartBar_Dispenser.DispenserDebug == 1):
 
-            print('Timer Thread Started')
+        print('Timer Thread Started')
         
         while(DispenseTime > 0):
             
@@ -514,35 +514,6 @@ class SmartBar_Inventory():
         self.ImportInventory(inventory_file)
         
 
-##    def FindValve(self,item_category,item_type,item_brand)
-##
-##        for j in range(len(SmartBar_Dispenser.InventoryManager.Alcohols)): # scan through all alcohol in inventory
-##
-##            if (self.CurrentDrink.Alcohols[i].Type == self.InventoryManager.Alcohols[j].Type): # if the alcohol type matches continue
-##
-##
-##                    if (self.CurrentDrink.Alcohols[i].Brand == SmartBar_Dispenser.InventoryManager.Alcohols[j].Brand): # if the brand also matches, the component is confirmed
-##
-##                        if (SmartBar_Dispenser.InventoryManager.Alcohols[j].Active == 1): # if the container is currently in use valve info can be added to the list
-##                        
-##                            ValveTime = (self.CurrentDrink.Alcohols[i].Volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.AlcoholDispenseTimePerOz # calculating valve open time
-##
-##                            SmartBar_Dispenser.ValvesToOpen.append(ValveDispenseData(SmartBar_Dispenser.InventoryManager.Alcohols[j].ValveNumber,ValveTime,Delay)) # storing valve info
-##                            print('word')
-##                            Available = 1
-##                            print('word')
-##
-##                            self.Delay = self.Delay + ValveTime
-##
-##                            break
-##
-##                if (self.Available == 0):
-##                
-##                    return  -2
-##                
-##                else:
-##                    
-##                    self.Available = 0
 
 
 
@@ -738,7 +709,7 @@ class SmartBar_ValveController():
 
         self.ShiftRegisterClear()
 
-        SmartBar_Dispenser.PrintFilter.System('GPIO Initialized: Shift Register Control\n',SmartBar_Dispenser.PrintFilter.Standard) # system print statement 
+        SmartBar_Dispenser.PrintFilter.System('GPIO Initialized: Shift Register Control',SmartBar_Dispenser.PrintFilter.Standard) # system print statement 
         
 
 
@@ -759,43 +730,27 @@ class SmartBar_ValveController():
         self.UpdateShiftRegisters() # update registers to current state
 
 
-    def SetValveTime(self,valve_number,valve_timing): # open a single valve for an set amount of time
+    def SetValveTime(self,valve_number,valve_timing): # setup a single valve to be open for some amount of time
+
+    #    try:
+
+            SmartBar_ValveController.CurrentOpenValves.append(valve_number) 
+
+            self.ValveState[valve_number] = 1 # valve state open
+
+            self.ValveTimer[valve_number] = valve_timing # valve open time set
+
+            SmartBar_Dispenser.PrintFilter.System('Valve #'+str(valve_number)+' set for '+str(valve_timing)+' milliseconds',SmartBar_Dispenser.PrintFilter.Standard)
+
+            return 1
+
+##        except:
+##
+##            return -1
 
 
-        SmartBar_ValveController.CurrentOpenValves.append(valve_number) 
 
-        self.ValveState[valve_number] = 1 # valve state open
-
-        self.ValveTimer[valve_number] = valve_timing # valve open time set
-
-
-
-    def OpenValvesTimed(self,valve_data):
-
-        try:
-            del SmartBar_ValveController.CurrentOpenValves
-
-        except:
-
-            pass
-
-        SmartBar_ValveController.CurrentOpenValves = []
-
-        ValveData = valve_data.split(".")
-
-        i = 0
-
-        print('Valvedatststs: '+str(ValveData[0]))
-
-        while (i < len(ValveData)):
-
-            if (SmartBar_ValveController.ValveDebug == 1):
-
-                print('Valve: '+ValveData[1]+' opened for '+ValveData[i+1]+' miliseconds')
-
-            self.SetValveTime(int(ValveData[i]),int(ValveData[i+1]))
-
-            i = i + 2
+    def OpenSetValves(self):
             
 
         self.UpdateShiftRegisters()    
@@ -941,7 +896,7 @@ class Print_Filter():
 
             else:
 
-                print(system_message)
+                print(system_message+'\n')
             
 
     def Debug(self, debug_message,message_type):
@@ -950,11 +905,11 @@ class Print_Filter():
 
             if (message_type > 0):
 
-                self.TitleMessage(self.DebugIndex,message_type,debug_message)
+                self.TitleMessage(self.DebugIndex, message_type,debug_message)
 
             else:
 
-                print(self.MessageIndicators[self.DebugIndex]+self.MessagePrefix[self.DebugIndex]+debug_message)
+                print(self.MessageIndicators[self.DebugIndex]+self.MessagePrefix[self.DebugIndex]+debug_message+'\n')
 
 
     def Warn(self, warning_message, message_type):
@@ -978,7 +933,7 @@ class Print_Filter():
 
                 BarIndent = self.NoSpace.join([self.MessageIndicators[self.ErrorIndex]] * self.MessageBarIndent)
 
-                print('\n'+BarIndent+self.MessagePrefix[self.ErrorIndex]+debug_message)
+                print(BarIndent+self.MessagePrefix[self.ErrorIndex]+debug_message)
 
             
             
@@ -995,8 +950,6 @@ class Print_Filter():
 
         Message = self.Space.join((BarString.join([self.MessageIndicators[filter_type]] * self.MessageBarIndent),self.MessagePrefix[filter_type],message_content,MessageBar[int(MessageLength):]))
 
-        print('\n')
-
         if (message_type == self.Title):
 
             print('\n'+MessageBar)
@@ -1005,6 +958,10 @@ class Print_Filter():
 
             print(MessageBar)
 
+        else:
+
+            print(Message)
+            
         print('\n')
 
 
@@ -1016,7 +973,7 @@ def main():
     Dispenser = SmartBar_Dispenser()
 
     #Dispenser.DispenseDrinkOrder("$DO.2.2@1.2.15@2.2.15@1.2.1.20@1.2.0.30@")
-    Dispenser.ReceiveSystemCommand("$DO.2.2@1.2.15@2.2.15@1.2.1.20@1.2.0.30@")
+    Dispenser.ReceiveCommand("$DO.2.2@1.0.15@1.1.15@4.0.0.20@1.1.1.30")
 ##
  ##   Success = Dispenser.DispenseDrinkOrder("$DO.2.2@1.1.15@2.2.15@4.0.0.40@2.1.20.40@")
 
@@ -1025,6 +982,9 @@ def main():
         
 ##    while(Dispenser.CurrentlyDispensing > 0):
 ##        pass
+
+    while (Dispenser.CurrentlyDispensing > 0):
+        pass
     
     Dispenser.GPIO_Free()
     
