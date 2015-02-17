@@ -22,8 +22,7 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         setContentView(R.layout.activity_drink_ordered);
 
         pinDisplay = (TextView) findViewById(R.id.displayPin);
-        pinDisplay.setText(String.format("%04d", ((MyApplication) this.getApplication()).getPin()));
-
+        pinDisplay.setText(String.format("%04d", ((MyApplication)this.getApplication()).myPin));
     }
 
     @Override
@@ -60,10 +59,6 @@ public class DrinkOrderedActivity extends ActionBarActivity {
 
     // logs user out of account and returns to Startup Activity
     private void logout() {
-        ((MyApplication)this.getApplication()).setLoggedIn(false);
-        ((MyApplication)this.getApplication()).setMyUsername("");
-        ((MyApplication)this.getApplication()).setMyPassword("");
-        ((MyApplication)this.getApplication()).setFirst();
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
