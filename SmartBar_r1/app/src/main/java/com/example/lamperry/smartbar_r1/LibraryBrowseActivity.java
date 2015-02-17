@@ -16,16 +16,22 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+ * This class defines the behavior of the order drink screen, namely allows a user to manually
+ * enter a drink to order or choose from the library of drinks displayed and passes the drink order
+ * to the next screen.
+ */
 public class LibraryBrowseActivity extends ActionBarActivity implements View.OnClickListener,
 AdapterView.OnItemClickListener {
 
+    // Initializations
     ListView drinkList;
     ArrayList<String> drinkLibrary = new ArrayList<>();
     ArrayAdapter drinkAdapter;
     String drinkOrder;
     EditText drinkOrderTyped;
 
+    // generated activity method
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,12 +71,16 @@ AdapterView.OnItemClickListener {
         return super.onOptionsItemSelected(item);
     }
 
+    // directs user back to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
+        ((MyApplication)this.getApplication()).myUsername = "";
+        ((MyApplication)this.getApplication()).myPin = 0;
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
 
+    // populates the (prototype) library of drinks
     private void populateLibrary() {
         drinkLibrary.add("Adios Motherfucker");
         drinkLibrary.add("Bloody Mary");
@@ -96,6 +106,7 @@ AdapterView.OnItemClickListener {
         drinkLibrary.add("White Russian");
     }
 
+    // directs user to Confirmation Screen
     public void libraryBrowseToConfirmation(View view) {
         if (drinkOrderTyped == null) {
             Toast.makeText(this, "You must choose a drink!", Toast.LENGTH_SHORT).show();

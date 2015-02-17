@@ -32,6 +32,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
     private Button mSubmit;                     //Login button
     private ProgressDialog pDialog;             // Progress Dialog
     JSONParser jsonParser = new JSONParser();   // JSON parser class
+    int pin;                                    // pin for user
 
     //PHPlogin script location:
     //UCSC Smartbar Server:
@@ -56,6 +57,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
 
         //register listeners
         mSubmit.setOnClickListener(this);
+        pin = ((MyApplication)this.getApplication()).addPin();
     }
 
     // generated button method
@@ -142,7 +144,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                 success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
                     Log.d("Login Successful!", json.toString());
-                    ((MyApplication)LoginActivity.this.getApplication()).setMyUsername(username);
+                    ((MyApplication)LoginActivity.this.getApplication()).myUsername = username;
                     Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
                     finish();
                     startActivity(intent);

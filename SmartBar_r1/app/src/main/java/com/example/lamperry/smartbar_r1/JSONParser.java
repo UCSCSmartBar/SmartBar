@@ -24,6 +24,10 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+
+/*
+ * This class is the JSON class which communicates with the PHP script which queries the database.
+ */
 public class JSONParser {
 
     static InputStream is = null;
@@ -93,7 +97,6 @@ public class JSONParser {
 
     }
 
-
     // function get json from url
     // by making HTTP POST or GET method
     public JSONObject makeHttpRequest(String url, String method,
@@ -101,7 +104,6 @@ public class JSONParser {
 
         // Making HTTP request
         try {
-
             // check for request method
             if(method.equals("POST")) {
                 // request method is POST
@@ -157,6 +159,5 @@ public class JSONParser {
 
         // return JSON String
         return jObj;
-
     }
 }

@@ -50,8 +50,7 @@ public class ConfirmationActivity extends ActionBarActivity {
         drinkOrder = intent.getStringExtra("drinkOrder");
         displayDrink = (TextView)findViewById(R.id.drinkOrder);
         displayDrink.setText(drinkOrder);
-        pin = ((MyApplication)this.getApplication()).addPin();
-
+        pin = ((MyApplication)this.getApplication()).myPin;
     }
 
     // generated activity method to display action bar menu
@@ -72,6 +71,7 @@ public class ConfirmationActivity extends ActionBarActivity {
 
         // Get pin clicked
         if (id == R.id.action_pin) {
+            // TODO: add dialog to display user pin number
             return true;
         }
 
@@ -86,6 +86,8 @@ public class ConfirmationActivity extends ActionBarActivity {
     // directs user back to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
+        ((MyApplication)this.getApplication()).myUsername = "";
+        ((MyApplication)this.getApplication()).myPin = 0;
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }

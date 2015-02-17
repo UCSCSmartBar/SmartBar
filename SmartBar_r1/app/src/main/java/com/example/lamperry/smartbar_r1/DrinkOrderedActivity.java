@@ -9,11 +9,13 @@ import android.view.View;
 import android.widget.TextView;
 
 
-// this class defines all the activity within the drink ordered screen
-// generates random number for user, displays random number for user, allows access to drink
-// library screen
+/*
+ * This class defines the behavior of the drink ordered screen: displays pin number for user, allows
+ * access to library drink screen.
+ */
 public class DrinkOrderedActivity extends ActionBarActivity {
 
+    // Initializations
     TextView pinDisplay;
 
     @Override
@@ -59,6 +61,9 @@ public class DrinkOrderedActivity extends ActionBarActivity {
 
     // logs user out of account and returns to Startup Activity
     private void logout() {
+        ((MyApplication)this.getApplication()).setLoggedIn(false);
+        ((MyApplication)this.getApplication()).myUsername = "";
+        ((MyApplication)this.getApplication()).myPin = 0;
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
@@ -68,5 +73,4 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         Intent intent = new Intent(this, LibraryBrowseActivity.class);
         startActivity(intent);
     }
-
 }

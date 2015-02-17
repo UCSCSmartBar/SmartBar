@@ -47,6 +47,8 @@ public class WelcomeActivity extends ActionBarActivity {
     // logout method, returns user to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
+        ((MyApplication)this.getApplication()).myUsername = "";
+        ((MyApplication)this.getApplication()).myPin = 0;
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
