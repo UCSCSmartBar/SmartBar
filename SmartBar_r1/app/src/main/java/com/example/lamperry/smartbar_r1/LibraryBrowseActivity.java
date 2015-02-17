@@ -3,6 +3,7 @@ package com.example.lamperry.smartbar_r1;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +75,7 @@ AdapterView.OnItemClickListener {
         drinkLibrary.add("Adios Motherfucker");
         drinkLibrary.add("Bloody Mary");
         drinkLibrary.add("Cosmopolitan");
+        drinkLibrary.add("Gin & Tonic");
         drinkLibrary.add("Incredible Hulk");
         drinkLibrary.add("Lemon Drop");
         drinkLibrary.add("Long Island Iced Tea");
@@ -86,6 +89,7 @@ AdapterView.OnItemClickListener {
         drinkLibrary.add("Screaming Orgasm");
         drinkLibrary.add("Screwdriver");
         drinkLibrary.add("Sex on the Beach");
+        drinkLibrary.add("Vodka Cranberry");
         drinkLibrary.add("Vodka Soda");
         drinkLibrary.add("Whiskey Ginger");
         drinkLibrary.add("Whiskey Sour");
@@ -93,6 +97,10 @@ AdapterView.OnItemClickListener {
     }
 
     public void libraryBrowseToConfirmation(View view) {
+        if (drinkOrderTyped == null) {
+            Toast.makeText(this, "You must choose a drink!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         drinkOrder = drinkOrderTyped.getText().toString();
 
         Intent intent = new Intent(this, ConfirmationActivity.class);

@@ -3,50 +3,32 @@ package com.example.lamperry.smartbar_r1;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 
 
+/*
+ * This class represents the behavior of the first screen a user sees when opening the app.
+ * Displays logo, buttons to direct to either login or new user
+ */
 public class StartupActivity extends ActionBarActivity {
 
+    // generated activity method
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
+        // initializes app wide global boolean to false
         ((MyApplication)this.getApplication()).setLoggedIn(false);
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_startup, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
+    // method to direct user to login screen
     public void startupToLogin(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
+    // method to direct user to create account screen
     public void startupToNewUser(View view) {
         Intent intent = new Intent(this, NewUserActivity.class);
         startActivity(intent);

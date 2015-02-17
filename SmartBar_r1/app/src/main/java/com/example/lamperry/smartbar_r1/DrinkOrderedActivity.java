@@ -20,14 +20,8 @@ public class DrinkOrderedActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drink_ordered);
-        pinDisplay = (TextView) findViewById(R.id.displayPin);
 
-        // if this is users first time ordering a drink, generate random pin and display
-        // this will set the random pin to the user login index in the pin array list
-        if (((MyApplication)this.getApplication()).isFirst()) {
-            ((MyApplication) this.getApplication()).setPin(generatePin());
-            ((MyApplication)this.getApplication()).notFirst();
-        }
+        pinDisplay = (TextView) findViewById(R.id.displayPin);
         pinDisplay.setText(String.format("%04d", ((MyApplication) this.getApplication()).getPin()));
 
     }
@@ -85,8 +79,4 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
-    // generate random user pin
-    private int generatePin() {
-        return ((MyApplication)this.getApplication()).addPin();
-    }
 }

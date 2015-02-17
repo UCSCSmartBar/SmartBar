@@ -22,43 +22,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// this class defines the behavior of the new user screen
-// namely takes user input to create account, parses through login/password DB to authorize new
-// account, and logs user in
-// throws user prompt if login already created
+/*
+ * This class defines the behavior of the new user screen, namely takes user input to create
+ * account, parses through login/password DB tables to authorize new account, logs user in
+ * throws toast if login already created
+ */
 public class NewUserActivity extends ActionBarActivity implements View.OnClickListener {
 
-    EditText newUsernameText, newPasswordText, user, pass, agesb, weightsb, sexsb;
-    String usernameString, passwordString;
-    private Button mRegister;
-    ArrayList<String> usernameDB = new ArrayList<>();
-    ArrayList<String> passwordDB = new ArrayList<>();
+    // Initializations
+    EditText user, pass, agesb, weightsb, sexsb;    // User Inputs
+    private Button mRegister;                       // Register Button
+    private ProgressDialog pDialog;                 // Progress Dialog
+    JSONParser jsonParser = new JSONParser();       // JSON parser class
+    int myPin;
 
-    // Progress Dialog
-    private ProgressDialog pDialog;
-
-    // JSON parser class
-    JSONParser jsonParser = new JSONParser();
-
-    //PHP login script
-
+    //PHP login script:
     //UCSC Smartbar Server:
     private static final String LOGIN_URL = "http://www.ucscsmartbar.com/register.php";
 
-    //JSON element ids from repsonse of php script:
+    //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_MESSAGE = "message";
 
+    // generated activity method
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
-
-        usernameDB = ((MyApplication)this.getApplication()).getUsernameDB();
-        passwordDB = ((MyApplication)this.getApplication()).getPasswordDB();
-
-        newUsernameText = (EditText)findViewById(R.id.type_email);
-        newPasswordText = (EditText)findViewById(R.id.type_password);
 
         user = (EditText)findViewById(R.id.type_email);
         pass = (EditText)findViewById(R.id.type_password);
@@ -68,16 +58,18 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
 
         mRegister = (Button)findViewById(R.id.login_button);
         mRegister.setOnClickListener(this);
+
+        myPin = ((MyApplication)this.getApplication()).addPin();
     }
 
+    // generated activity method
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
-
+        // instantiate and execute CreateUser class to query database and create account
         new CreateUser().execute();
-
     }
 
+    // generated activity method
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -85,6 +77,7 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
         return true;
     }
 
+    // generated activity method
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -92,44 +85,23 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        // Forgot user chosen in action bar
+        if (id == R.id.action_forgot_user) {
+            // add dialog box to input email address to send information to
+            return true;
+        }
+
+        // Forgot password chosen in action bar
+        if (id == R.id.action_forgot_pass) {
+            // add dialog box to input email address to send information to
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    // makes sure user input is valid; has entered something for username and password
-    // and throws user prompt if login already taken
-    public void checkUserLogin(View view) {
-        usernameString = newUsernameText.getText().toString();
-        passwordString = newPasswordText.getText().toString();
-
-        if ((usernameString.equals("")) || (passwordString.equals(""))) {
-            Toast.makeText(this, "You must enter a valid login and password", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (!checkExists(usernameString, passwordString)) {
-            newUserToWelcome(view, usernameString, passwordString);
-        } else {
-            Toast.makeText(this, "Username taken. Please try again.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    // parses through DB to check if login account already exists
-    private boolean checkExists(String username, String password) {
-        int index = 0;
-        for ( ; index < usernameDB.size(); index++) {
-            if (username.equals(usernameDB.get(index))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
+    // class to query database and add new user information, extends AsyncTask so that query can be
+    // background thread
     class CreateUser extends AsyncTask<String, String, String> {
 
         /**
@@ -137,6 +109,7 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
          * */
         boolean failure = false;
 
+        // initializes the progress dialog
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -149,7 +122,6 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
 
         @Override
         protected String doInBackground(String... args) {
-            // TODO Auto-generated method stub
             // Check for success tag
             int success;
             String username = user.getText().toString();
@@ -179,20 +151,21 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
                 success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
                     Log.d("User Created!", json.toString());
+                    Intent intent = new Intent(NewUserActivity.this, WelcomeActivity.class);
                     finish();
+                    startActivity(intent);
                     return json.getString(TAG_MESSAGE);
                 }else{
+                    failure = true;
                     Log.d("Login Failure!", json.getString(TAG_MESSAGE));
                     return json.getString(TAG_MESSAGE);
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             return null;
-
         }
+
         /**
          * After completing background task Dismiss the progress dialog
          * **/
@@ -202,20 +175,6 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
             if (file_url != null){
                 Toast.makeText(NewUserActivity.this, file_url, Toast.LENGTH_LONG).show();
             }
-
         }
-
-    }
-
-    // starts welcome activity and sets all relevant global variables
-    public void newUserToWelcome(View view, String username, String password) {
-        usernameDB.add(username);
-        passwordDB.add((password));
-        ((MyApplication)this.getApplication()).setLoggedIn(true);
-        ((MyApplication)this.getApplication()).setMyUsername(usernameString);
-        ((MyApplication)this.getApplication()).setMyPassword(passwordString);
-
-        Intent intent = new Intent(this, WelcomeActivity.class);
-        startActivity(intent);
     }
 }

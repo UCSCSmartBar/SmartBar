@@ -5,32 +5,24 @@ import android.app.Application;
 import java.util.ArrayList;
 import java.util.Random;
 
-
+/*
+ * This class holds all the global variables for the entire application. Namely the
+ * username/password who is currently logged in and unique pin
+ */
 // this class holds all the global variables for the entire app
 // namely the particular username/password who is currently logged in
 // for now the DB arrays too
 public class MyApplication extends Application {
-    int pin = 0;
     Random random = new Random();
     boolean loggedIn = false;
     boolean first = true;
     String myUsername;
     String myPassword;
     int myPin;
-    ArrayList<String> usernameDB = new ArrayList<>();
-    ArrayList<String> passwordDB = new ArrayList<>();
-    ArrayList<Integer> uniquePins = new ArrayList<>();
-
-    public ArrayList<String> getUsernameDB() { return usernameDB; }
-    public ArrayList<String> getPasswordDB() { return passwordDB; }
-    public ArrayList<Integer> getUniquePins() { return uniquePins; }
 
     public void setMyUsername(String username) { myUsername = username; }
     public void setMyPassword(String password) { myPassword = password; }
     public void setPin(int pin) { myPin = pin; }
-
-    public String getMyUsername() { return myUsername; }
-    public String getMyPassword() { return myPassword; }
     public int getPin() { return myPin; }
 
     public boolean isFirst() { return first; }
@@ -42,8 +34,7 @@ public class MyApplication extends Application {
     }
 
     public int addPin() {
-        pin = random.nextInt(10000);
-        uniquePins.add(pin);
-        return pin;
+        myPin = random.nextInt((int) System.currentTimeMillis() % 1000);
+        return myPin;
     }
 }
