@@ -52,14 +52,10 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         
         // adds get pin button to action bar
         if (id == R.id.action_pin) {
-            int pin = getPin();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private int getPin() {
-        return ((MyApplication)this.getApplication()).getPin();
     }
 
     // logs user out of account and returns to Startup Activity
@@ -67,7 +63,6 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
         ((MyApplication)this.getApplication()).setMyUsername("");
         ((MyApplication)this.getApplication()).setMyPassword("");
-        ((MyApplication)this.getApplication()).setPin(0);
         ((MyApplication)this.getApplication()).setFirst();
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);

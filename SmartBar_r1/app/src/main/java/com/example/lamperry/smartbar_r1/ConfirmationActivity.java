@@ -51,6 +51,7 @@ public class ConfirmationActivity extends ActionBarActivity {
         displayDrink = (TextView)findViewById(R.id.drinkOrder);
         displayDrink.setText(drinkOrder);
         pin = ((MyApplication)this.getApplication()).addPin();
+
     }
 
     // generated activity method to display action bar menu
@@ -116,12 +117,13 @@ public class ConfirmationActivity extends ActionBarActivity {
             // Check for success tag
             int success;
             String username = ((MyApplication)ConfirmationActivity.this.getApplication()).myUsername;
+            String myPin = String.valueOf(pin);
             String drink = drinkOrder;
             try {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("username", username));
-                params.add(new BasicNameValuePair("pin", String.valueOf(pin)));
+                params.add(new BasicNameValuePair("pin", myPin));
                 params.add(new BasicNameValuePair("drink", drink));
 
                 Log.d("request!", "starting");

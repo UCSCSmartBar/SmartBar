@@ -22,8 +22,9 @@ public class MyApplication extends Application {
 
     public void setMyUsername(String username) { myUsername = username; }
     public void setMyPassword(String password) { myPassword = password; }
-    public void setPin(int pin) { myPin = pin; }
-    public int getPin() { return myPin; }
+    public String getPin() {
+        return String.valueOf(myPin);
+    }
 
     public void setFirst() { first = true; }
 
@@ -32,7 +33,7 @@ public class MyApplication extends Application {
     }
 
     public int addPin() {
-        myPin = random.nextInt((int)System.currentTimeMillis() % 1000);
+        myPin = random.nextInt(random.nextInt(100000) % 10000);
         return myPin;
     }
 }
