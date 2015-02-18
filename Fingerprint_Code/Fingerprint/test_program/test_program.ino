@@ -17,6 +17,24 @@ void setup()
   fps.SetLED(true);
   //enroll();
   identify();
+
+//  if(fps.DeleteID(1)){
+//    Serial.print("lol");
+//  }else{
+//    Serial.print("daw");
+//  }
+
+  //fps.DeleteAll();
+  
+  //checking if enrolled exists. tests indicates will work around indices 
+  //(e.g. if 14 are enrolled, 13 will return true but 14 will return false)
+  //useful for debugging other functions such as deleteid and deleteall
+//  if(fps.CheckEnrolled(12)==true){
+//    Serial.print("\nhey");
+//  }
+//  else{
+//    Serial.print("\nhi");
+//  }
 }
 
 void enroll(){
@@ -36,7 +54,7 @@ void enroll(){
   fps.EnrollStart(ID);
 
   Serial.print("\nEnrollment takes three scans.\n Place finger on sensor, please, User #");
-  Serial.println(ID);
+  Serial.println(ID+1);
 
   //wait for the finger the be pressed on the surface
   while(fps.IsPressFinger()==false){
@@ -59,7 +77,7 @@ void enroll(){
       delay(100);
     }
     capt=fps.CaptureFinger(false);
-    
+
     //second finger captured
     if(capt==true){
       Serial.println("Please remove finger");
@@ -77,22 +95,26 @@ void enroll(){
       if(capt==true){
         Serial.println("Please remove finger");
         captErr=fps.Enroll3();
-        
+
         //checks if the enrollment failed, a bad image was taken or if the finger has already been scanned
         if(captErr==0){
           Serial.println("\nYou have been successfully enrolled");
-        }else{
+        }
+        else{
           Serial.println("\nEnrollment unsuccessful. Error code:");
           Serial.println(captErr);
           enroll();
         }
-      }else{
+      }
+      else{
         Serial.println("\nEnrollment unsuccessful, did not capture third finger.");
       }
-    }else{
+    }
+    else{
       Serial.println("\nEnrollment unsuccessful, did not capture second finger."); 
     }  
-  }else{
+  }
+  else{
     Serial.println("\nEnrollment unsuccessful, did not capture first finger."); 
   }
 
@@ -103,21 +125,22 @@ void enroll(){
 
 void identify(){
   Serial.println("\nPlace finger on sensor for identification, please.");
-  
+
   //wait for finger to be placed on sensor
   while(fps.IsPressFinger()==false){
     delay(100);
   }
-  
+
   //do 1:N comparison
   fps.CaptureFinger(false);
-  int ID=fps.Identify1_N();
-  
+  int ID=fps.Identify1_N();;//=fps.Verify1_1(0)
+
   //if the user exists, welcome them. or else they aren't in database
   if(ID<200){
     Serial.println("Welcome, User #");
-    Serial.print(ID);
-  }else{
+    Serial.print(ID+1);
+  }
+  else{
     Serial.println("No user found, please enroll.");
     enroll();
   }
@@ -127,9 +150,16 @@ void loop()
 {
   //test#1: blink internal LED
   /*fps.SetLED(true);
-  delay(500);
-  fps.SetLED(false);
-  delay(500);*/
+   delay(500);
+   fps.SetLED(false);
+   delay(500);*/
+
+  //  char buffer[35];
+  //  sprintf(buffer,"\nCurrent number of enrolled users:%d",fps.GetEnrollCount());
+  //  Serial.println(buffer);
+
   delay(60000);
 }
+
+
 
