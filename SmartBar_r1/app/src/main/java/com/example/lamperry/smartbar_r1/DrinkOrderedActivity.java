@@ -1,8 +1,10 @@
 package com.example.lamperry.smartbar_r1;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +25,8 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drink_ordered);
 
-        pinDisplay = (TextView) findViewById(R.id.displayPin);
-        pinDisplay.setText(String.format("%04d", ((MyApplication)this.getApplication()).myPin));
+        pinDisplay = (TextView)findViewById(R.id.displayPin);
+        pinDisplay.setText(((MyApplication)this.getApplication()).myPin);
     }
 
     @Override
@@ -41,19 +43,19 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        // adds get pin button to action bar
+        if (id == R.id.action_pin) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("My Pin");
+            builder.setMessage(pinDisplay.getText().toString());
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
             return true;
         }
 
         // adds logout button to action bar
         if (id == R.id.action_logout) {
             logout();
-        }
-        
-        // adds get pin button to action bar
-        if (id == R.id.action_pin) {
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -63,7 +65,7 @@ public class DrinkOrderedActivity extends ActionBarActivity {
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
         ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = 0;
+        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }

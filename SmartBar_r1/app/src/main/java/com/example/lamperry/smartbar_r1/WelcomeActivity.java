@@ -1,5 +1,6 @@
 package com.example.lamperry.smartbar_r1;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,11 +14,15 @@ import android.view.View;
  */
 public class WelcomeActivity extends ActionBarActivity {
 
+    String pin;
+
     // generated activity code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
+        pin = ((MyApplication)this.getApplication()).myPin;
     }
 
     // generated activity code
@@ -37,6 +42,16 @@ public class WelcomeActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         // Logout chosen from action bar
+        if (id == R.id.action_pin) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("My Pin");
+            builder.setMessage(String.valueOf(pin));
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
+            return true;
+        }
+
+        // Logout chosen from action bar
         if (id == R.id.action_logout) {
             logout();
         }
@@ -48,7 +63,7 @@ public class WelcomeActivity extends ActionBarActivity {
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
         ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = 0;
+        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }

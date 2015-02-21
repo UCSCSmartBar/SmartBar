@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -30,11 +32,12 @@ import java.util.List;
 public class NewUserActivity extends ActionBarActivity implements View.OnClickListener {
 
     // Initializations
-    EditText user, pass, agesb, weightsb, sexsb;    // User Inputs
+    EditText user, pass, agesb, weightsb;           // User Inputs
+    Spinner sexsb;
     private Button mRegister;                       // Register Button
     private ProgressDialog pDialog;                 // Progress Dialog
     JSONParser jsonParser = new JSONParser();       // JSON parser class
-    int pin;                                        // pin for user
+    String pin;                                     // pin for user
 
     //PHP login script:
     //UCSC Smartbar Server:
@@ -49,22 +52,32 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
+        String[] genders = { "Male", "Female", "Other"};
 
         user = (EditText)findViewById(R.id.type_email);
         pass = (EditText)findViewById(R.id.type_password);
         agesb = (EditText)findViewById(R.id.type_age);
         weightsb = (EditText)findViewById(R.id.type_weight);
-        sexsb = (EditText)findViewById(R.id.type_sex);
+
+        // set up drop down gender menu
+        sexsb = (Spinner)findViewById(R.id.type_sex);
+        ArrayAdapter<String> gender = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, genders);
+        gender.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        sexsb.setAdapter(gender);
 
         mRegister = (Button)findViewById(R.id.login_button);
         mRegister.setOnClickListener(this);
-        pin = ((MyApplication)this.getApplication()).addPin();
+        pin = ((MyApplication)this.getApplication()).myPin;
     }
 
     // generated activity method
     @Override
     public void onClick(View v) {
         // instantiate and execute CreateUser class to query database and create account
+        if ((agesb.getText() == null) || (weightsb.getText() == null) || (sexsb.toString() == null)) {
+            Toast.makeText(this, "All fields required", Toast.LENGTH_LONG).show();
+            return;
+        }
         new CreateUser().execute();
     }
 
@@ -127,7 +140,7 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
             String password = pass.getText().toString();
             String age = agesb.getText().toString();
             String weight = weightsb.getText().toString();
-            String sex =sexsb.getText().toString();
+            String sex = sexsb.toString();
             try {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();

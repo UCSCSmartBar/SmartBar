@@ -5,18 +5,13 @@
     tools:context="com.example.lamperry.smartbar_r1.DrinkOrderedActivity">
 
     <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:id="@+id/action_pin"
+        android:title="@string/action_pin"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_logout"
         android:title="@string/action_logout"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_pin"
-        android:title="@string/action_pin"
         app:showAsAction="never" />
 
 </menu>

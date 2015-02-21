@@ -1,5 +1,6 @@
 package com.example.lamperry.smartbar_r1;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ AdapterView.OnItemClickListener {
     ArrayAdapter drinkAdapter;
     String drinkOrder;
     EditText drinkOrderTyped;
+    String pin;
 
     // generated activity method
     @Override
@@ -39,10 +41,13 @@ AdapterView.OnItemClickListener {
         populateLibrary();
 
         drinkList = (ListView)findViewById(R.id.drinkList);
+        drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
         drinkAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, drinkLibrary);
         drinkList.setAdapter(drinkAdapter);
 
         drinkList.setOnItemClickListener(this);
+
+        pin = ((MyApplication)this.getApplication()).myPin;
     }
 
     @Override
@@ -60,7 +65,12 @@ AdapterView.OnItemClickListener {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_pin) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("My Pin");
+            builder.setMessage(String.valueOf(pin));
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
             return true;
         }
 
@@ -75,7 +85,7 @@ AdapterView.OnItemClickListener {
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
         ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = 0;
+        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
@@ -85,7 +95,7 @@ AdapterView.OnItemClickListener {
         drinkLibrary.add("Adios Motherfucker");
         drinkLibrary.add("Bloody Mary");
         drinkLibrary.add("Cosmopolitan");
-        drinkLibrary.add("Gin & Tonic");
+        drinkLibrary.add("Gin and Tonic");
         drinkLibrary.add("Incredible Hulk");
         drinkLibrary.add("Lemon Drop");
         drinkLibrary.add("Long Island Iced Tea");

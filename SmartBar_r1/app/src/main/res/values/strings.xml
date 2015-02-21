@@ -46,6 +46,11 @@
     <string name="order_drink_button">Yes, Order Drink</string>
     <string name="change_order_button">Change Order</string>
     <string name="title_activity_drink_ordered">DrinkOrderedActivity</string>
+    <string name="customize">Customize Drink</string>
+    <string name="tequila">Tequila</string>
+    <string name="rum">Rum</string>
+    <string name="vodka">Vodka</string>
+    <string name="gin">Gin</string>
 
     <!-- Order Confirmed Activity -->
     <string name="done">done</string>
@@ -61,5 +66,42 @@
     <string name="action_forgot_user">Forgot Username</string>
     <string name="action_forgot_pass">Forgot Password</string>
 
+    <!-- Drop Down Tequila Options -->
+    <string-array name="tequila_array">
+        <item>Default: Jose Cuervo</item>
+        <item>El Jimador</item>
+        <item>Sauza</item>
+        <item>Patron</item>
+    </string-array>
+
+    <!-- Drop Down Rum Options -->
+    <string-array name="rum_array">
+        <item>Default: Bacardi</item>
+        <item>Captain Morgan</item>
+    </string-array>
+
+    <!-- Drop Down Vodka Options -->
+    <string-array name="vodka_array">
+        <item>Default: Smirnoff</item>
+        <item>Svedka</item>
+        <item>Grey Goose</item>
+    </string-array>
+
+    <!-- Drop Down Gin Options -->
+    <string-array name="gin_array">
+        <item>Default: Bombay Sapphire</item>
+        <item>Beefeater</item>
+    </string-array>
+
+    <!-- Drop Down Gin Options -->
+    <string-array name="whiskey_array">
+        <item>Default: Jack Daniels</item>
+        <item>Jameson</item>
+        <item>Maker\'s Mark</item>
+        <item>Jim Beam</item>
+    </string-array>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_customize_drink">CustomizeDrinkActivity</string>
 
 </resources>

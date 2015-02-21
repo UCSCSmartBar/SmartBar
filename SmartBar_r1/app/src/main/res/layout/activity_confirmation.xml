@@ -1,37 +1,39 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
     tools:context=".ConfirmationActivity">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/order_confirmation1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:text="@string/order_confirmation1"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/order_confirmation1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            android:text="@string/order_confirmation1"
-            android:textSize="20sp" />
+    <TextView
+        android:id="@+id/drinkOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:text="@string/order_confirmation"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/drinkOrder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            android:text="@string/order_confirmation"
-            android:textSize="20sp" />
+    <TextView
+        android:id="@+id/customRecipe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:text="@string/order_confirmation"
+        android:textSize="20sp"
+        android:visibility="invisible" />
 
         <TextView
             android:id="@+id/order_confirmation2"
@@ -50,8 +52,7 @@
             android:text="@string/order_drink_button"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:onClick="confirmationToDrinkOrdered"
-            />
+            android:onClick="confirmationToDrinkOrdered" />
 
         <Button
             android:id="@+id/change_order_button"
@@ -61,9 +62,16 @@
             android:text="@string/change_order_button"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:onClick="confirmationToLibraryBrowse"
-            />
+            android:onClick="confirmationToLibraryBrowse" />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/customize_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/customize"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:onClick="customizeDrink" />
 
-</RelativeLayout>
+</LinearLayout>

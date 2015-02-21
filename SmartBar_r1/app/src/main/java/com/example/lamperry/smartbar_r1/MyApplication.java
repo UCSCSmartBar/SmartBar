@@ -10,16 +10,11 @@ import java.util.Random;
  * username/pin for logged in user
  */
 public class MyApplication extends Application {
-    Random random = new Random();
     boolean loggedIn = false;
     String myUsername;
-    int myPin;
+    String myPin = "16505559898";
 
     public void setLoggedIn(boolean setLogIn) {
         loggedIn = setLogIn;
-    }
-    public int addPin() {
-        myPin = random.nextInt(random.nextInt(100000) % 10000);
-        return myPin;
     }
 }

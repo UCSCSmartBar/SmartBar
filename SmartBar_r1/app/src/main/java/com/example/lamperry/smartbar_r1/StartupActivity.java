@@ -24,7 +24,7 @@ public class StartupActivity extends ActionBarActivity {
 
     // method to direct user to login screen
     public void startupToLogin(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, LibraryBrowseActivity.class);
         startActivity(intent);
     }
 

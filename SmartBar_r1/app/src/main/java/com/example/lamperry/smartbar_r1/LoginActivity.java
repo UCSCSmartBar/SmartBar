@@ -29,10 +29,9 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
 
     // Initializations
     EditText user, pass;                        //To store username from login/pass field
-    private Button mSubmit;                     //Login button
     private ProgressDialog pDialog;             // Progress Dialog
     JSONParser jsonParser = new JSONParser();   // JSON parser class
-    int pin;                                    // pin for user
+    String pin;                                 // pin for user
 
     //PHPlogin script location:
     //UCSC Smartbar Server:
@@ -53,11 +52,11 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
         pass = (EditText)findViewById(R.id.type_password);
 
         //setup buttons
-        mSubmit = (Button)findViewById(R.id.login_button);
+        Button mSubmit = (Button)findViewById(R.id.login_button);
 
         //register listeners
         mSubmit.setOnClickListener(this);
-        pin = ((MyApplication)this.getApplication()).addPin();
+        pin = ((MyApplication)this.getApplication()).myPin;
     }
 
     // generated button method
