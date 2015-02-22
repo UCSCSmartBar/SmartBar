@@ -9,9 +9,28 @@ import time
 import io
 import string
 import threading
+
+
+
+ValveOpen = 1
+
+ValveClosed = 0
  
+ValveHasNotOpened = 0
 
+ValveHasOpened = 1
 
+AlcoholValveDelayEnabled = 1
+
+ValveController_SR_Data = 4 # pin number of serial output to shift register
+    
+ValveController_SR_Clock = 14 # pin number of clock output to shift register
+
+ValveController_SR_Store = 15 # pin number of store data output to shift register
+    
+ValveController_SR_ClockPause = .0000001# time between high and low clock signal to shift register
+
+ValveController_SR_TotalBits = 24 # number of shift register bits in use (3 shift registers)
 ######################################################################################        
     
 # Class: SmartBar_Dispenser
@@ -104,7 +123,7 @@ class SmartBar_Dispenser():
       #      if (self.CurrentDrink.Status == 2):
 ##
 
-        self.StartDispense()
+            SmartBar_Dispenser.ValveManager.OpenQueuedValves()
         
 
 
@@ -134,7 +153,7 @@ class SmartBar_Dispenser():
             
         while(RecieveOrderStatus == 0):
 
-            try:
+            #try:
 
                 self.OrderPacket = drink_order.split("@") # break up the order into rows to be processed
                 
@@ -146,9 +165,10 @@ class SmartBar_Dispenser():
 
                 SmartBar_Dispenser.PrintFilter.Debug("Number of Alcohol Components : "+str(self.NumOfAlcoholComponents)+" Number of Mixer Components : "+str(self.NumOfMixerComponents)+" Packet Length : "+str(len(self.OrderPacket)),SmartBar_Dispenser.PrintFilter.Standard)
     
-                if ((self.NumOfAlcoholComponents + self.NumOfMixerComponents) == (len(self.OrderPacket) - 1)): # if the packet is the right size continue
+       #         if ((self.NumOfAlcoholComponents + self.NumOfMixerComponents) == (len(self.OrderPacket) - 1)): # if the packet is the right size continue
 
-                    self.CurrentDrink = SmartBar_DrinkOrder(self.NumOfAlcoholComponents,self.NumOfMixerComponents) # create a new drink order
+      
+                self.CurrentDrink = SmartBar_DrinkOrder(self.NumOfAlcoholComponents,self.NumOfMixerComponents) # create a new drink order
 
                 for i in range(self.NumOfAlcoholComponents): # store all alcohol drink components
 
@@ -166,11 +186,11 @@ class SmartBar_Dispenser():
 
                 RecieveOrderStatus = 1 # recieve drink order successful    
 
-            except:
+            #except:
 
                 SmartBar_Dispenser.PrintFilter.Error('Failure: Receive Drink Order',SmartBar_Dispenser.PrintFilter.Title)
 
-                RecieveOrderStatus = -1 # recieve drink order failed
+               # RecieveOrderStatus = -1 # recieve drink order failed
 
         return RecieveOrderStatus
 
@@ -180,7 +200,7 @@ class SmartBar_Dispenser():
 
     def ProcessDrinkOrder(self):
 
-
+        self.AlcoholValveDelay = 0
         
         for i in range(self.CurrentDrink.NumberOfAlcoholComponents): # scan through all alcohol components of current drink
            
@@ -198,6 +218,7 @@ class SmartBar_Dispenser():
 
                 return -1
 
+        self.MixerValveDelay = 0
 
         for i in range(self.CurrentDrink.NumberOfMixerComponents): # scan through all alcohol components of current drink
            
@@ -223,11 +244,15 @@ class SmartBar_Dispenser():
 
     def SetupValve(self,item_category,item_type,item_brand,item_carbonation,item_volume):
 
-        WaterValveNumber = 18
 
-        CarbonatedWaterValveNumber = 19
+        MixType_Alcohol = 0
+
+        MixType_H2OMixer = 1
+
+        MixType_CO2Mixer = 2
         
-        self.MaximumValveTime = 0
+        self.AlcoholValveDelay_Enabled = AlcoholValveDelayEnabled
+        
         if (item_category == 0):
 
             for i in range(len(SmartBar_Dispenser.InventoryManager.Alcohols)): # scan through all alcohol in inventory
@@ -238,50 +263,54 @@ class SmartBar_Dispenser():
 
                             if (SmartBar_Dispenser.InventoryManager.Alcohols[i].Active == 1): # if the container is currently in use valve info can be added to the list
                             
-                                self.ValveTime = ((item_volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.AlcoholDispenseTimePerOz) # calculating valve open time
+                                ValveTime = float((float(item_volume/SmartBar_Dispenser.OzScalingFactor)) * SmartBar_Dispenser.AlcoholDispenseTimePerOz) # calculating valve open time
 
                                 ValveNumber = SmartBar_Dispenser.InventoryManager.Alcohols[i].ValveNumber
+            
+                                ValveDelay = self.AlcoholValveDelay
 
-                                Status = SmartBar_Dispenser.ValveManager.SetValveTime(ValveNumber,self.ValveTime)
+                                Status = SmartBar_Dispenser.ValveManager.QueueValve(ValveNumber, ValveTime, ValveDelay,MixType_Alcohol)
 
-                                if (self.ValveTime > self.MaximumValveTime):
+                                if (self.AlcoholValveDelay_Enabled == 1):
 
-                                    self.MaximumValveTime = self.ValveTime
-                                return Status
+                                    self.AlcoholValveDelay = self.AlcoholValveDelay + ValveTime
+                                    
+                                return 1
 
-            SmartBar_Dispenser.PrintFilter.Error("Drink Component Not Found",SmartBar_Dispenser.PrintFilter.Title)
+
+            SmartBar_Dispenser.PrintFilter.Error("Drink Component Not Found - Type: "+str(item_type)+" , Brand: "+str(item_brand),SmartBar_Dispenser.PrintFilter.Title)
 
             return SmartBar_Dispenser.FindDrinkComponent_Fail
 
 
         if (item_category == 1):
                             
-            for i in range(len(SmartBar_Dispenser.InventoryManager.Mixers)): # scan through all alcohol in inventory
+            for i in range(len(SmartBar_Dispenser.InventoryManager.Mixers)): # scan through all mixer in inventory
 
-                    if (item_type == SmartBar_Dispenser.InventoryManager.Mixers[i].Type): # if the alcohol type matches continue
+                    if (item_type == SmartBar_Dispenser.InventoryManager.Mixers[i].Type): # if the mixer type matches continue
 
                             if (item_brand == SmartBar_Dispenser.InventoryManager.Mixers[i].Brand): # if the brand also matches, the component is confirmed
 
                                 if (SmartBar_Dispenser.InventoryManager.Mixers[i].Active == 1): # if the container is currently in use valve info can be added to the list
 
-                                    self.ValveTime = ((item_volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.MixerDispenseTimePerOz) # calculating valve open time
+                                    ValveTime = float((float(item_volume/SmartBar_Dispenser.OzScalingFactor) * SmartBar_Dispenser.MixerDispenseTimePerOz)) # calculating valve open time
 
                                     ValveNumber = SmartBar_Dispenser.InventoryManager.Mixers[i].ValveNumber
 
-                                    if (self.ValveTime > self.MaximumValveTime):
+                                    ValveDelay = self.MixerValveDelay
 
-                                        self.MaximumValveTime = self.ValveTime
+                                    self.MixerValveDelay = self.MixerValveDelay + ValveTime
 
-                                    Status = SmartBar_Dispenser.ValveManager.SetValveTime(ValveNumber,self.ValveTime)
+                                    if (item_carbonation == 0):
 
-                                    if (item_carbonation == 1 & Status == 1):
+                                        MixerType = MixType_H2OMixer
 
-                                        Status = SmartBar_Dispenser.ValveManager.SetValveTime(CarbonatedWaterValveNumber,self.ValveTime)
-
-                                    if (item_carbonation == 1 & Status == 1):
+                                    if (item_carbonation == 1):
                                         
+                                        MixerType = MixType_CO2Mixer
 
-                                        Status = SmartBar_Dispenser.ValveManager.SetValveTime(WaterValveNumber,self.ValveTime)
+                                    Status = SmartBar_Dispenser.ValveManager.QueueValve(ValveNumber,ValveTime,ValveDelay,MixerType)
+                                        
 
                                     return Status
 
@@ -291,14 +320,9 @@ class SmartBar_Dispenser():
             return SmartBar_Dispenser.FindDrinkComponent_Fail
                                                        
 
-    def StartDispense(self):
 
         
-        SmartBar_Dispenser.ValveManager.OpenSetValves()
         
-        thread = threading.Thread(target=self.TimerThread)
-
-        thread.start()
 
          
 
@@ -346,17 +370,19 @@ class SmartBar_Dispenser():
             
     def TimerThread(self):
         
-        DispenseTime = self.MaximumValveTime
+        self.MaxDispenseTime = self.MaximumValveTime/1000 + .5
 
-        print('Timer Thread Started')
-        
-        while(DispenseTime > 0):
+        self.CurrentDispenseTime = time.time()
+
+        self.DispenseEndTime = self.CurrentDispenseTime + self.MaxDispenseTime
+
+        SmartBar_Dispenser.PrintFilter.Debug('Timer Module Started - Starting Time: '+str(self.CurrentDispenseTime)+' Ending Time: '+ str(self.DispenseEndTime), SmartBar_Dispenser.PrintFilter.SubTitle)
+
+        while(self.CurrentDispenseTime < self.DispenseEndTime):
             
-            time.sleep(SmartBar_Dispenser.TimerInterval)
-            
-            SmartBar_Dispenser.ValveManager.CheckValves(self.TimerInterval*1000)
-            
-            DispenseTime = DispenseTime - SmartBar_Dispenser.TimerInterval
+            self.CurrentDispenseTime = time.time()
+
+        print('word!!!')
             
         SmartBar_Dispenser.CurrentlyDispensing = 0
 
@@ -416,7 +442,7 @@ class SmartBar_DrinkOrder():
 
             ComponentInfo = order_line.split(".") # break up the string (Alcohol Type).(Alcohol Brand).(Dispense Volume)
 
-            AlcoholType = int(ComponentInfo[0]) # get alcohol type
+            AlcoholType = ComponentInfo[0] # get alcohol type
 
             AlcoholBrand = int(ComponentInfo[1]) # get alcohol brand
 
@@ -433,7 +459,7 @@ class SmartBar_DrinkOrder():
 
         ComponentInfo = order_line.split(".") # break up the string (Mixer Type).(Mixer Brand).(Carbonated).(Dispense Volume)
 
-        MixerType = int(ComponentInfo[0]) # get Mixer type
+        MixerType = ComponentInfo[0] # get Mixer type
 
         MixerBrand = int(ComponentInfo[1]) # get Mixer brand
 
@@ -567,7 +593,7 @@ class SmartBar_Inventory():
 
             MixerName = CurrentLine[2]
 
-            MixerType = int(CurrentLine[3])
+            MixerType = CurrentLine[3]
 
             MixerBrand = int(CurrentLine[4])
 
@@ -599,7 +625,7 @@ class SmartBar_Inventory():
 
             AlcoholName = CurrentLine[2]
 
-            AlcoholType = int(CurrentLine[3])
+            AlcoholType = CurrentLine[3]
 
             AlcoholBrand = int(CurrentLine[4])
 
@@ -672,17 +698,7 @@ class SmartBar_ValveController():
 
     # Variables
 
-    ValveDebug = 1 
 
-    SR_Data = 20 # serial output to shift register
-    
-    SR_Clock = 19 # clock to shift register
-    
-    SR_ClockPause = .0001 # time between high and low clock signal to shift register
-
-    SR_TotalBits = 24 # number of shift register bits in use (3 shift registers)
-    
-    CurrentOpenValves = []
     
     # Functions
 
@@ -691,69 +707,159 @@ class SmartBar_ValveController():
 
         # Additional Variable Setup
 
+        self.WaterValveNumber = 18
+
+        self.CarbonatedWaterValveNumber = 19
+
         self.TotalValves = total_valves # total number of valves in use
 
-        self.ValveState = [0] * total_valves # state (open/closed) of all of the valves, initialized to 0 (closed)
+        self.CurrentValveState = [0] * total_valves # state (open/closed) of all of the valves, initialized to 0 (closed)
 
-        self.ValveTimer = [0] *total_valves # stores the remaining amount of time the valve(s) should be open, initialized to 0 (closed)
+        self.QueuedValves = []
 
-        # GPIO Setup 
+        # GPIO Setup
 
-        GPIO.setup(SmartBar_ValveController.SR_Data,GPIO.OUT)  # set the shift register serial data pin output
+        self.SR_Data = ValveController_SR_Data # pin of serial output to shift register
+    
+        self.SR_Clock = ValveController_SR_Clock # pin of clock to shift register
+
+        self.SR_Store = ValveController_SR_Store # pin of store data to shift register 
+    
+        self.SR_ClockPause = ValveController_SR_ClockPause # time between high and low clock signal to shift register
+
+        self.SR_TotalBits = ValveController_SR_TotalBits # number of shift register bits in use (3 shift registers)
+
+        GPIO.setup(self.SR_Data,GPIO.OUT)  # set the shift register serial data pin output
         
-        GPIO.output(SmartBar_ValveController.SR_Data,GPIO.LOW) # set the shift register serial data pin low initially
+        GPIO.output(self.SR_Data,GPIO.LOW) # set the shift register serial data pin low initially
         
-        GPIO.setup(SmartBar_ValveController.SR_Clock,GPIO.OUT) # set the shift register clock pin as output
+        GPIO.setup(self.SR_Clock,GPIO.OUT) # set the shift register clock pin as output
 
-        GPIO.output(SmartBar_ValveController.SR_Clock,GPIO.LOW) # set the shift register clock pin low initially
+        GPIO.output(self.SR_Clock,GPIO.LOW) # set the shift register clock pin low initially
+
+        GPIO.setup(self.SR_Store,GPIO.OUT) # set the shift register store pin as output
+
+        GPIO.output(self.SR_Store,GPIO.LOW) # set the shift register store pin low initially
 
         self.ShiftRegisterClear()
 
         SmartBar_Dispenser.PrintFilter.System('GPIO Initialized: Shift Register Control',SmartBar_Dispenser.PrintFilter.Standard) # system print statement 
         
 
+    def OpenQueuedValves(self):
+        
+        self.MaxDispenseTime =  self.MaxQueuedValveTime() + .1
+        
+        self.DispenseStartTime = time.time()
+
+        self.DispenseEndTime = self.DispenseStartTime + self.MaxDispenseTime
+
+        SmartBar_Dispenser.PrintFilter.Debug('Valve Monitor Started - Starting Time: '+str(self.DispenseStartTime)+' Ending Time: '+ str(self.DispenseEndTime), SmartBar_Dispenser.PrintFilter.Standard)
+
+        self.CurrentDispenseTime = time.time()
+
+        while(self.CurrentDispenseTime < self.DispenseEndTime):
+
+            self.CurrentDispenseTime = time.time()
+
+            self.ValveMonitor()
+        
+        self.UpdateShiftRegisters()
+
+
+    def ValveMonitor(self):
+
+        Changes = 0
+
+        for i in range(len(self.QueuedValves)):
+
+            if (  (self.CurrentDispenseTime >= (self.QueuedValves[i].Delay + self.QueuedValves[i].OpenTime + self.DispenseStartTime)) & (self.QueuedValves[i].CurrentlyOpen == 1)):
+
+                SmartBar_Dispenser.PrintFilter.Debug("valve # "+str(self.QueuedValves[i].ValveNumber)+" closed  @ dispense time: "+str(self.CurrentDispenseTime-self.DispenseStartTime)+" seconds", SmartBar_Dispenser.PrintFilter.Standard)
+
+                self.QueuedValves[i].CurrentlyOpen = 0
+
+                self.CurrentValveState[self.QueuedValves[i].ValveNumber] = 0
+
+                if (self.QueuedValves[i].Mix == 1):
+                    
+                    SmartBar_Dispenser.PrintFilter.Debug("valve # "+str(self.WaterValveNumber)+" closed  @ dispense time: "+str(self.CurrentDispenseTime-self.DispenseStartTime)+" seconds", SmartBar_Dispenser.PrintFilter.Standard)
+
+                    self.CurrentValveState[self.WaterValveNumber] = 0
+
+                if (self.QueuedValves[i].Mix == 2):
+
+                    SmartBar_Dispenser.PrintFilter.Debug("valve # "+str(self.CarbonatedWaterValveNumber)+" closed  @ dispense time: "+str(self.CurrentDispenseTime-self.DispenseStartTime)+" seconds", SmartBar_Dispenser.PrintFilter.Standard)
+
+                    self.CurrentValveState[self.CarbonatedWaterValveNumber] = 0
+
+                Changes = 1
+                
+
+            if ((self.CurrentDispenseTime >= (self.QueuedValves[i].Delay + self.DispenseStartTime)) & (self.QueuedValves[i].HasBeenOpened != 1)):
+
+                SmartBar_Dispenser.PrintFilter.Debug("valve # "+str(self.QueuedValves[i].ValveNumber)+" opened  @ dispense time: "+str(self.CurrentDispenseTime-self.DispenseStartTime)+" seconds", SmartBar_Dispenser.PrintFilter.Standard)
+
+                self.QueuedValves[i].HasBeenOpened = 1
+
+                self.QueuedValves[i].CurrentlyOpen = 1
+
+                self.CurrentValveState[self.QueuedValves[i].ValveNumber] = 1
+
+                if (self.QueuedValves[i].Mix == 1):
+
+                    SmartBar_Dispenser.PrintFilter.Debug("valve # "+str(self.WaterValveNumber)+" opened  @ dispense time: "+str(self.CurrentDispenseTime-self.DispenseStartTime)+" seconds", SmartBar_Dispenser.PrintFilter.Standard)
+
+                    self.CurrentValveState[self.WaterValveNumber] = 1
+
+                if (self.QueuedValves[i].Mix == 2):
+
+                    SmartBar_Dispenser.PrintFilter.Debug("valve # "+str(self.CarbonatedWaterValveNumber)+" opened  @ dispense time: "+str(self.CurrentDispenseTime-self.DispenseStartTime)+" seconds", SmartBar_Dispenser.PrintFilter.Standard)
+
+                    self.CurrentValveState[self.CarbonatedWaterValveNumber] = 1
+
+                Changes = 1
+                
+
+        if (Changes == 1):
+
+            self.UpdateShiftRegisters()
+        
 
     def OpenValve(self,valve_number): # open a single valve for an indefininte amount of time
 
-        self.ValveState[valve_number] = 1 # valve state open
+        self.CurrentValveState[valve_number] = 1 # valve state open
 
         self.UpdateShiftRegisters() # update registers to current state
     
 
 
-    def OpenValveTimed(self,valve_number,valve_timing): # open a single valve for an set amount of time
+##    def OpenValveTimed(self,valve_number,valve_timing, valve_delay): # open a single valve for an set amount of time
+##
+##        
+##
+##        ValveToOpen = ValveDispenseData(valve_number,ValveClosed, valve_timing, valve_delay)
+##
+##        self.QueuedValveTime[valve_number] = valve_timing # valve open time set
+##
+##        self.UpdateShiftRegisters() # update registers to current state
 
-        self.ValveState[valve_number] = 1 # valve state open
 
-        self.ValveTimer[valve_number] = valve_timing # valve open time set
+    def QueueValve(self,valve_number,valve_timing,valve_delay,mix_type): # setup a single valve to be open for some amount of time
 
-        self.UpdateShiftRegisters() # update registers to current state
+        try:
 
+            self.QueuedValves.append(ValveDispenseData(valve_number,ValveClosed, ValveHasNotOpened, valve_timing, valve_delay,mix_type))
 
-    def SetValveTime(self,valve_number,valve_timing): # setup a single valve to be open for some amount of time
-
-    #    try:
-
-            SmartBar_ValveController.CurrentOpenValves.append(valve_number) 
-
-            self.ValveState[valve_number] = 1 # valve state open
-
-            self.ValveTimer[valve_number] = valve_timing # valve open time set
-
-            SmartBar_Dispenser.PrintFilter.System('Valve #'+str(valve_number)+' set for '+str(valve_timing)+' milliseconds',SmartBar_Dispenser.PrintFilter.Standard)
+            SmartBar_Dispenser.PrintFilter.Debug('Valve #'+str(valve_number)+' set for '+str(valve_timing)+' seconds',SmartBar_Dispenser.PrintFilter.Standard)
 
             return 1
 
-##        except:
-##
-##            return -1
+        except:
 
+            SmartBar_Dispenser.PrintFilter.Error('Unable to set Valve #'+str(valve_number)+' for '+str(valve_timing)+' seconds',SmartBar_Dispenser.PrintFilter.Standard)
 
-
-    def OpenSetValves(self):
-            
-
-        self.UpdateShiftRegisters()    
+            return -1
 
             
 
@@ -763,7 +869,7 @@ class SmartBar_ValveController():
 
             print('Valve: '+str(valve_number)+' closed')
 
-        self.ValveState[valve_number] = 0 # valve state closed
+        self.QueuedValveState[valve_number] = 0 # valve state closed
 
         self.UpdateShiftRegisters() # update registers to current state
 
@@ -791,55 +897,160 @@ class SmartBar_ValveController():
         
         
     def UpdateShiftRegisters(self): # update shift registers by shifting in state data
+
         
-        i = SmartBar_ValveController.SR_TotalBits - 1 # index for the total number of bits available to the shift register
+        i = self.SR_TotalBits - 1 # index for the total number of bits available to the shift register
         
         while(i >= 0): # counting down because the last values are shifted in first
         
             if (i < self.TotalValves): # set all the bits that are being used to control valves
                 
-                if (self.ValveState[i] == 1): # write a high if the valve is supposed to be open
+                if (self.CurrentValveState[i] == 1): # write a high if the valve is supposed to be open
                     
-                    GPIO.output(SmartBar_ValveController.SR_Data,GPIO.HIGH) 
+                    GPIO.output(self.SR_Data,GPIO.HIGH) 
                     
                 else: # write a low if the valve is not supposed to be open
-                    
-                    GPIO.output(SmartBar_ValveController.SR_Data,GPIO.LOW) 
+                  
+                    GPIO.output(self.SR_Data,GPIO.LOW) 
                     
             else: # write low to all of the bits that aren't being used
 
-                GPIO.output(SmartBar_ValveController.SR_Data,GPIO.LOW) # write low to all of the bits that aren't being used
+                GPIO.output(self.SR_Data,GPIO.LOW) # write low to all of the bits that aren't being used
 
             i = i-1
 
-            SmartBar_ValveController.ShiftRegisterTick(self) # clock cycle to shift the bits along
+            self.ShiftRegisterTick() # clock cycle to shift the bits along
 
-        SmartBar_ValveController.ShiftRegisterTick(self) # extra clock cycle at the end because shift register clock and read clock are tied together which results in the shift register being one cycle ahead of storage register
+        self.ShiftRegisterStore()
+
+ #       SmartBar_ValveController.ShiftRegisterTick(self) # extra clock cycle at the end because shift register clock and read clock are tied together which results in the shift register being one cycle ahead of storage register
 
             
         
     def ShiftRegisterTick(self): # shift register clock cycle
         
-        GPIO.output(SmartBar_ValveController.SR_Clock,GPIO.HIGH) # set rising clock edge
-        
-        time.sleep(SmartBar_ValveController.SR_ClockPause) # first half of clock cycle period
-        
-        GPIO.output(SmartBar_ValveController.SR_Clock,GPIO.LOW) # set falling clock edge
-        
-        time.sleep(SmartBar_ValveController.SR_ClockPause) # second half of clock cycle period
+        GPIO.output(self.SR_Clock,GPIO.HIGH) # set rising clock edge
 
+        CurrentClockTime = time.time()
+
+        EndClockTime = (time.time() + self.SR_ClockPause)
+
+        while(CurrentClockTime < EndClockTime):
+
+            CurrentClockTime = time.time()
+        
+        GPIO.output(self.SR_Clock,GPIO.LOW) # set falling clock edge
+        
+
+    def ShiftRegisterStore(self): # shift register clock cycle
+        
+        GPIO.output(self.SR_Store,GPIO.HIGH) # set rising clock edge
+        
+        CurrentClockTime = time.time()
+
+        EndClockTime = (time.time() + self.SR_ClockPause)
+
+        while(CurrentClockTime < EndClockTime):
+
+            CurrentClockTime = time.time()
+        
+        GPIO.output(self.SR_Store,GPIO.LOW) # set falling clock edge
+    
 
 
     def ShiftRegisterClear(self): # clear shift registers - set all bits to 0
 
-        GPIO.output(SmartBar_ValveController.SR_Data,GPIO.LOW) # shift register serial input set low
+        GPIO.output(self.SR_Data,GPIO.LOW) # shift register serial input set low
         
-        for i in range(SmartBar_ValveController.SR_TotalBits): # shift in all low values
+        for i in range(self.SR_TotalBits): # shift in all low values
             
-	    SmartBar_ValveController.ShiftRegisterTick(self) # shift clock cycle
+	    self.ShiftRegisterTick() # shift clock cycle
 
-	SmartBar_ValveController.ShiftRegisterTick(self) # required extra clock cycle
-	
+	self.ShiftRegisterStore() # required extra clock cycle
+
+
+    def MaxQueuedValveTime(self):
+
+        if (self.QueuedValves == None):
+
+            SmartBar_Dispenser.PrintFilter.Warn('Attempted to get maximum queued valve time of empty queue',SmartBar_Dispenser.PrintFilter.Standard)
+
+            return -1
+
+        else:
+
+            MaxValveTime = 0
+
+            for i in range(len(self.QueuedValves)):
+
+                if ((self.QueuedValves[i].OpenTime + self.QueuedValves[i].Delay) > MaxValveTime):
+
+                    MaxValveTime = (self.QueuedValves[i].OpenTime + self.QueuedValves[i].Delay)
+
+            SmartBar_Dispenser.PrintFilter.Debug(('Maximum valve time for queue: '+str(MaxValveTime)+' seconds'),SmartBar_Dispenser.PrintFilter.Standard)
+
+            return MaxValveTime
+
+
+    def ClearQueuedValves(self):
+        
+        del self.QueuedValves
+
+        self.QueuedValves = []
+
+        SmartBar_Dispenser.PrintFilter.Debug('Valve queue cleared',SmartBar_Dispenser.PrintFilter.Standard)
+
+
+    def TestAllValves(self):
+
+        TestPause = .5
+        
+        self.ClearQueuedValves()
+
+        for i in range(self.TotalValves):
+
+            self.CurrentValveState[i] = 1
+
+            self.UpdateShiftRegisters()
+
+            CurrentClockTime = time.time()
+
+            EndClockTime = (time.time() + TestPause)
+
+            while(CurrentClockTime < EndClockTime):
+
+                CurrentClockTime = time.time()
+
+            self.CurrentValveState[i] = 0
+
+        self.ShiftRegisterClear()
+
+            
+
+######################################################################################
+
+#Class: SmartBar_DrinkComponent
+#Description: A data type to store indiviual valve information for a list in Dispenser
+#Author: Brendan Short
+#Last Modified: 2/13/2015
+
+        
+class ValveDispenseData():
+
+    def __init__(self,valve_number,currently_open, been_opened, valve_open_time,valve_delay,mix_type):
+
+        self.ValveNumber = valve_number # valve number
+
+        self.CurrentlyOpen = currently_open # keeps track of if valve currently open or closed
+
+        self.HasBeenOpened = been_opened
+
+        self.OpenTime = valve_open_time # dispense time
+
+        self.Delay = valve_delay # delay time
+
+        self.Mix = mix_type # mix with carbonated water or water or nothing
+
 
 
 # Class: PrintFilter
@@ -916,7 +1127,13 @@ class Print_Filter():
             
         if (self.WarningsEnabled == 1):
 
-            print(warning_message)
+            if (message_type > 0):
+
+                self.TitleMessage(self.WarnIndex, message_type,warning_message)
+
+            else:
+
+                print(self.MessageIndicators[self.WarnIndex]+self.MessagePrefix[self.WarnIndex]+warning_message+'\n')
 
             
     def Error(self, error_message, message_type):
@@ -931,9 +1148,7 @@ class Print_Filter():
 
             else:
 
-                BarIndent = self.NoSpace.join([self.MessageIndicators[self.ErrorIndex]] * self.MessageBarIndent)
-
-                print(BarIndent+self.MessagePrefix[self.ErrorIndex]+debug_message)
+                print(self.MessageIndicators[self.ErrorIndex]+self.MessagePrefix[self.ErrorIndex]+error_message)
 
             
             
@@ -972,21 +1187,17 @@ def main():
                                             
     Dispenser = SmartBar_Dispenser()
 
-    #Dispenser.DispenseDrinkOrder("$DO.2.2@1.2.15@2.2.15@1.2.1.20@1.2.0.30@")
-    Dispenser.ReceiveCommand("$DO.2.2@1.0.15@1.1.15@4.0.0.20@1.1.1.30")
-##
- ##   Success = Dispenser.DispenseDrinkOrder("$DO.2.2@1.1.15@2.2.15@4.0.0.40@2.1.20.40@")
+    Dispenser.ValveManager.ClearQueuedValves()
 
-#    if (Success < 0):
- #       print('faiiled')
-        
-##    while(Dispenser.CurrentlyDispensing > 0):
-##        pass
+    Dispenser.ValveManager.ShiftRegisterClear()
 
-    while (Dispenser.CurrentlyDispensing > 0):
-        pass
+    Dispenser.ValveManager.TestAllValves()
     
-    Dispenser.GPIO_Free()
+  #  Dispenser.ReceiveCommand("$DO.2.3@GN.1.15@CO.0.15@GA.0.0.30@SO.3.1.20@SO.1.1.20")
+#    Dispenser.ReceiveCommand("$DO.2.3@W.1.15@T.1.15@CJ.0.0.40@GA.0.0.20@GA.0.1.20")
+
+    
+ #   Dispenser.GPIO_Free()
     
 if __name__ == '__main__':
     main()
