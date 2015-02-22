@@ -9,7 +9,7 @@
     android:textColor="@color/white"
     android:background="@drawable/smart_bar_background"
     android:orientation="vertical"
-    tools:context="com.example.trider.smartbarui.PickUpDrink"
+    tools:context="com.example.trider.smartbarui.NewUser"
     android:weightSum="1">
 
 
@@ -33,7 +33,7 @@
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/findUserProgress"
+        android:id="@+id/newUserProgress"
         android:layout_marginLeft="375dp" />
 
     <EditText
@@ -63,8 +63,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Skip"
-        android:onClick="SkipToPickFinger"
-        android:id="@+id/button16"
+        android:onClick="GoToRegister"
+        android:id="@+id/button15"
         android:layout_gravity="right" />
 
 </LinearLayout>

@@ -88,5 +88,9 @@
     <string name="title_activity_test_acc">TestAcc</string>
     <string name="title_activity_idle_menu">IdleMenu</string>
     <string name="title_activity_pick_up_finger">PickUpFinger</string>
+    <string name="title_activity_register_finger_print">RegisterFingerPrint</string>
+    <string name="register_finger_print_prompt">Hello Please, Place your finger on the scanner 3 Times
+                                                when the blue light is on</string>
+    <string name="title_activity_test_activityr">testActivityr</string>
 
 </resources>

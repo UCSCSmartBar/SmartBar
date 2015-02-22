@@ -13,16 +13,24 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
-
-    <uses-permission
-        android:name="android.permission.INTERNET"
-      />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <receiver android:name=".DetectUSB" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_DETACHED" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -68,6 +76,46 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.PickUpDrink" />
+        </activity>
+        <activity
+            android:name=".CheckBAC"
+            android:label="@string/title_activity_check_bac"
+            android:parentActivityName=".PickUpFinger" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.PickUpFinger" />
+        </activity>
+        <activity
+            android:name=".ConfirmDrink"
+            android:label="@string/title_activity_confirm_drink"
+            android:parentActivityName=".PickUpDrink" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.PickUpDrink" />
+        </activity>
+        <activity
+            android:name=".NewUser"
+            android:label="@string/title_activity_new_user"
+            android:parentActivityName=".IdleMenu" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.IdleMenu" />
+        </activity>
+        <activity
+            android:name=".RegisterFingerPrint"
+            android:label="@string/title_activity_register_finger_print"
+            android:parentActivityName=".NewUser" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.NewUser" />
+        </activity>
+        <activity
+            android:name=".testActivityr"
+            android:label="@string/title_activity_test_activityr"
+            android:parentActivityName=".TestActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.TestActivity" />
         </activity>
     </application>
 

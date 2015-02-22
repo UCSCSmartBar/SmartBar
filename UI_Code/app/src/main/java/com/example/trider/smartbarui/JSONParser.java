@@ -133,6 +133,7 @@ public class JSONParser {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d("AGD","Failed AGD");
         }
         Log.d("JSON_POST","Passed call");
         try {

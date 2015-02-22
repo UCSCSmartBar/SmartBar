@@ -3,6 +3,7 @@ package com.example.trider.smartbarui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -48,18 +51,18 @@ public class PickUpDrink extends Activity {
 
     //Variables
     boolean searching = false;
+    boolean searchFailure = true;
     String pinString;
     String IncomingString;
+    String OutMessage;
     String[] ParsedString;
 
 
     //Login tags
     private static final String LOGIN_URL = "http://www.ucscsmartbar.com/getDrink.php";
-    //JSON element ids from repsonse of php script:
+    //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_MESSAGE = "message";
-
-
 
 
 
@@ -88,7 +91,7 @@ public class PickUpDrink extends Activity {
         //Displays the comm status, and virtual drink order, along with its serial equivalent on
         //the actual UI
         TextView tView = (TextView) findViewById(R.id.drinkView);
-        tView.setText("Pi Comm is:" + PiComm.Status()+ "\n" + PiComm.readString());
+        //tView.setText("Pi Comm is:" + PiComm.Status()+ "\n" + PiComm.readString());
         tView.append(testDrink.toString());
         tView.append(testDrink.serialDrink());
 
@@ -154,17 +157,11 @@ public class PickUpDrink extends Activity {
         }
 
         new AttemptGetDrink().execute();
-        //Log.d("JSON",printString);
-/*
-        //For debugging purposes display pin if entered.
-        toast = Toast.makeText(context,"Pin is "+ pinString ,Toast.LENGTH_SHORT);
-        toast.show();
 
         //Displays the progress bar so user knows the drink is being looked up
         pBar = (ProgressBar) findViewById(R.id.findUserProgress);
         pBar.setVisibility(View.VISIBLE);
         searching = true;
-
 
         //Creates a singleton task that will run in exactly 2000ms after the button is clicked
         new Timer().schedule(new TimerTask() {
@@ -174,11 +171,15 @@ public class PickUpDrink extends Activity {
                     public void run() {
                         pBar.setVisibility(View.INVISIBLE);
                         searching = false;
+                        Intent intent = new Intent(PickUpDrink.this,PickUpFinger.class);
+                        if(searchFailure){return;}
+                        intent.putExtra("tString",IncomingString);
+                        startActivity(intent);
                     }
                 });
-            };
-        },3000);
-*/
+            }
+        },5000);
+
 
     }
 
@@ -187,7 +188,7 @@ public class PickUpDrink extends Activity {
         /**
          * Before starting background thread Show Progress Dialog
          * */
-        boolean failure = false;
+
 
         @Override
         protected void onPreExecute() {
@@ -197,6 +198,7 @@ public class PickUpDrink extends Activity {
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
+            Log.d("AGD","Pre-Exec");
         }
 
         @Override
@@ -207,6 +209,7 @@ public class PickUpDrink extends Activity {
             String userpin = eText.getText().toString();
 
             try {
+                Log.d("AGD","Mid-Execute");
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("pin", userpin));
@@ -223,19 +226,18 @@ public class PickUpDrink extends Activity {
                 success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
                     Log.d("Drink found Successful!", json.toString());
+                    searchFailure = false;
                     //Intent i = new Intent(Login.this, ReadComments.class);
-
-
-                    /************Commented out not to **/
-                    //finish();
-                    //startActivity(i);
                     return json.getString(TAG_MESSAGE);
                 }else{
                     Log.d("Login Failure!", json.getString(TAG_MESSAGE));
+                    searchFailure = true;
                     return json.getString(TAG_MESSAGE);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch(NullPointerException npe){
+                npe.printStackTrace();
             }
 
             return null;
@@ -248,8 +250,12 @@ public class PickUpDrink extends Activity {
             // dismiss the dialog once product deleted
             pDialog.dismiss();
             if (file_url != null){
-                Toast.makeText(PickUpDrink.this, file_url, Toast.LENGTH_LONG).show();
-                ParseInputString(file_url);
+               Toast.makeText(PickUpDrink.this, file_url, Toast.LENGTH_LONG).show();
+               IncomingString = file_url;
+               PiComm.writeString(IncomingString);
+            }else{
+                Toast.makeText(PickUpDrink.this,"Failure to Access Server. Check Internet Connection"
+                        , Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -272,17 +278,25 @@ public class PickUpDrink extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    public void ParseInputString(String s){
-
-        ParsedString = s.split("[,]+");
-        for(int i = 0; i < ParsedString.length; i++){
-            Log.d("PS", ParsedString[i]);
-        }
-
-
+    /**
+     * Skips screen
+     * @param view
+     */
+    public void SkipToPickFinger (View view){
+        startActivity(new Intent(this,PickUpFinger.class));
 
     }
+
+    public void ParseInputString(String s){
+        ParsedString = s.split("[,]+");
+        for(int i = 0; i < ParsedString.length; i++){
+            PiComm.writeString(ParsedString[i]);
+            Log.d("PS", ParsedString[i]);
+        }
+    }
+
+
+
 
 
 }

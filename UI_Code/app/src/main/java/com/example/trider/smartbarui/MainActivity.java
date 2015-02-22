@@ -1,10 +1,21 @@
+/**
+ * @Title: Main Activity
+ * @project: SmartBarSDP
+ * @author: Tyler Rider
+ * @dateCreated: January 24, 2015
+ */
+
+
+
+
 package com.example.trider.smartbarui;
-
-
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
+import android.nfc.FormatException;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +28,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -29,72 +42,82 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
+/**
+ * MainActivity is the Debugging Dashboard used for testing communication between the RaspberryPi
+ * and the android tablet(or alternate phone connected to raspberry pi).
+ */
 public class MainActivity extends Activity {
 
     //Text View and Edit Text for the sending/receiving messages
     TextView mText;
     EditText eText;
+    Context context;//App context needed for Toast
+    SeekBar sBar;
 
-    //Delcares the instances of the connection
+    //Declares the instances of the connection and USB abstract objects
     Intent intent;
     static UsbManager mUsbManager;
     static UsbAccessory mAccessory;
     static ParcelFileDescriptor mFileDescriptor;
-    String[] tokens;
+
     //Where the file streams are inputted and outputted
     static FileInputStream mInputStream;
     static FileOutputStream mOutputStream;
 
-    //Singleton Class
+    //Singleton Class which contains all communication statically
     static CommStream PiComm;
 
     //Default strings for sending/receiving messages
+    String[] tokens;
     String InMessage;
     String OutMessage;
-    String mMessage3;
     String TAG = "DebugPy";
 
+    static boolean AppStarted = false;
 
-    static boolean ConnectionMade =false;
-    //App context needed for toast
-    Context context;
-
-
-    /*Toggle Values*/
+    // Toggle values for Toggle Buttons
     boolean[] toggle_val = {false,false,false,false,false,false};
 
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            context = getApplicationContext();
-            Toast toast = Toast.makeText(context,"Broadcast Received" + intent.getAction().toString(),Toast.LENGTH_LONG);
-            toast.show();
-        }
-    };
+    //The Broadcast Receiver to warn the app of connections/disconnections
+    DetectUSB detectUSB = new DetectUSB();
 
 
-
-    //Will update the screen based on whatever message was received
+    /*Will update the screen based on whatever message was received
     Runnable mUpdateUI = new Runnable() {
         @Override
         public void run() {
             mText.setText(InMessage);
         }
-    };
-//Can update screen on what was sent
+    };*/
+
+    /**
+     * @title: mUpdateUI2
+     * @description: Parses and splits incoming string from Raspberry Pi, and updates the information
+     * onto the Display/ shows appropriate toasts
+     */
     Runnable mUpdateUI2 = new Runnable() {
         @Override
         public void run() {
             //mText.setText(OutMessage);
-            tokens = InMessage.split("[.]");
+            tokens = InMessage.split("[.]+");
+            mText.append("->"+InMessage+ "\n");
             for(int i =0; i < tokens.length; i++){
-                mText.append(tokens[i] + "\n");
-                if(tokens[i].contains("Error")){
-                    mText.append("makToast");
+                //Checks for $AD.command
+               if(tokens[i].contains("$AD")){
+                    //tokens[i+1] = tokens[i+1].replace("\n", "");
+                    mText.append("Analog Value:{" + tokens[i+1] + "}\n");
+                    int val = 0;
                     Context context = getApplicationContext();
-                    Toast toast = Toast.makeText(context,"Error"+tokens[i+1],Toast.LENGTH_SHORT);
-                    toast.show();
+                   ///Converts AD string to VAL
+                    try{
+                        String s = new String(tokens[i+1]);
+                        val =  Integer.valueOf(s.trim());
+                    }catch(NumberFormatException n){
+                        Toast toast = Toast.makeText(context,"Error Converting val: "+ n.toString() + "\n",Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                    sBar.setProgress(val);
                 }else{
                     //mText.append(Integer.toString(tokens[i].compareTo("Error")));
                 }
@@ -102,24 +125,26 @@ public class MainActivity extends Activity {
         }
     };
 
-    //The background task to read in input from the accessory
+
+
+    /**
+     * @title: mListenerTask
+     * @description: The background thread that receives serial communication from the raspberry pi,
+     *
+     */
     Runnable mListenerTask = new Runnable() {
         @Override
         public void run() {
-
-            byte[] buffer = new byte[32];
+            byte[] buffer = new byte[128];
             //ret is the size of the size of the incoming buffer
             int ret;
             try {
                 //InMessage = "> ";
-                ret = mInputStream.read(buffer);
-                if (ret < 32) {
+                ret = PiComm.getIStream().read(buffer);
+                if (ret < 128) {
                     String msg = new String(buffer);
                     InMessage = msg;
-
                     mText.post(mUpdateUI2);
-                } else {
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -128,24 +153,13 @@ public class MainActivity extends Activity {
                     Toast toast = Toast.makeText(context,"Error Reading: ret >= 32",Toast.LENGTH_LONG);
                     toast.show();*/
             }
-
-            //mText.post(mUpdateUI);
-            /**
-             *
-             * //??String Decode Method will be implemented here.
-             *
-             *
-             *
-             *
-             */
-
-
-
+            //Waits for new input communication
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            //Restarts this thread.
             new Thread(this).start();
         }
     };
@@ -153,50 +167,51 @@ public class MainActivity extends Activity {
 
 
 /**
- * SendCustomText()
- * Sending out the user inputted text, by first getting the
+ * @title SendCustomText()
+ * @description Sending out the user inputted text, by first getting the
  * text in the editText box, converting it to an array of bytes,
- * and trying to write to the output stream*/
+ * and tries to write to the output stream contained in separate class*/
     public void SendCustomText(View view){
 
 
+        //Hides the keyboard after hitting enter.
         InputMethodManager inputManager = (InputMethodManager)
                 getSystemService(Context.INPUT_METHOD_SERVICE);
-
         inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
 
-
-        if(!ConnectionMade){
+        //If the USB isn't connected, warn and don't try sending.
+        if(!DetectUSB.Connection){
             ConnectionNotMadeWarning(view);
             return;
         }
 
+        //Grabs the text from the edit text box, and converts it to string.
         eText= (EditText) findViewById(R.id.editText);
-        byte[] outBuffer;
-
         OutMessage = eText.getText().toString();
-        outBuffer = OutMessage.getBytes();
+
         //Writes to output
-        try {
-            mOutputStream.write(outBuffer);
-        } catch (IOException e) {
-            e.printStackTrace();
-            context = getApplicationContext();
-            Toast toast = Toast.makeText(context,"Error Writing: IO out error",Toast.LENGTH_LONG);
-            toast.show();
+        if(PiComm.writeString(OutMessage)){
+            return;
         }
+        //If there is an error writing the output stream. Could be redundant because of DetectUSB.
+        context = getApplicationContext();
+        Toast toast = Toast.makeText(context,"Error Writing: IO out error",Toast.LENGTH_LONG);
+        toast.show();
+
     }
 
-    /** sendMessage
-     * Called when the user clicks a button.
-     * The method sends a preset message to be decoded my the PI, and updates
-     * the appropriate variables
+    /**
+     * @title: sendMessage()
+     * @description Called when the user clicks one of several buttons. The method sends a preset
+     *  message to be decoded my the pi, and updates the appropriate variables.
      * */
     public void sendMessage(View view) {
 
-        ToggleButton tBut;
-        Button b;
+        //ToggleButton tBut;
+        //Button b;
+
+        //view.getId() is the corresponding button that called the method.
         switch (view.getId()) {
             case R.id.hello_pi:
                 OutMessage = "Hello Raspberry Pi";
@@ -226,40 +241,28 @@ public class MainActivity extends Activity {
                 toggle_val[4] = !toggle_val[4];
                 break;
             case R.id.toggleButton6:
-                OutMessage = (toggle_val[5]) ? "$LED" : "$LED";
+                //Sends current time over serial link
+                int t = (int)System.currentTimeMillis();
+                sBar.setProgress(t % 100);
+                OutMessage = "$DO.1.0@W.1.15";
                 toggle_val[5] = !toggle_val[5];
                 break;
             default:
                 context = getApplicationContext();
-                Toast toast = Toast.makeText(context,"Unknown View called send",Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(context,"Unknown View called send",Toast.LENGTH_SHORT);
                 toast.show();
                 break;
         }
-        if(!ConnectionMade){
+        if(!DetectUSB.Connection){
             ConnectionNotMadeWarning(view);
             return;
         }
 
-/*
-        byte[] buffer = new byte[5];
-        buffer[0] = (byte) 'A';
-        for (int i = 1; i < 5; i++) {
-            buffer[i] = (byte) direction;
-        }*/
-        /*Converts string into serializable mesage to be sent over Comm Link*/
-        byte[] buffer2 = new byte[256] ;
-        buffer2 = OutMessage.getBytes();
-
-        try {
-            mOutputStream.write(buffer2);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!PiComm.writeString(OutMessage)) {
             context = getApplicationContext();
             Toast toast = Toast.makeText(context,"Error Writing: IO out error",Toast.LENGTH_LONG);
             toast.show();
         }
-
-        //mText.post(mUpdateUI2); // Can optionally view sent messages
 
     }
 
@@ -272,70 +275,69 @@ public class MainActivity extends Activity {
         mText = (TextView) findViewById(R.id.display_area);
         mText.setMovementMethod(new ScrollingMovementMethod());
         eText = (EditText) findViewById(R.id.editText);
+        sBar = (SeekBar) findViewById(R.id.seekBar);
 
+        sBar.setProgress((int)(System.currentTimeMillis() % 100));
         intent = getIntent();
-        PiComm = new CommStream("hey");
 
+        /**
+        * On Opening the app or app getting started by accessory;
+        */
+        if (!AppStarted) {
+            //Creates a new PiComm
+            PiComm = new CommStream("hey");
+            mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+            mAccessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 
-        /*PiComm gets initialized once, and if returning to the main activity, do not make another one*/
-        if(PiComm.isInitialized()){
-            context = getApplicationContext();
-            Toast toast = Toast.makeText(context,"PiComm already initialized",Toast.LENGTH_LONG);
-            toast.show();
-
-/*
-            mUsbManager =   PiComm.getUSB();
-            mAccessory =    PiComm.getAcc();
-            mInputStream =  PiComm.getIStream();
-            mOutputStream = PiComm.getOStream();*/
-            //new Thread(mListenerTask).start();
-            toast = Toast.makeText(context,"PiComm Reset",Toast.LENGTH_LONG);
-            toast.show();
-            new Thread(mListenerTask).start();
-            return;
-        }
-        //the Usb manager and USB accessory is declared and connected here
-        mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        mAccessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-
-        if (mAccessory == null) {
-            mText.append("Not started by the Accessory directly" + System.getProperty("line.separator"));
-            PiComm.writeString("Not Started yet");
+            //Updates USB image indicator
             ImageView usbConn = (ImageView) findViewById(R.id.usbCon3);
-            usbConn.setVisibility(View.INVISIBLE);
-            return;
+            if(DetectUSB.Connection){
+                usbConn.setVisibility(View.VISIBLE);
+            }else{
+                usbConn.setVisibility(View.INVISIBLE);
+            }
+
+            //If the accessory is not there, the PiComm class has yet to be made/instantiated
+            //Most likely caused by being opened by User first
+            if (mAccessory == null) {
+                mText.append("Not started by the Accessory directly" + System.getProperty("line.separator"));
+                PiComm.SetStatus(CommStream.Status_Created);
+                return;
+            }
+            //If the device was successfully connected, open open new file streams as per the
+            //Android Open Accessory Protocol(AOA).
+            Log.v(TAG, mAccessory.toString());
+            mFileDescriptor = mUsbManager.openAccessory(mAccessory);
+            if (mFileDescriptor != null) {
+                FileDescriptor fd = mFileDescriptor.getFileDescriptor();
+                mInputStream = new FileInputStream(fd);
+                mOutputStream = new FileOutputStream(fd);
+                DetectUSB.Connection = true;
+                //Creates Singleton class for other activities to use
+                PiComm = new CommStream(mInputStream, mOutputStream, mAccessory, mUsbManager, mFileDescriptor);
+                AppStarted = true;
+            }
+            Log.v(TAG, mFileDescriptor.toString());
+            eText.clearFocus();
+            new Thread(mListenerTask).start();
+            /**
+             * Returning to this screen for a second time
+              */
+        }else {
+        /*PiComm gets initialized once, and if returning to the main activity, do not make another one*/
+            if (PiComm.isInitialized()) {
+                context = getApplicationContext();
+                Toast toast = Toast.makeText(context, "PiComm already initialized", Toast.LENGTH_LONG);
+                toast.show();
+                new Thread(mListenerTask).start();
+                return;
+            }
+            //Trying again to get usb upon return to main screen
+            //the Usb manager and USB accessory is declared and connected here
+            TryToReconnect(null);
+
         }
-
-
-
-
-
-        //If the device was successfully connected, open open new file streams
-        Log.v(TAG, mAccessory.toString());
-        mFileDescriptor = mUsbManager.openAccessory(mAccessory);
-        if (mFileDescriptor != null) {
-            FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-            mInputStream = new FileInputStream(fd);
-            mOutputStream = new FileOutputStream(fd);
-            ConnectionMade = true;
-            //Trying to created singleton class to move between other activities
-            //PiComm = new CommStream(mInputStream, mOutputStream);
-            PiComm = new CommStream(mInputStream,mOutputStream,  mAccessory, mUsbManager,mFileDescriptor);
-        }
-        Log.v(TAG, mFileDescriptor.toString());
-        eText.clearFocus();
-        new Thread(mListenerTask).start();
-
-//
-//        InputMethodManager inputManager = (InputMethodManager)
-//                getSystemService(Context.INPUT_METHOD_SERVICE);
-//
-//        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-//                InputMethodManager.HIDE_NOT_ALWAYS);
-
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -344,60 +346,65 @@ public class MainActivity extends Activity {
         return true;
     }
 
-
-
+    /*
+    *Warns that USB is not connected.
+     */
     public void ConnectionNotMadeWarning(View view){
         context = getApplicationContext();
-        Toast toast = Toast.makeText(context,"No device detected, cannot perform task",Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(context,"No device detected, cannot perform task",Toast.LENGTH_SHORT);
         toast.show();
     }
-
+    /*
+    *Moves onto next windows
+    */
     public void TryNewWindow(View view){
-
         Intent intent = new Intent(this,TestActivity.class);
         startActivity(intent);
     }
 
 
-
-
+    //Attempts to Reconnect. Currently not working.
     public void TryToReconnect(View view){
 
-        if(ConnectionMade){return;}
-
+        if(DetectUSB.Connection){return;}
+        Log.d("Con", "TryingToReconnect");
         intent = getIntent();
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mAccessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 
 
-
-        //PiComm = new CommStream("hey");
-
-
         if (mAccessory == null) {
-            context = getApplicationContext();
-            Toast toast = Toast.makeText(context,"Failed To Connect to Pi",Toast.LENGTH_LONG);
-            toast.show();
+            mText.append("Still not connected" + System.getProperty("line.separator"));
+            ImageView usbConn = (ImageView) findViewById(R.id.usbCon3);
+            usbConn.setVisibility(View.INVISIBLE);
             return;
         }
-
-        //If the device was successfully connected, open open new file streams
+        //If the device was successfully connected, upon return
         Log.v(TAG, mAccessory.toString());
         mFileDescriptor = mUsbManager.openAccessory(mAccessory);
         if (mFileDescriptor != null) {
             FileDescriptor fd = mFileDescriptor.getFileDescriptor();
             mInputStream = new FileInputStream(fd);
             mOutputStream = new FileOutputStream(fd);
-            ConnectionMade = true;
+            DetectUSB.Connection = true;
             //Trying to created singleton class to move between other activities
-            //PiComm = new CommStream(mInputStream, mOutputStream);
-            PiComm = new CommStream(mInputStream,mOutputStream,  mAccessory, mUsbManager,mFileDescriptor);
+            PiComm = new CommStream(mInputStream, mOutputStream, mAccessory, mUsbManager, mFileDescriptor);
         }
         Log.v(TAG, mFileDescriptor.toString());
+        eText.clearFocus();
         new Thread(mListenerTask).start();
-        ConnectionMade = true;
     }
 
+    /*
+    public void DecodeString(String s){
+
+    }
+    */
+
+
+    public void ClearWindow(View view){
+        mText.setText("");
+    }
 }
 
 

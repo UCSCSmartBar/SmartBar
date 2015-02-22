@@ -3,10 +3,12 @@ package com.example.trider.smartbarui;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -25,8 +27,17 @@ public class CommStream {
     private static UsbManager usbMan;
     private static ParcelFileDescriptor parcelFD;
 
-    public static String StatusString = "EmptyCommStream";
-    public static String testString = "test0";
+    public static final String Status_Created          =    "COMM_CREATED";
+    public static final String Status_Connected        =    "USB_CONNECTED";
+    public static final String Status_Disconnected     =    "USB_DISCONNECTED";
+
+
+    public static String StatusString = "test0";
+
+    public static byte[] readBuffer = new byte[128];
+    public static byte[] writeBuffer = new byte[128];
+
+
 
     public CommStream(FileInputStream iStream, FileOutputStream oStream,UsbAccessory uAcc,
                                                   UsbManager uMan,ParcelFileDescriptor PFD){
@@ -37,12 +48,7 @@ public class CommStream {
             usbMan = uMan;
             parcelFD = PFD;
             initialized = true;
-            StatusString = "CommStream initialized with valid USB Accessory Data"+
-            iStream.toString()+
-            oStream.toString()+
-            usbAcc.toString() +
-            usbMan.toString() +
-            parcelFD.toString();
+            StatusString = Status_Connected;
         }
     }
 
@@ -50,18 +56,34 @@ public class CommStream {
         //mInputStream = null;
         //mOutputStream = null;
         if(initialized){return;}
-        StatusString = "Empty CommStream made";
+        StatusString = Status_Created;
     }
 
     public CommStream(String s){
-        testString = s;
+        StatusString = s;
     }
 
-    public String readString(){
-        return testString;
+    public boolean isInitialized(){
+        return initialized;
     }
-    public void writeString(String s){
-        testString = s;
+    public String readString(){
+        //Currently reads the status, will return string
+
+        return StatusString;
+    }
+    public boolean writeString(String s) {
+        if (mOutputStream != null) {
+            byte[] outBuffer;
+            outBuffer = s.getBytes();
+            //Writes to output
+            try {
+                mOutputStream.write(outBuffer);
+            } catch (IOException ioe) {
+                Log.d("Warn", "Error writing out");
+                return false;
+            }
+        }
+        return true;
     }
     public FileOutputStream getOStream(){
         if(initialized){
@@ -98,11 +120,11 @@ public class CommStream {
             return parcelFD;
         }
     }
-    public String Status(){
+    public String ReadStatus(){
         return StatusString;
     }
-    public boolean isInitialized(){
-        return initialized;
+    public void SetStatus(String s){
+        StatusString = s;
     }
 
 }

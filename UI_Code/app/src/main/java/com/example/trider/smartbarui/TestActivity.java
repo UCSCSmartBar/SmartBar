@@ -52,7 +52,7 @@ public class TestActivity extends ActionBarActivity {
             context = getApplicationContext();
             Toast toast = Toast.makeText(context,"No PiComm is Initialized",Toast.LENGTH_LONG);
             toast.show();
-            textView.setText(PiComm.Status());
+            textView.setText(PiComm.ReadStatus());
         }
     }
 

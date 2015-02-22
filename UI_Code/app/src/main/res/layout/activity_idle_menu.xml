@@ -59,6 +59,7 @@
         android:background="#44ffffff"
         android:textColor="@color/black"
         android:text="New User?"
+        android:onClick="GoToNewUser"
         android:id="@+id/button7"
         android:layout_gravity="center_horizontal"/>
 
