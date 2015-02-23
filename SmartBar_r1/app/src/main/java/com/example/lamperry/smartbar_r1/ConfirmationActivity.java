@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +24,7 @@ import java.util.List;
  * This class defines the behavior of the confirmation screen, namely entering drink and pin
  * information into the database
  */
-public class ConfirmationActivity extends FragmentActivity {
+public class ConfirmationActivity extends ActionBarActivity {
 
     // Initializations
     String drinkOrder;
@@ -36,12 +36,11 @@ public class ConfirmationActivity extends FragmentActivity {
 
     //PHP login script:
     //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/addDrink.php";
+    private static final String ADD_DRINK_URL = "http://www.ucscsmartbar.com/addDrink.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_MESSAGE = "message";
-
 
     // generated activity method
     @Override
@@ -58,7 +57,8 @@ public class ConfirmationActivity extends FragmentActivity {
         displayDrink.setText(drinkOrder);
         pin = ((MyApplication)this.getApplication()).myPin;
 
-        // if previous screen was customize drink screen, display the custom brands
+        // if previous screen was customize drink screen, display the custom brands along with
+        // drink order
         if (liquorReturnList != null) {
             String recipe;
             if (liquorReturnList.get(0).startsWith("Default: ")) {
@@ -68,21 +68,24 @@ public class ConfirmationActivity extends FragmentActivity {
             } else {
                 recipe = "with " + liquorReturnList.get(0);
             }
-            for (int i = 1; i < liquorReturnList.size() - 1; i++) {
-                if (liquorReturnList.get(i).startsWith("Default: ")) {
-                    String[] liquorOnly = liquorReturnList.get(i).split(":");
+            // skip this if only one liquor in drink
+            if (liquorReturnList.size() != 1) {
+                for (int i = 1; i < liquorReturnList.size() - 1; i++) {
+                    if (liquorReturnList.get(i).startsWith("Default: ")) {
+                        String[] liquorOnly = liquorReturnList.get(i).split(":");
+                        liquorOnly[1] = liquorOnly[1].trim();
+                        recipe = recipe + ", " + liquorOnly[1];
+                    } else {
+                        recipe = recipe + ", " + liquorReturnList.get(i);
+                    }
+                }
+                if (liquorReturnList.get(liquorReturnList.size() - 1).startsWith("Default: ")) {
+                    String[] liquorOnly = liquorReturnList.get(liquorReturnList.size() - 1).split(":");
                     liquorOnly[1] = liquorOnly[1].trim();
                     recipe = recipe + ", " + liquorOnly[1];
                 } else {
-                    recipe = recipe + ", " + liquorReturnList.get(i);
+                    recipe = recipe + " and " + liquorReturnList.get(liquorReturnList.size() - 1);
                 }
-            }
-            if (liquorReturnList.get(liquorReturnList.size()-1).startsWith("Default: ")) {
-                String[] liquorOnly = liquorReturnList.get(liquorReturnList.size()-1).split(":");
-                liquorOnly[1] = liquorOnly[1].trim();
-                recipe = recipe + ", " + liquorOnly[1];
-            } else {
-                recipe = recipe + " and " + liquorReturnList.get(liquorReturnList.size()-1);
             }
             TextView customRecipe = (TextView) findViewById(R.id.customRecipe);
             customRecipe.setText(recipe);
@@ -146,24 +149,31 @@ public class ConfirmationActivity extends FragmentActivity {
         new DrinkOrder().execute();
     }
 
+    // method gets called when customize drink button clicked
+    // allows for lowercase spelling as well as leading and trailing whitespace on user input
+    // builds array of liquors present in the chosen drink and sends to customize drink activity
     public void customizeDrink(View view) {
         ArrayList<String> liquorList = new ArrayList<>();
-        switch (drinkOrder) {
-            case "Gin and Tonic":
+        switch (drinkOrder.toUpperCase()) {
+            case "GIN AND TONIC":
+                drinkOrder = "Gin and Tonic";
                 liquorList.add("Gin");
                 break;
-            case "Long Island Iced Tea":
+            case "LONG ISLAND ICED TEA":
+                drinkOrder = "Long Island Iced Tea";
                 liquorList.add("Gin");
                 liquorList.add("Rum");
                 liquorList.add("Tequila");
                 liquorList.add("Vodka");
                 break;
-            case "Manhattan":
+            case "MANHATTAN":
+                drinkOrder = "Manhattan";
                 liquorList.add("Bitters");
                 liquorList.add("Vermouth");
                 liquorList.add("Whiskey");
                 break;
-            case "Whiskey Sour":
+            case "WHISKEY SOUR":
+                drinkOrder = "Whiskey Sour";
                 liquorList.add("Whiskey");
                 break;
             default:
@@ -194,7 +204,7 @@ public class ConfirmationActivity extends FragmentActivity {
             String drink = drinkOrder;
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
                 params.add(new BasicNameValuePair("username", username));
                 params.add(new BasicNameValuePair("pin", pin));
                 params.add(new BasicNameValuePair("drink", drink));
@@ -203,7 +213,7 @@ public class ConfirmationActivity extends FragmentActivity {
 
                 //Posting user data to script
                 JSONObject json = jsonParser.makeHttpRequest(
-                        LOGIN_URL, "POST", params);
+                        ADD_DRINK_URL, "POST", params);
 
                 // full json response
                 Log.d("Sending Drink Order...", json.toString());

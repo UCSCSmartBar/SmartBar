@@ -28,7 +28,7 @@ AdapterView.OnItemClickListener {
     // Initializations
     ListView drinkList;
     ArrayList<String> drinkLibrary = new ArrayList<>();
-    ArrayAdapter drinkAdapter;
+    ArrayAdapter<String> drinkAdapter;
     String drinkOrder;
     EditText drinkOrderTyped;
     String pin;
@@ -42,7 +42,7 @@ AdapterView.OnItemClickListener {
 
         drinkList = (ListView)findViewById(R.id.drinkList);
         drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
-        drinkAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, drinkLibrary);
+        drinkAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
         drinkList.setAdapter(drinkAdapter);
 
         drinkList.setOnItemClickListener(this);
@@ -106,7 +106,6 @@ AdapterView.OnItemClickListener {
         drinkLibrary.add("Mojito");
         drinkLibrary.add("Old Fashioned");
         drinkLibrary.add("Rum and Coke");
-        drinkLibrary.add("Screaming Orgasm");
         drinkLibrary.add("Screwdriver");
         drinkLibrary.add("Sex on the Beach");
         drinkLibrary.add("Vodka Cranberry");
@@ -118,17 +117,34 @@ AdapterView.OnItemClickListener {
 
     // directs user to Confirmation Screen
     public void libraryBrowseToConfirmation(View view) {
-        if (drinkOrderTyped == null) {
+        drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
+        drinkOrder = drinkOrderTyped.getText().toString();
+        if (drinkOrder.equals("")) {
             Toast.makeText(this, "You must choose a drink!", Toast.LENGTH_SHORT).show();
             return;
         }
-        drinkOrder = drinkOrderTyped.getText().toString();
+        drinkOrderTyped.setText(drinkOrder);
 
+        boolean isInLibrary = false;
+        for (int i = 0; i < drinkLibrary.size(); i++) {
+            if (drinkOrder.toUpperCase().trim().equals(drinkLibrary.get(i).toUpperCase())) {
+                isInLibrary = true;
+                drinkOrder = drinkLibrary.get(i);
+                break;
+            }
+        }
+
+        if (!isInLibrary) {
+            Toast.makeText(this, "Sorry, SmartBar does not have that drink in its inventory. Please try again.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
         startActivity(intent);
     }
 
+    // necessary method to implement AdapterView and View classes
     @Override
     public void onClick(View v) {
 
@@ -136,6 +152,7 @@ AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // grab the drink selected from the library and display in edit text
         drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
         drinkOrder = drinkLibrary.get(position);
         drinkOrderTyped.setText(drinkOrder);

@@ -74,11 +74,12 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         // instantiate and execute CreateUser class to query database and create account
-        if ((agesb.getText() == null) || (weightsb.getText() == null) || (sexsb.toString() == null)) {
+        if ((agesb.getText().toString().equals("")) || (weightsb.getText().toString().equals(""))) {
             Toast.makeText(this, "All fields required", Toast.LENGTH_LONG).show();
             return;
+        } else {
+            new CreateUser().execute();
         }
-        new CreateUser().execute();
     }
 
     // generated activity method

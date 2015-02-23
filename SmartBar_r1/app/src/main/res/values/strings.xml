@@ -55,7 +55,7 @@
     <!-- Order Confirmed Activity -->
     <string name="done">done</string>
     <string name="drink_sent">Your order has been sent to the Smart Bar!
-        When you\'re ready, enter this pin # into the touch screen interface.</string>
+        When you\'re ready, enter your phone number into the touch screen interface.</string>
     <string name="thank_you">Thank you!</string>
     <string name="back_to_library_button">Back to Drink Library</string>
 

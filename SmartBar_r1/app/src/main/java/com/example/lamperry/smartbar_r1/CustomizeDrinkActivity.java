@@ -1,5 +1,6 @@
 package com.example.lamperry.smartbar_r1;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,10 +10,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 
+/*
+ * this class defines the behavior of the custom drink activity in which a user can select a
+ * particular brand of liquor for a chosen drink
+ */
 public class CustomizeDrinkActivity extends ActionBarActivity {
 
     // Initializations
@@ -21,6 +27,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
     String[] liquorString;
     ArrayList<String> liquorList = new ArrayList<>();
     ArrayList<String> liquorReturnList = new ArrayList<>();
+    String pin;
 
     ArrayList<Spinner> spinnerArrayList = new ArrayList<>();
     Spinner liquor1, liquor2, liquor3, liquor4, liquor5;
@@ -36,11 +43,14 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize_drink);
 
+        pin = String.valueOf(((MyApplication)this.getApplication()).myPin);
+
         // grab variables from previous intent
         Intent intent = getIntent();
         drinkOrder = intent.getStringExtra("drinkOrder");
         liquorList = intent.getStringArrayListExtra("liquorList");
 
+        // display which chosen drink user is customizing
         TextView drinkOrderView = (TextView)findViewById(R.id.customize_drink);
         drinkOrderView.setText(drinkOrder);
         numLiquors = liquorList.size();
@@ -49,6 +59,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         buildSpinners();
     }
 
+    // inflates the action bar items (settings bar)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -56,6 +67,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         return true;
     }
 
+    // handles behavior of  each item in action bar when clicked
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -63,16 +75,35 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        // Get pin clicked
+        if (id == R.id.action_pin) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("My Pin");
+            builder.setMessage(String.valueOf(pin));
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
             return true;
+        }
+
+        // Logout clicked
+        if (id == R.id.action_logout) {
+            logout();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    // this method associates java spinners with resource id in layout and builds each specific one
-    // for each type of liquor
+    // directs user back to Startup Activity/resets all globals
+    private void logout() {
+        ((MyApplication)this.getApplication()).setLoggedIn(false);
+        ((MyApplication)this.getApplication()).myUsername = "";
+        ((MyApplication)this.getApplication()).myPin = "";
+        Intent intent = new Intent(this, StartupActivity.class);
+        startActivity(intent);
+    }
+
+    // associates java spinners with (xml spinners) resource id in layout and builds each specific
+    // one for each type of liquor
     private void buildSpinners() {
         // assign spinner with resource id
         liquor1 = (Spinner)findViewById(R.id.liquor1);
@@ -150,32 +181,66 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         }
     }
 
+    // method gets called when user clicks the customize button on this screen
+    // grabs the chosen items from each spinner and adds the appropriate value to the liquor return
+    // list which gets parsed through in Confirmation Activity
     public void customizeToConfirmation(View view) {
-        // grab item options from each spinner
         int i = 0;
+        boolean choose = false;
         while (i < numLiquors) {
             switch (i) {
                 case 0:
-                    liquorReturnList.add(liquor1.getSelectedItem().toString());
+                    if (liquor1.getSelectedItem().toString().startsWith("Choose")) {
+                        choose = true;
+                        liquorReturnList.add(liquor1.getItemAtPosition(1).toString());
+                    } else {
+                        liquorReturnList.add(liquor1.getSelectedItem().toString());
+                    }
                     break;
                 case 1:
-                liquorReturnList.add(liquor2.getSelectedItem().toString());
+                    if (liquor2.getSelectedItem().toString().startsWith("Choose")) {
+                        choose = true;
+                        liquorReturnList.add(liquor2.getItemAtPosition(1).toString());
+                    } else {
+                        liquorReturnList.add(liquor2.getSelectedItem().toString());
+                    }
                     break;
                 case 2:
-                liquorReturnList.add(liquor3.getSelectedItem().toString());
+                    if (liquor3.getSelectedItem().toString().startsWith("Choose")) {
+                        choose = true;
+                        liquorReturnList.add(liquor3.getItemAtPosition(1).toString());
+                    } else {
+                        liquorReturnList.add(liquor3.getSelectedItem().toString());
+                    }
                     break;
                 case 3:
-                liquorReturnList.add(liquor4.getSelectedItem().toString());
+                    if (liquor4.getSelectedItem().toString().startsWith("Choose")) {
+                        choose = true;
+                        liquorReturnList.add(liquor4.getItemAtPosition(1).toString());
+                    } else {
+                        liquorReturnList.add(liquor4.getSelectedItem().toString());
+                    }
                     break;
                 case 4:
-                liquorReturnList.add(liquor5.getSelectedItem().toString());
+                    if (liquor5.getSelectedItem().toString().startsWith("Choose")) {
+                        choose = true;
+                        liquorReturnList.add(liquor5.getItemAtPosition(1).toString());
+                    } else {
+                        liquorReturnList.add(liquor5.getSelectedItem().toString());
+                    }
                     break;
                 default:
             }
             i++;
         }
 
-        // send them back to confirmation activity
+        if (choose) {
+            Toast.makeText(this, "You've failed to specify the liquor brand for one or more " +
+                    "liquors in your drink. The defaults will be applied.", Toast.LENGTH_SHORT).show();
+        }
+
+        // send user back to confirmation activity with the appropriate drink order and liquor
+        // return list
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
         intent.putStringArrayListExtra("liquorReturnList", liquorReturnList);
