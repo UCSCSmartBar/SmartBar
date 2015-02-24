@@ -74,6 +74,7 @@ def set_protocol(ldev):
             print('device configured')
         else:
             sys.exit('config failed')
+    #check protocol
     ret = ldev.ctrl_transfer(0xC0, 51, 0, 0, 2)
     protocol = ret[0]
     if protocol < 2:
@@ -170,8 +171,9 @@ def wait_for_accessory():
 #        command
 def readbuf(ldev):
     try:
-        ret = ldev.read(0x81, 15)
-        if ret:
+        #ret = ldev.read(0x81, 15, 128, 0)
+        ret = ldev.read(0x81, 128)
+        if ret:     #turn light blue
             GPIO.output(16, 0)
             GPIO.output(21, 1)
         sret = ''.join([chr(x) for x in ret])
@@ -180,10 +182,12 @@ def readbuf(ldev):
         print var
         print('>>> ' + sret)
     except usb.core.USBError as e:
-        print 'readbuf error' + str(e)
+        pass
+        #print 'readbuf error' + str(e)
     except:
         pass
     time.sleep(.02)
+    #turn ligh back green
     GPIO.output(16, 1)
     GPIO.output(21, 0)
 
@@ -219,7 +223,7 @@ def main():
         time.sleep(.02)
         writebuf(dev, '$ready')
         try:
-            thread.start_new_thread(readbufThread, (dev,))
+            thread.start_new_thread(readbufThread, (dev,))  #start read thread
         except Exception as e:
             print 'error' + str(e)
         while True:
@@ -228,11 +232,11 @@ def main():
                     GPIO.output(16, 0)
                     GPIO.output(19, 1)
                     dev = wait_for_accessory()
-                    if dev:
+                    if dev:             #start read thread again
                         thread.start_new_thread(readbufThread, (dev,))
                         time.sleep(.02)
                         writebuf(dev, '$ready')
-            except KeyboardInterrupt:
+            except KeyboardInterrupt:   #receive keyboard input
                 print ('To android: ')
                 msg = raw_input()
                 if msg == 'exit':
