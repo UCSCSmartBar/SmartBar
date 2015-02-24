@@ -3,7 +3,9 @@
 # Description: A test driver for the dispensing system
 # Author: Brendan Short
 # Date: 2/13/2015
-
+import sys
+sys.path.append('/SmartBar/Dispenser/')
+sys.path.append('/SmartBar/System/')
 import RPi.GPIO as GPIO
 import time
 import io
@@ -73,7 +75,7 @@ class SmartBar_Dispenser():
 
     TotalDispensingValves = 22 # number of dispensing valves in use
 
-    InventoryFilePath = "UCSC_SmartBar_Inventory.sb" # file where inventory data is stored
+    InventoryFilePath = "/SmartBar/Dispenser/UCSC_SmartBar_Inventory.sb" # file where inventory data is stored
 
     OzScalingFactor = 10 # scale up ounces to transfer data more compactly - ie: 1.5oz = 15
 
@@ -1180,8 +1182,7 @@ class Print_Filter():
         print('\n')
 
 
-
-
+"""
 def main():
 
                                             
@@ -1202,10 +1203,10 @@ def main():
 if __name__ == '__main__':
     main()
 
-        
+      
 
     
             
 
-
+"""
 
