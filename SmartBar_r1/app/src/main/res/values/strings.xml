@@ -11,7 +11,7 @@
     <string name="new_user_button">New User</string>
 
     <!-- Login Activity -->
-    <string name="login_actionbar">log in</string>
+    <string name="login_actionbar">Log In</string>
     <string name="welcome_back">Welcome Back!</string>
     <string name="enter_login">User Login</string>
     <string name="enter_password">Password</string>
@@ -35,17 +35,14 @@
     <string name="library_browse_actionbar">Choose Drink</string>
     <string name="enter_drink">What would you like to drink?</string>
     <string name="drink_hint">ex: Whiskey Ginger</string>
-    <string name="title_activity_confirmation">ConfirmationActivity</string>
-    <string name="hello_world">Hello world!</string>
 
     <!-- Confirmation Activity -->
-    <string name="confirmation_actionbar">Order</string>
+    <string name="confirmation_actionbar">Confirm Order</string>
     <string name="order_confirmation1">So, you\'d like to order a</string>
     <string name="order_confirmation">{drink_order}</string>
     <string name="order_confirmation2">is this correct?</string>
     <string name="order_drink_button">Yes, Order Drink</string>
     <string name="change_order_button">Change Order</string>
-    <string name="title_activity_drink_ordered">DrinkOrderedActivity</string>
     <string name="customize">Customize Drink</string>
     <string name="tequila">Tequila</string>
     <string name="rum">Rum</string>
@@ -53,7 +50,7 @@
     <string name="gin">Gin</string>
 
     <!-- Order Confirmed Activity -->
-    <string name="done">done</string>
+    <string name="done">Done!</string>
     <string name="drink_sent">Your order has been sent to the Smart Bar!
         When you\'re ready, enter your phone number into the touch screen interface.</string>
     <string name="thank_you">Thank you!</string>
@@ -61,47 +58,9 @@
 
     <!-- ActionBar Menu -->
     <string name="action_logout">Logout</string>
-    <string name="action_pin">Get Pin</string>
+    <string name="action_pin">Display Number</string>
     <string name="dismiss">Dismiss</string>
     <string name="action_forgot_user">Forgot Username</string>
     <string name="action_forgot_pass">Forgot Password</string>
-
-    <!-- Drop Down Tequila Options -->
-    <string-array name="tequila_array">
-        <item>Default: Jose Cuervo</item>
-        <item>El Jimador</item>
-        <item>Sauza</item>
-        <item>Patron</item>
-    </string-array>
-
-    <!-- Drop Down Rum Options -->
-    <string-array name="rum_array">
-        <item>Default: Bacardi</item>
-        <item>Captain Morgan</item>
-    </string-array>
-
-    <!-- Drop Down Vodka Options -->
-    <string-array name="vodka_array">
-        <item>Default: Smirnoff</item>
-        <item>Svedka</item>
-        <item>Grey Goose</item>
-    </string-array>
-
-    <!-- Drop Down Gin Options -->
-    <string-array name="gin_array">
-        <item>Default: Bombay Sapphire</item>
-        <item>Beefeater</item>
-    </string-array>
-
-    <!-- Drop Down Gin Options -->
-    <string-array name="whiskey_array">
-        <item>Default: Jack Daniels</item>
-        <item>Jameson</item>
-        <item>Maker\'s Mark</item>
-        <item>Jim Beam</item>
-    </string-array>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_customize_drink">CustomizeDrinkActivity</string>
 
 </resources>

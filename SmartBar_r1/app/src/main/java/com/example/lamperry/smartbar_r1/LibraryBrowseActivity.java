@@ -4,10 +4,14 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -23,26 +27,33 @@ import java.util.List;
  * to the next screen.
  */
 public class LibraryBrowseActivity extends ActionBarActivity implements View.OnClickListener,
-AdapterView.OnItemClickListener {
+                AdapterView.OnItemClickListener {
 
     // Initializations
     ListView drinkList;
     ArrayList<String> drinkLibrary = new ArrayList<>();
-    ArrayAdapter<String> drinkAdapter;
+    ArrayList<String> filteredLibrary = new ArrayList<>();
+    ArrayAdapter<String> drinkAdapter, filteredAdapter;
     String drinkOrder;
     EditText drinkOrderTyped;
     String pin;
+    String lastChange = "";
 
     // generated activity method
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library_browse);
-        populateLibrary();
+        setupUI(findViewById(R.id.library_browse_activity));
+
+        populateLibrary(drinkLibrary);
+        populateLibrary(filteredLibrary);
 
         drinkList = (ListView)findViewById(R.id.drinkList);
         drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
+        drinkOrderTyped.addTextChangedListener(filterTextWatcher);
         drinkAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
+        filteredAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
         drinkList.setAdapter(drinkAdapter);
 
         drinkList.setOnItemClickListener(this);
@@ -50,6 +61,45 @@ AdapterView.OnItemClickListener {
         pin = ((MyApplication)this.getApplication()).myPin;
     }
 
+    // to filter library as user enters input
+    // all methods necessary to implement TextWatcher
+    private TextWatcher filterTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        // still need logic to update library when user removes characters from constraint
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            Log.d("LAMPERRY", "onTextChanged filtering...");
+
+            if (lastChange.length() < s.toString().length()) {
+                // user has added characters to constraint
+                for (int i = 0; i < filteredLibrary.size(); i++) {
+                    if (!filteredLibrary.get(i).toUpperCase().startsWith(s.toString().toUpperCase())) {
+                        filteredAdapter.remove(filteredLibrary.get(i));
+                    }
+                }
+            }
+            filteredAdapter.notifyDataSetChanged();
+            drinkList.setFilterText(s.toString());
+            drinkList.setAdapter(filteredAdapter);
+            lastChange = s.toString();
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
+
+    // necessary method when invoking text change listener
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        drinkOrderTyped.removeTextChangedListener(filterTextWatcher);
+    }
+
+    // inflate options action bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -57,6 +107,7 @@ AdapterView.OnItemClickListener {
         return true;
     }
 
+    // define options actions bar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -67,7 +118,7 @@ AdapterView.OnItemClickListener {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_pin) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("My Pin");
+            builder.setTitle("My Number");
             builder.setMessage(String.valueOf(pin));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
@@ -84,35 +135,33 @@ AdapterView.OnItemClickListener {
     // directs user back to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
-        ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
 
     // populates the (prototype) library of drinks
-    private void populateLibrary() {
-        drinkLibrary.add("Adios Motherfucker");
-        drinkLibrary.add("Bloody Mary");
-        drinkLibrary.add("Cosmopolitan");
-        drinkLibrary.add("Gin and Tonic");
-        drinkLibrary.add("Incredible Hulk");
-        drinkLibrary.add("Lemon Drop");
-        drinkLibrary.add("Long Island Iced Tea");
-        drinkLibrary.add("Mai Tai");
-        drinkLibrary.add("Manhattan");
-        drinkLibrary.add("Margarita");
-        drinkLibrary.add("Martini");
-        drinkLibrary.add("Mojito");
-        drinkLibrary.add("Old Fashioned");
-        drinkLibrary.add("Rum and Coke");
-        drinkLibrary.add("Screwdriver");
-        drinkLibrary.add("Sex on the Beach");
-        drinkLibrary.add("Vodka Cranberry");
-        drinkLibrary.add("Vodka Soda");
-        drinkLibrary.add("Whiskey Ginger");
-        drinkLibrary.add("Whiskey Sour");
-        drinkLibrary.add("White Russian");
+    private void populateLibrary(ArrayList<String> drinkLibraryList) {
+        drinkLibraryList.add("Adios Motherfucker");
+        drinkLibraryList.add("Bloody Mary");
+        drinkLibraryList.add("Cosmopolitan");
+        drinkLibraryList.add("Gin and Tonic");
+        drinkLibraryList.add("Incredible Hulk");
+        drinkLibraryList.add("Lemon Drop");
+        drinkLibraryList.add("Long Island Iced Tea");
+        drinkLibraryList.add("Mai Tai");
+        drinkLibraryList.add("Manhattan");
+        drinkLibraryList.add("Margarita");
+        drinkLibraryList.add("Martini");
+        drinkLibraryList.add("Mojito");
+        drinkLibraryList.add("Old Fashioned");
+        drinkLibraryList.add("Rum and Coke");
+        drinkLibraryList.add("Screwdriver");
+        drinkLibraryList.add("Sex on the Beach");
+        drinkLibraryList.add("Vodka Cranberry");
+        drinkLibraryList.add("Vodka Soda");
+        drinkLibraryList.add("Whiskey Ginger");
+        drinkLibraryList.add("Whiskey Sour");
+        drinkLibraryList.add("White Russian");
     }
 
     // directs user to Confirmation Screen
@@ -125,6 +174,8 @@ AdapterView.OnItemClickListener {
         }
         drinkOrderTyped.setText(drinkOrder);
 
+        // make sure user enters in valid drink order, case insensitive and leading/trailing
+        // whitespace ok
         boolean isInLibrary = false;
         for (int i = 0; i < drinkLibrary.size(); i++) {
             if (drinkOrder.toUpperCase().trim().equals(drinkLibrary.get(i).toUpperCase())) {
@@ -133,12 +184,12 @@ AdapterView.OnItemClickListener {
                 break;
             }
         }
-
         if (!isInLibrary) {
             Toast.makeText(this, "Sorry, SmartBar does not have that drink in its inventory. Please try again.",
                     Toast.LENGTH_SHORT).show();
             return;
         }
+        // send drink order to next activity
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
         startActivity(intent);
@@ -147,7 +198,6 @@ AdapterView.OnItemClickListener {
     // necessary method to implement AdapterView and View classes
     @Override
     public void onClick(View v) {
-
     }
 
     @Override
@@ -156,5 +206,26 @@ AdapterView.OnItemClickListener {
         drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
         drinkOrder = drinkLibrary.get(position);
         drinkOrderTyped.setText(drinkOrder);
+    }
+
+    // http://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext
+    public void setupUI(View view) {
+        // set up touch listener for non-text box views to hide keyboard
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    ((MyApplication)LibraryBrowseActivity.this.getApplication()).hideSoftKeyboard(LibraryBrowseActivity.this);
+                    return false;
+                }
+            });
+        }
+        // if a layout container, iterate over children and seed recursion
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup)view).getChildCount(); i++) {
+                View innerView = ((ViewGroup)view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
     }
 }

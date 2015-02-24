@@ -31,6 +31,7 @@ public class ConfirmationActivity extends ActionBarActivity {
     TextView displayDrink;
     String pin;
     ArrayList<String> liquorReturnList;
+    String finalRecipe = "";
 
     JSONParser jsonParser = new JSONParser();       // JSON parser class
 
@@ -48,8 +49,9 @@ public class ConfirmationActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmation);
 
-        Log.d("LAMPERRY", "onCreate Activity");
-
+        // grab the drink order from either Library Browse or Customize Drink
+        // if previous intent was Customize Drink grab the specified liquors
+        // display data
         Intent intent = getIntent();
         drinkOrder = intent.getStringExtra("drinkOrder");
         liquorReturnList = intent.getStringArrayListExtra("liquorReturnList");
@@ -59,6 +61,7 @@ public class ConfirmationActivity extends ActionBarActivity {
 
         // if previous screen was customize drink screen, display the custom brands along with
         // drink order
+        // parse through each string and grab only liquor brand, not "Default: "
         if (liquorReturnList != null) {
             String recipe;
             if (liquorReturnList.get(0).startsWith("Default: ")) {
@@ -87,11 +90,11 @@ public class ConfirmationActivity extends ActionBarActivity {
                     recipe = recipe + " and " + liquorReturnList.get(liquorReturnList.size() - 1);
                 }
             }
+            // display in text view
             TextView customRecipe = (TextView) findViewById(R.id.customRecipe);
             customRecipe.setText(recipe);
             customRecipe.setVisibility(View.VISIBLE);
         }
-
     }
 
     // generated activity method to display action bar menu
@@ -113,7 +116,7 @@ public class ConfirmationActivity extends ActionBarActivity {
         // Get pin clicked
         if (id == R.id.action_pin) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("My Pin");
+            builder.setTitle("My Number");
             builder.setMessage(String.valueOf(pin));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
@@ -131,8 +134,6 @@ public class ConfirmationActivity extends ActionBarActivity {
     // directs user back to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
-        ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
@@ -146,12 +147,15 @@ public class ConfirmationActivity extends ActionBarActivity {
     // directs user to Drink Ordered Activity
     public void confirmationToDrinkOrdered(View view) {
         // instantiate and execute DrinkOrder to enter pin and drink order to database
+        buildRecipe(drinkOrder);
         new DrinkOrder().execute();
     }
 
-    // method gets called when customize drink button clicked
-    // allows for lowercase spelling as well as leading and trailing whitespace on user input
-    // builds array of liquors present in the chosen drink and sends to customize drink activity
+    /*
+     * method gets called when customize drink button clicked
+     * allows for lowercase spelling as well as leading and trailing whitespace on user input
+     * builds array of liquors present in the chosen drink and sends to customize drink activity
+     */
     public void customizeDrink(View view) {
         ArrayList<String> liquorList = new ArrayList<>();
         switch (drinkOrder.toUpperCase()) {
@@ -185,14 +189,29 @@ public class ConfirmationActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    // method for sending recipe to database, prototype for now
+    private void buildRecipe(String drink) {
+        switch (drink) {
+            case "Gin and Tonic":
+                finalRecipe = "1,2@G,0,1.0@T,0,1,3.0*";
+                break;
+            case "Long Island Iced Tea":
+                finalRecipe = "";
+                break;
+            case "Manhattan":
+                finalRecipe = "1,2@W,0,4.0@V,0,0,2.0@A,0,0,0.5*";
+                break;
+            case "Whiskey Sour":
+                finalRecipe = "";
+                break;
+        }
+    }
+
 
     // class to query database and add drink order/pin number, extends AsyncTask so that query can
     // be background thread
     class DrinkOrder extends AsyncTask<String, String, String> {
 
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
         boolean failure = false;
 
         // queries database and adds new user information
@@ -208,6 +227,7 @@ public class ConfirmationActivity extends ActionBarActivity {
                 params.add(new BasicNameValuePair("username", username));
                 params.add(new BasicNameValuePair("pin", pin));
                 params.add(new BasicNameValuePair("drink", drink));
+                //params.add(new BasicNameValuePair("recipe", finalRecipe));
 
                 Log.d("request!", "starting");
 

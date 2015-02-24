@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -52,6 +54,8 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
+        setupUI(findViewById(R.id.new_user_activity));
+
         String[] genders = { "Male", "Female", "Other"};
 
         user = (EditText)findViewById(R.id.type_email);
@@ -111,6 +115,27 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // http://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext
+    public void setupUI(View view) {
+        // set up touch listener for non-text box views to hide keyboard
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    ((MyApplication)NewUserActivity.this.getApplication()).hideSoftKeyboard(NewUserActivity.this);
+                    return false;
+                }
+            });
+        }
+        // if a layout container, iterate over children and seed recursion
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup)view).getChildCount(); i++) {
+                View innerView = ((ViewGroup)view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
     }
 
     // class to query database and add new user information, extends AsyncTask so that query can be

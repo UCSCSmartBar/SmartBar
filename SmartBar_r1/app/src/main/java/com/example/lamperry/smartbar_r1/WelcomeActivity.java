@@ -44,7 +44,7 @@ public class WelcomeActivity extends ActionBarActivity {
         // Logout chosen from action bar
         if (id == R.id.action_pin) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("My Pin");
+            builder.setTitle("My Number");
             builder.setMessage(String.valueOf(pin));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
@@ -62,8 +62,6 @@ public class WelcomeActivity extends ActionBarActivity {
     // logout method, returns user to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
-        ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }

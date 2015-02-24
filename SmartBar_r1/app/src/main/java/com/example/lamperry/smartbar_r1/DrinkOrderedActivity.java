@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +45,7 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         // adds get pin button to action bar
         if (id == R.id.action_pin) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("My Pin");
+            builder.setTitle("My Number");
             builder.setMessage(pinDisplay.getText().toString());
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
@@ -64,8 +63,6 @@ public class DrinkOrderedActivity extends ActionBarActivity {
     // logs user out of account and returns to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
-        ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }

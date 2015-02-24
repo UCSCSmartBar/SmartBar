@@ -78,7 +78,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         // Get pin clicked
         if (id == R.id.action_pin) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("My Pin");
+            builder.setTitle("My Number");
             builder.setMessage(String.valueOf(pin));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
@@ -96,14 +96,14 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
     // directs user back to Startup Activity/resets all globals
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
-        ((MyApplication)this.getApplication()).myUsername = "";
-        ((MyApplication)this.getApplication()).myPin = "";
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
 
-    // associates java spinners with (xml spinners) resource id in layout and builds each specific
-    // one for each type of liquor
+    /*
+     * Associates java spinners with (xml spinners) resource id in layout and builds each specific
+     * one for each type of liquor
+     */
     private void buildSpinners() {
         // assign spinner with resource id
         liquor1 = (Spinner)findViewById(R.id.liquor1);
@@ -181,14 +181,18 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         }
     }
 
-    // method gets called when user clicks the customize button on this screen
-    // grabs the chosen items from each spinner and adds the appropriate value to the liquor return
-    // list which gets parsed through in Confirmation Activity
+    /*
+     * method gets called when user clicks the customize button on this screen
+     * grabs the chosen items from each spinner and adds the appropriate value to the liquor return
+     * list which gets parsed through in Confirmation Activity
+     */
     public void customizeToConfirmation(View view) {
         int i = 0;
         boolean choose = false;
         while (i < numLiquors) {
             switch (i) {
+                // if starts with 'choose' then automatically grab item at position 1 which holds
+                // the default liquor brand in all liquor arrays
                 case 0:
                     if (liquor1.getSelectedItem().toString().startsWith("Choose")) {
                         choose = true;
