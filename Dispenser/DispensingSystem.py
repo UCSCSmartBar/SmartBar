@@ -22,11 +22,11 @@ ValveHasOpened = 1
 
 AlcoholValveDelayEnabled = 1
 
-ValveController_SR_Data = 4 # pin number of serial output to shift register
+ValveController_SR_Data = 5 # pin number of serial output to shift register
     
-ValveController_SR_Clock = 14 # pin number of clock output to shift register
+ValveController_SR_Clock = 13 # pin number of clock output to shift register
 
-ValveController_SR_Store = 15 # pin number of store data output to shift register
+ValveController_SR_Store = 6 # pin number of store data output to shift register
     
 ValveController_SR_ClockPause = .0000001# time between high and low clock signal to shift register
 
@@ -75,7 +75,7 @@ class SmartBar_Dispenser():
 
     InventoryFilePath = "UCSC_SmartBar_Inventory.sb" # file where inventory data is stored
 
-    OzScalingFactor = 10 # scale up ounces to transfer data more compactly - ie: 1.5oz = 15
+    OzScalingFactor = 1 # scale up ounces to transfer data more compactly - ie: 1.5oz = 15
 
     AlcoholDispenseTimePerOz = 4 # time in seconds to dispense one fluid ounce of alcohol
 
@@ -89,7 +89,9 @@ class SmartBar_Dispenser():
 
     CurrentlyDispensing = 1 # flag indicating if dispensing
 
-    
+    LineSplittingCharacter = ","
+
+    PacketSplittingCharacter = "@"
 
 
     # Functions
@@ -98,7 +100,7 @@ class SmartBar_Dispenser():
 
         self.CommandPacket = incoming_command # store incoming command packet
 
-        self.CommandType = incoming_command.split("@")[0].split(".")[0] # get the incoming command
+        self.CommandType = incoming_command.split(SmartBar_Dispenser.PacketSplittingCharacter)[0].split(SmartBar_Dispenser.LineSplittingCharacter)[0] # get the incoming command
 
         SmartBar_Dispenser.PrintFilter.System(("Received Command : "+self.CommandType+" Input String : "+self.CommandPacket),SmartBar_Dispenser.PrintFilter.SubTitle)
         
@@ -155,9 +157,9 @@ class SmartBar_Dispenser():
 
             #try:
 
-                self.OrderPacket = drink_order.split("@") # break up the order into rows to be processed
+                self.OrderPacket = drink_order.split(SmartBar_Dispenser.PacketSplittingCharacter) # break up the order into rows to be processed
                 
-                self.GeneralDrinkInfo = self.OrderPacket[0].split(".") # get the general drink info - $DO.X.Y where $DO is the drink order command, X is the number of alcohol components, and Y is the number of conentrate components
+                self.GeneralDrinkInfo = self.OrderPacket[0].split(SmartBar_Dispenser.LineSplittingCharacter) # get the general drink info - $DO.X.Y where $DO is the drink order command, X is the number of alcohol components, and Y is the number of conentrate components
 
                 self.NumOfAlcoholComponents = int(self.GeneralDrinkInfo[1]) # number of alcohol components
 
@@ -440,13 +442,13 @@ class SmartBar_DrinkOrder():
 
         try: # attempt to store current alcohol data the order
 
-            ComponentInfo = order_line.split(".") # break up the string (Alcohol Type).(Alcohol Brand).(Dispense Volume)
+            ComponentInfo = order_line.split(SmartBar_Dispenser.LineSplittingCharacter) # break up the string (Alcohol Type).(Alcohol Brand).(Dispense Volume)
 
             AlcoholType = ComponentInfo[0] # get alcohol type
 
             AlcoholBrand = int(ComponentInfo[1]) # get alcohol brand
 
-            AlcoholDispenseVolume = int(ComponentInfo[2]) # get alcohol dispense volume
+            AlcoholDispenseVolume = float(ComponentInfo[2]) # get alcohol dispense volume
 
             self.Alcohols.append(SmartBar_DrinkComponent_Alcohol(AlcoholType,AlcoholBrand,AlcoholDispenseVolume)) # store alcohol component data
 
@@ -457,7 +459,7 @@ class SmartBar_DrinkOrder():
 
     def StoreMixerComponent(self, mixer_number, order_line): # store mixer component information
 
-        ComponentInfo = order_line.split(".") # break up the string (Mixer Type).(Mixer Brand).(Carbonated).(Dispense Volume)
+        ComponentInfo = order_line.split(SmartBar_Dispenser.LineSplittingCharacter) # break up the string (Mixer Type).(Mixer Brand).(Carbonated).(Dispense Volume)
 
         MixerType = ComponentInfo[0] # get Mixer type
 
@@ -465,7 +467,7 @@ class SmartBar_DrinkOrder():
 
         MixerCarbonation = int(ComponentInfo[2]) # get carbonation choice
 
-        MixerDispenseVolume = int(ComponentInfo[3]) # get mixer  dispense volume
+        MixerDispenseVolume = float(ComponentInfo[3]) # get mixer  dispense volume
 
         self.Mixers.append(SmartBar_DrinkComponent_Mixer(MixerType,MixerBrand,MixerCarbonation,MixerDispenseVolume)) # store Mixer component data
 
@@ -1193,10 +1195,9 @@ def main():
 
     Dispenser.ValveManager.TestAllValves()
     
-  #  Dispenser.ReceiveCommand("$DO.2.3@GN.1.15@CO.0.15@GA.0.0.30@SO.3.1.20@SO.1.1.20")
-#    Dispenser.ReceiveCommand("$DO.2.3@W.1.15@T.1.15@CJ.0.0.40@GA.0.0.20@GA.0.1.20")
-
-    
+ #
+ #Dispenser.ReceiveCommand("$DO,2,3@W,1,1.5@CO,0,1.5@GA,0,0,3.0@SO,3,1,2.0@SO,1,1,2.0")
+  
  #   Dispenser.GPIO_Free()
     
 if __name__ == '__main__':
