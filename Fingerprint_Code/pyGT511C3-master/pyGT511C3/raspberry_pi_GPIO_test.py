@@ -41,7 +41,7 @@ import FPS, sys, time
 def enroll(fps):
     ID=0;count=0
     unavail=True
-
+    prevcount=fps.GetEnrollCount()
     #increment through IDs in chronological order until one is available
     while unavail==True:
        unavail=fps.CheckEnrolled(ID)
@@ -64,7 +64,7 @@ def enroll(fps):
     if capt==True:
         print 'Please remove finger'
         captErr=fps.Enroll1()
-        print 'Err Status: %d' % captErr
+        #print 'Err Status: %d' % captErr
         captErr=0
 
         #wait for finger to be removed from device
@@ -82,7 +82,7 @@ def enroll(fps):
         if capt==True:
             print 'Please remove finger'
             captErr=fps.Enroll2()
-            print 'Err Status: %d' % captErr
+            #print 'Err Status: %d' % captErr
             captErr=0
 
             while fps.IsPressFinger()==True:
@@ -98,10 +98,13 @@ def enroll(fps):
             if capt==True:
                 print 'Please remove finger'
                 captErr=fps.Enroll3()
-                print 'Err Status: %d' % captErr
-                captErr=0
+                #print 'Err Status: %d' % captErr
+                currcount=fps.GetEnrollCount()
                 if captErr==0:
-                    print 'You have successfully been enrolled'
+                    if currcount!=prevcount:
+                        print 'You have successfully been enrolled'
+                    else:
+                        print 'Enrollment unsuccessful. Error code: 2'
                 else:
                     print 'Enrollment unsuccessful. Error code: %d' % captErr
                     #enroll(fps)
@@ -159,11 +162,13 @@ if __name__ == '__main__':
     fps.SetLED(True) # Turns ON the CMOS LED
     FPS.delay(2) # wait 1 second
     #fps.DeleteAll()
-    #fps.DeleteID(0)
-    #enroll(fps)
-    identify(fps,1,12)
+    fps.DeleteID(5)
+    enroll(fps)
+    #identify(fps,1,12)
     enrollcount=fps.GetEnrollCount()
     print 'Enroll count: %d' % enrollcount
+
+    
 
 ##    print 'Put your finger in the scan'
 ##    counter = 0 # simple counter for wait 10 seconds
