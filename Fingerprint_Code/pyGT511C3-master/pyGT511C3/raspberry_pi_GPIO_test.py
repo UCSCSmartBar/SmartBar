@@ -143,10 +143,9 @@ def identify(fps,mode,num):
         fps.CaptureFinger(False)
         ID=fps.Verify1_1(num)
 	#time.sleep(2)
-
-	#print 'ERR %d' % ID
+        #print 'ERR %d'% ID
 	#if the user exists and the ID# does not exceed 200, welcome. else, enroll
-        if ID==1:
+        if ID==0:
             print 'Welcome, User #%d'% (num+1)
         else:
             print 'User mismatch, check database for a match'
@@ -162,7 +161,7 @@ if __name__ == '__main__':
     #fps.DeleteAll()
     #fps.DeleteID(0)
     #enroll(fps)
-    identify(fps,1,0)
+    identify(fps,1,12)
     enrollcount=fps.GetEnrollCount()
     print 'Enroll count: %d' % enrollcount
 

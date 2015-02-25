@@ -636,7 +636,7 @@ class FPS_GT511C3(SerialCommander):
         cp.ParameterFromInt(ID)
         packetbytes = cp.GetPacketBytes()
         self.SendCommand(packetbytes, 12)
-        time.sleep(.3)
+        time.sleep(1)
         rp = self.GetResponse()
         #retval = 0
         #print 'ACK %s' % rp.ACK
