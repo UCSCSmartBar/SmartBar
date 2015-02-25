@@ -485,6 +485,7 @@ class FPS_GT511C3(SerialCommander):
         del cp
         self.SendCommand(packetbytes, 12)
         del packetbytes
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
         #print 'RETVAL %d' % retval
@@ -517,6 +518,7 @@ class FPS_GT511C3(SerialCommander):
         del cp
         self.SendCommand(packetbytes, 12)
         del packetbytes
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
         #print 'RETVAL %d' % retval
@@ -551,6 +553,7 @@ class FPS_GT511C3(SerialCommander):
         del cp
         self.SendCommand(packetbytes, 12)
         del packetbytes
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
         #print 'RETVAL %d' % retval
@@ -633,6 +636,7 @@ class FPS_GT511C3(SerialCommander):
         cp.ParameterFromInt(ID)
         packetbytes = cp.GetPacketBytes()
         self.SendCommand(packetbytes, 12)
+        time.sleep(.3)
         rp = self.GetResponse()
         #retval = 0
         #print 'ACK %s' % rp.ACK
@@ -663,6 +667,7 @@ class FPS_GT511C3(SerialCommander):
         cp = Command_Packet('Identify1_N',UseSerialDebug=self.UseSerialDebug)
         packetbytes = cp.GetPacketBytes()
         self.SendCommand(packetbytes, 12)
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
         #print 'RP: %s' % str(rp)

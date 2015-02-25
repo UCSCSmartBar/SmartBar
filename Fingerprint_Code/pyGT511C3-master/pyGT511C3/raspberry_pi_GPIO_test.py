@@ -32,7 +32,7 @@ This program is being modified to design and test fingerprint functions to be ca
 
 
 '''
-import FPS, sys
+import FPS, sys, time
 
 #function which contains entire enrollment process
 #thoughts: consider making subfunction for each enroll to reduce reduncy and increase readability
@@ -51,7 +51,7 @@ def enroll(fps):
     fps.EnrollStart(ID)
 
     print 'Enrollment takes three scans.'
-    print 'Place finger on sensor, please, user # %d' % ID
+    print 'Place finger on sensor, please, user # %d' % (ID+1)
 
     #wait for finger to be present on device
     while fps.IsPressFinger()==False:
@@ -100,10 +100,10 @@ def enroll(fps):
                 captErr=fps.Enroll3()
                 print 'Err Status: %d' % captErr
                 captErr=0
-##                if captErr==0:
-##                    print 'You have successfully been enrolled'
-##                else:
-##                    print 'Enrollment unsuccessful. Error code: %d' % captErr
+                if captErr==0:
+                    print 'You have successfully been enrolled'
+                else:
+                    print 'Enrollment unsuccessful. Error code: %d' % captErr
                     #enroll(fps)
             else:
                 print 'Enrollment unsuccessful, did not capture third finger.'
@@ -117,37 +117,55 @@ def enroll(fps):
 #Identify returns the matched ID#
 #Verify Error Codes:
 #   0-Correct Finger   1-Invalid Position    2-ID not in use   3-False
-def identify(fps):
+def identify(fps,mode,num):
     print 'Place finger on sensor for identification, please'
 
     #wait for the user to place their finger on the scanner
     while fps.IsPressFinger()==False:
         FPS.delay(1)
 
-    #capture an image and check if it is in the database
-    fps.CaptureFinger(False)
-    ID= fps.Verify1_1(0)#fps.Identify1_N()
+    if mode==0:
+        #capture an image and check if it is in the database
+        fps.CaptureFinger(False)
+        ID=fps.Identify1_N()#Verify1_1(0)
+	#time.sleep(2)
 
-    #print 'ERR %d' % acc
-    #if the user exists and the ID# does not exceed 200, welcome. else, enroll
-    if ID==0:#if ID<200:
-        print 'Welcome, User #0'#% ID
-    else:
-        print 'User not found' 
+	#print 'ERR %d' % ID
+	#if the user exists and the ID# does not exceed 200, welcome. else, enroll
+        if ID<200:
+            print 'Welcome, User #%d'% (ID+1)
+        else:
+            print 'User not found'
+            time.sleep(1)
+            enroll(fps)
+    elif mode==1:
+        #capture an image and check if it is in the database
+        fps.CaptureFinger(False)
+        ID=fps.Verify1_1(num)
+	#time.sleep(2)
+
+	#print 'ERR %d' % ID
+	#if the user exists and the ID# does not exceed 200, welcome. else, enroll
+        if ID==1:
+            print 'Welcome, User #%d'% (num+1)
+        else:
+            print 'User mismatch, check database for a match'
+            time.sleep(1)
+            identify(fps,0,0)
 
 
 if __name__ == '__main__':
     fps =  FPS.FPS_GT511C3(device_name='/dev/ttyAMA0',baud=9600,timeout=2,is_com=False)
     fps.UseSerialDebug = True
     fps.SetLED(True) # Turns ON the CMOS LED
-    FPS.delay(1) # wait 1 second
+    FPS.delay(2) # wait 1 second
     #fps.DeleteAll()
-    #fps.DeleteID(5)
+    #fps.DeleteID(0)
     #enroll(fps)
-    #FPS.delay(1)
-    #enrollcount=fps.GetEnrollCount()
-    #print 'Enroll count: %d' % enrollcount
-    identify(fps)
+    identify(fps,1,0)
+    enrollcount=fps.GetEnrollCount()
+    print 'Enroll count: %d' % enrollcount
+
 ##    print 'Put your finger in the scan'
 ##    counter = 0 # simple counter for wait 10 seconds
 ##    while counter < 10:
