@@ -1,5 +1,6 @@
 package com.example.trider.smartbarui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
@@ -17,7 +18,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class RegisterFingerPrint extends ActionBarActivity {
+public class RegisterFingerPrint extends Activity {
 
 CommStream PiComm = new CommStream();
 
@@ -99,11 +100,19 @@ FingerState nextState = FingerState.IDLE;
         setContentView(R.layout.activity_register_finger_print);
 
         ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
+        Intent intent = getIntent();
+        if(!PiComm.isInitialized()){
+            String s = intent.getExtras().getString("tString");
+            DrinkOrder a = new DrinkOrder();
+            a.DecodeString(s);
+        }
 
         PiComm.writeString("$FP.First");
-
         new Thread(mListenerTask).start();
         new Timer().schedule(ChangeFinger,1000,1000);
+
+        //For actual implementation of state machine start with Finger Print Invisible
+        finger.setVisibility(View.INVISIBLE);
 
 
 
@@ -137,6 +146,7 @@ FingerState nextState = FingerState.IDLE;
                         case "$FP.1.Success":
                             nextState = FingerState.SECOND_FINGER;
                             ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
+                            finger.setVisibility(View.VISIBLE);
                             finger.setColorFilter(Color.argb(220, 255, 255, 255));
                             break;
                         case "FP.1.Failure":
@@ -170,6 +180,11 @@ FingerState nextState = FingerState.IDLE;
                             break;
                     }
                     break;
+                case REGISTERED:
+                    if(s.equals("Finish")){
+                        startActivity(new Intent(this,CheckBAC.class));
+                    }
+                    break;
                 case WARNING:
                     break;
             }
@@ -188,9 +203,9 @@ FingerState nextState = FingerState.IDLE;
 
 
 
-
-
-
+    public void SkipToBAC(View view){
+        startActivity(new Intent(this,CheckBAC.class));
+    }
 
 
     @Override

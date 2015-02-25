@@ -109,9 +109,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.NewUser" />
         </activity>
+
+
         <activity
-            android:name=".testActivityr"
-            android:label="@string/title_activity_test_activityr"
+            android:name=".SystemStatus"
+            android:label="@string/title_activity_system_status"
             android:parentActivityName=".TestActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

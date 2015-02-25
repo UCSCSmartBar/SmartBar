@@ -13,10 +13,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-     <ImageView
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skip"
+        android:onClick="SkipToBAC"
+        android:id="@+id/button17"
+        android:layout_gravity="right" />
+
+    <ImageView
          android:id="@+id/newFingerImg"
          android:layout_marginLeft="300dp"
          android:layout_width="200dp"
          android:layout_height="wrap_content"
          android:src="@drawable/science_fingerprint"/>
+
 </LinearLayout>

@@ -1,8 +1,8 @@
 package com.example.trider.smartbarui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,17 +10,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trider.smartbarui.CommStream;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-
-public class TestActivity extends ActionBarActivity {
+public class TestActivity extends Activity {
     Context context;
     CommStream PiComm;
-    OutputStream mOutputStream;
-    String OutMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,20 +27,7 @@ public class TestActivity extends ActionBarActivity {
             Toast toast = Toast.makeText(context,"PiComm is Initialized",Toast.LENGTH_LONG);
             toast.show();
 
-
-            OutMessage = "testing\n";
-            byte[] buffer = new byte[256];
-            buffer = OutMessage.getBytes();
-            mOutputStream = PiComm.getOStream();
-            try {
-                mOutputStream.write(buffer);
-            } catch (IOException e) {
-                e.printStackTrace();
-                context = getApplicationContext();
-                toast = Toast.makeText(context,"Test Failed",Toast.LENGTH_LONG);
-                toast.show();
-                //textView.append("Test Failed");
-            }
+                PiComm.writeString("Test Comms");
         }else{
             context = getApplicationContext();
             Toast toast = Toast.makeText(context,"No PiComm is Initialized",Toast.LENGTH_LONG);
@@ -67,8 +47,9 @@ public class TestActivity extends ActionBarActivity {
     public void StartUIClicked(View view){
         Intent intent = new Intent(this, IdleMenu.class);
         startActivity(intent);
-
-
+    }
+    public void SystemStatusClicked(View view){
+        startActivity(new Intent(this,SystemStatus.class));
     }
 
     @Override

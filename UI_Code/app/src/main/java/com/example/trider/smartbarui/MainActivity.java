@@ -135,6 +135,7 @@ public class MainActivity extends Activity {
     Runnable mListenerTask = new Runnable() {
         @Override
         public void run() {
+            /*
             byte[] buffer = new byte[128];
             //ret is the size of the size of the incoming buffer
             int ret;
@@ -142,16 +143,17 @@ public class MainActivity extends Activity {
                 //InMessage = "> ";
                 ret = PiComm.getIStream().read(buffer);
                 if (ret < 128) {
-                    String msg = new String(buffer);
-                    InMessage = msg;
+                    InMessage = new String(buffer);
                     mText.post(mUpdateUI2);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                /*
-                    context = getApplicationContext();
-                    Toast toast = Toast.makeText(context,"Error Reading: ret >= 32",Toast.LENGTH_LONG);
-                    toast.show();*/
+            }
+            */
+            InMessage = PiComm.readString();
+
+            if(InMessage != null){
+                mText.post(mUpdateUI2);
             }
             //Waits for new input communication
             try {
@@ -181,6 +183,16 @@ public class MainActivity extends Activity {
                 InputMethodManager.HIDE_NOT_ALWAYS);
 
         //If the USB isn't connected, warn and don't try sending.
+        Boolean DEBUG_MODE = false;
+        if(DEBUG_MODE){
+            eText= (EditText) findViewById(R.id.editText);
+            OutMessage = eText.getText().toString();
+            DrinkOrder t = new DrinkOrder();
+            //t.DecodeString(OutMessage);
+            mText.setText(t.DecodeString(OutMessage));
+            return;
+        }
+
         if(!DetectUSB.Connection){
             ConnectionNotMadeWarning(view);
             return;
@@ -229,11 +241,11 @@ public class MainActivity extends Activity {
                 toggle_val[1] = !toggle_val[1];
                 break;
             case R.id.toggleButton3:
-                OutMessage = (toggle_val[2]) ? "IO.2.1" : "IO.2.0";
+                OutMessage = (toggle_val[2]) ? "IO|2,1" : "IO.2.0";
                 toggle_val[2] = !toggle_val[2];
                 break;
             case R.id.toggleButton4:
-                OutMessage = (toggle_val[3]) ? "$LED.0" : "$LED.0";
+                OutMessage = (toggle_val[3]) ? "$LED|0" : "$LED|0";
                 toggle_val[3] = !toggle_val[3];
                 break;
             case R.id.toggleButton5:
@@ -244,7 +256,7 @@ public class MainActivity extends Activity {
                 //Sends current time over serial link
                 int t = (int)System.currentTimeMillis();
                 sBar.setProgress(t % 100);
-                OutMessage = "$DO.1.0@W.1.15";
+                OutMessage = "$DO|1,0@W,1,1.5";
                 toggle_val[5] = !toggle_val[5];
                 break;
             default:

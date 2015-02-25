@@ -31,7 +31,7 @@ public class DetectUSB extends BroadcastReceiver {
                 toast.show();
                 Log.i(TAG, "USB Disconnected.." + action);
             }else if(intent.getAction().equalsIgnoreCase("android.hardware.usb.action.USB_ACCESSORY_DETACHED")){
-                Toast toast = Toast.makeText(context,"Disconnected" + action,Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(context,"Disconnected from Accessory" + action,Toast.LENGTH_LONG);
                 toast.show();
                 Connection  = false;
                 Log.i(TAG, "Um.." + action);

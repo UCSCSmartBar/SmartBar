@@ -104,7 +104,7 @@ public class PickUpFinger extends Activity {
         PiComm = new CommStream();
         Intent i = getIntent();
         try {
-            String s = "$DO." + i.getExtras().getString("tString");
+            String s = "$DO," + i.getExtras().getString("tString");
             Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
             toast.show();
             PiComm.writeString(s);
@@ -118,7 +118,7 @@ public class PickUpFinger extends Activity {
             usbConn.setVisibility(View.INVISIBLE);
         }
 
-        new Timer().schedule(FlashFinger,1000,1000);
+        new Timer().schedule(FlashFinger,1000,5000);
 
 
     }
@@ -150,6 +150,9 @@ public class PickUpFinger extends Activity {
                 }
                 break;
             case PASSED:
+                if(msg.equalsIgnoreCase("Finish")){
+                    startActivity(new Intent(this,CheckBAC.class));
+                }
                 break;
             case FAILED:
                 if(msg.equals("$FP.Start")){
@@ -162,6 +165,8 @@ public class PickUpFinger extends Activity {
                 Toast.makeText(getApplicationContext(), "Unknown state", Toast.LENGTH_SHORT).show();
                 Log.d("SM", "Unknown State");
         }
+        currentState = nextState;
+
     }
 
 

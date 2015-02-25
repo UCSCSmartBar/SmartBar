@@ -1,12 +1,17 @@
 package com.example.trider.smartbarui;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
-public class ConfirmDrink extends ActionBarActivity {
+public class ConfirmDrink extends Activity {
+
+    CommStream PiComm = new CommStream();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +40,12 @@ public class ConfirmDrink extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    public void PourDrink(View view){
+        PiComm.writeString("Drink");
     }
 }

@@ -172,6 +172,7 @@ public class DrinkOrder {
     public String serialDrink(){
         String serialMessage = StartOfDString;
         Log.d("ser", "\nSerial Message: "+ serialMessage);
+
         for(int i = 0; i < numLiquors; i++){
             serialMessage = serialMessage + liquors[i].serString();
         }
@@ -179,11 +180,69 @@ public class DrinkOrder {
         for(int i = 0; i < numMixers; i++){
             serialMessage = serialMessage + mixers[i].serString();
         }
+
         Log.d("ser", "\nSerial Message: "+ serialMessage+ "\n");
 
         serialMessage = serialMessage + "*";
         Log.d("ser", "\nSerial Message: "+ serialMessage);
         return serialMessage;
+    }
+
+
+//@TODO decode string before forwarding it to Raspberry Pi to check if feasible drink.
+
+    public String DecodeString(String s){
+        if(s == null){return null;}
+
+       Log.d("DParse","Incoming String:" +s);
+        int NOL;
+        int NOM;
+
+        String[] tokens;
+
+        //Takes a String of 1,2@V,0,.1@ ...... and converts it to [0,0,1] [1,2,3]
+        tokens = s.split("[@+]");
+
+        //Number of Mixers/Liquors Identifiers
+        Log.d("DParse","Token[0]:"+tokens[0] + "\n");
+        String[] aTokens =  tokens[0].split("[,*+]");
+        try{
+            NOL = Integer.valueOf(aTokens[0].trim());
+            NOM = Integer.valueOf(aTokens[1].trim());
+            Log.d("DParse","NOL["+NOL+"] NOM["+NOM+"]\n");
+        }catch(NumberFormatException i){
+            i.printStackTrace();
+            return "Error";
+        }
+
+
+       int i = 1;
+       for(; i < tokens.length - NOM; i++){
+           Log.d("Dparse","Tokens["+i+"] Liquor{"+tokens[i] + "}\n");
+           String[] lTokens = tokens[i].split("[,+]");
+
+           Log.d("Dparse","Mixer:" + lTokens[0]);
+           Log.d("Dparse","Brand:" + lTokens[1]);
+           Log.d("Dparse","Amount" + lTokens[2]);
+       }
+
+       for(;i < tokens.length;i++) {
+           Log.d("Dparse", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
+
+           String[] mTokens = tokens[i].split("[,+]");
+           Log.d("Dparse","Mixer:" + mTokens[0]);
+           Log.d("Dparse","Brand:" + mTokens[1]);
+           Log.d("Dparse","Amount" + mTokens[2]);
+
+       }
+
+
+
+
+
+
+
+        return "Success";
     }
 
 }

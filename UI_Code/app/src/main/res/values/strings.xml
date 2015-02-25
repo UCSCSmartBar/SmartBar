@@ -90,7 +90,14 @@
     <string name="title_activity_pick_up_finger">PickUpFinger</string>
     <string name="title_activity_register_finger_print">RegisterFingerPrint</string>
     <string name="register_finger_print_prompt">Hello Please, Place your finger on the scanner 3 Times
-                                                when the blue light is on</string>
+                                                when the blue light is on.</string>
     <string name="title_activity_test_activityr">testActivityr</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="title_activity_system_status">SystemStatus</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_asdf">asdf</string>
+    <string name="title_activity_system_status2">SystemStatus2</string>
 
 </resources>

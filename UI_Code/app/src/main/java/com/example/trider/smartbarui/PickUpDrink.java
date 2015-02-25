@@ -100,7 +100,6 @@ public class PickUpDrink extends Activity {
         pBar.setVisibility(View.INVISIBLE);
 
 
-
     }
 
 
@@ -119,7 +118,6 @@ public class PickUpDrink extends Activity {
      */
     public void CheckPin(View view){
         Context context = getApplicationContext();
-
         //Hides Message
         InputMethodManager inputManager = (InputMethodManager)
                 getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -141,20 +139,21 @@ public class PickUpDrink extends Activity {
         pinString = eText.getText().toString();
 
         //Checking for pin Length
-        if(pinString.length() != 4){
+        if(pinString.length() != 11){
             toast = Toast.makeText(context, "Pin is too short: " + pinString, Toast.LENGTH_SHORT);
             toast.show();
             return;
         }
 
         //Checking Numeric-based String for errors
+        /*
         try {
             Pin = Integer.decode(pinString);
         }catch(NumberFormatException e){
             toast = Toast.makeText(context, "Warn: Pin decoded incorrectly. ", Toast.LENGTH_SHORT);
             toast.show();
             return;
-        }
+        }*/
 
         new AttemptGetDrink().execute();
 
@@ -173,6 +172,10 @@ public class PickUpDrink extends Activity {
                         searching = false;
                         Intent intent = new Intent(PickUpDrink.this,PickUpFinger.class);
                         if(searchFailure){return;}
+                        PiComm.writeString("$DO,"+ IncomingString );
+                        DrinkOrder t = new DrinkOrder();
+                        t.DecodeString(IncomingString);
+                        PiComm.writeString("$FPQ," +eText.getText().toString());
                         intent.putExtra("tString",IncomingString);
                         startActivity(intent);
                     }
@@ -252,7 +255,7 @@ public class PickUpDrink extends Activity {
             if (file_url != null){
                Toast.makeText(PickUpDrink.this, file_url, Toast.LENGTH_LONG).show();
                IncomingString = file_url;
-               PiComm.writeString(IncomingString);
+
             }else{
                 Toast.makeText(PickUpDrink.this,"Failure to Access Server. Check Internet Connection"
                         , Toast.LENGTH_SHORT).show();

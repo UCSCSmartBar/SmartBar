@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Welcome, Please Enter Your Four Digit Pin"
+        android:text="Welcome, Please Enter Your 11-Digit Phone Number"
         android:textColor="@color/black"
         android:textSize="30dp"
         android:id="@+id/textView4"
@@ -38,13 +38,13 @@
 
     <EditText
         android:id="@+id/txtPin"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_marginLeft="300dp"
         android:layout_height="wrap_content"
-        android:hint="Pin Number"
+        android:hint="Phone Number"
         android:textSize="40dp"
-        android:inputType="numberPassword"
-        android:maxLength="4">
+        android:inputType="number"
+        android:maxLength="11">
         <requestFocus/>
     </EditText>
 

@@ -27,7 +27,7 @@ public class CommStream {
     private static UsbManager usbMan;
     private static ParcelFileDescriptor parcelFD;
 
-    public static final String Status_Created          =    "COMM_CREATED";
+    public static final String Status_Created          =    "UNINITIALIZED_COMM_CREATED";
     public static final String Status_Connected        =    "USB_CONNECTED";
     public static final String Status_Disconnected     =    "USB_DISCONNECTED";
 
@@ -36,6 +36,7 @@ public class CommStream {
 
     public static byte[] readBuffer = new byte[128];
     public static byte[] writeBuffer = new byte[128];
+    public int ret;
 
 
 
@@ -68,11 +69,21 @@ public class CommStream {
     }
     public String readString(){
         //Currently reads the status, will return string
-
-        return StatusString;
+         byte[] readBuffer = new byte[128];
+        if(isInitialized()){
+            try{
+                ret  = mInputStream.read(readBuffer);
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }else {
+            return null;
+        }
+        return new String(readBuffer);
     }
     public boolean writeString(String s) {
         if (mOutputStream != null) {
+            //Get clean buffer each time;
             byte[] outBuffer;
             outBuffer = s.getBytes();
             //Writes to output
@@ -126,5 +137,13 @@ public class CommStream {
     public void SetStatus(String s){
         StatusString = s;
     }
+
+
+
+
+
+
+
+
 
 }
