@@ -19,7 +19,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 /*
  * This class defines the behavior of the order drink screen, namely allows a user to manually
@@ -49,6 +49,7 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
         populateLibrary(drinkLibrary);
         populateLibrary(filteredLibrary);
 
+        // setup lists and adapters for displaying the library
         drinkList = (ListView)findViewById(R.id.drinkList);
         drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
         drinkOrderTyped.addTextChangedListener(filterTextWatcher);
@@ -80,10 +81,22 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
                         filteredAdapter.remove(filteredLibrary.get(i));
                     }
                 }
+                filteredAdapter.notifyDataSetChanged();
+                drinkList.setFilterText(s.toString());
+                drinkList.setAdapter(filteredAdapter);
             }
-            filteredAdapter.notifyDataSetChanged();
-            drinkList.setFilterText(s.toString());
-            drinkList.setAdapter(filteredAdapter);
+            if (lastChange.length() > s.toString().length()) {
+                drinkAdapter.clear();
+                // user has removed characters from constraint
+                for (int i = 0; i < filteredLibrary.size(); i++) {
+                    if (filteredLibrary.get(i).toUpperCase().startsWith(s.toString().toUpperCase())) {
+                        drinkAdapter.add(filteredLibrary.get(i));
+                    }
+                }
+                drinkAdapter.notifyDataSetChanged();
+                drinkList.setFilterText(s.toString());
+                drinkList.setAdapter(drinkAdapter);
+            }
             lastChange = s.toString();
         }
 
@@ -141,6 +154,7 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
 
     // populates the (prototype) library of drinks
     private void populateLibrary(ArrayList<String> drinkLibraryList) {
+        drinkLibraryList.clear();
         drinkLibraryList.add("Adios Motherfucker");
         drinkLibraryList.add("Bloody Mary");
         drinkLibraryList.add("Cosmopolitan");
