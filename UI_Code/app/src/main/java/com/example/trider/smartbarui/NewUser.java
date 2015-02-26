@@ -129,7 +129,10 @@ public class NewUser extends Activity {
                         PiComm.writeString("$FPQ,"+pinString);
                         DrinkOrder t = new DrinkOrder();
                         t.DecodeString(IncomingString);
+                        IncomingString.replace("*","");
                         PiComm.writeString("$DO,"+IncomingString);
+
+
                         startActivity(intent);
                     }
                 });

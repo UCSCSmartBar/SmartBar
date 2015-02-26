@@ -197,11 +197,12 @@ public class DrinkOrder {
        Log.d("DParse","Incoming String:" +s);
         int NOL;
         int NOM;
+        float vol = 0;
 
         String[] tokens;
 
         //Takes a String of 1,2@V,0,.1@ ...... and converts it to [0,0,1] [1,2,3]
-        tokens = s.split("[@+]");
+        tokens = s.split("[@*+]");
 
         //Number of Mixers/Liquors Identifiers
         Log.d("DParse","Token[0]:"+tokens[0] + "\n");
@@ -223,20 +224,32 @@ public class DrinkOrder {
 
            Log.d("Dparse","Mixer:" + lTokens[0]);
            Log.d("Dparse","Brand:" + lTokens[1]);
-           Log.d("Dparse","Amount" + lTokens[2]);
-       }
+           Log.d("Dparse","Volume" + lTokens[2]);
 
+           try {
+               vol += Float.parseFloat(lTokens[2].trim());
+           }catch(NumberFormatException e){
+               e.printStackTrace();
+           }
+
+           }
+        //Loop through Mixers
        for(;i < tokens.length;i++) {
            Log.d("Dparse", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
 
            String[] mTokens = tokens[i].split("[,+]");
            Log.d("Dparse","Mixer:" + mTokens[0]);
            Log.d("Dparse","Brand:" + mTokens[1]);
-           Log.d("Dparse","Amount" + mTokens[2]);
-
+           Log.d("Dparse","Carb:" +  mTokens[2]);
+           Log.d("Dparse","Volume" + mTokens[3]);
+           try {
+               vol += Float.parseFloat(mTokens[3]);
+           }catch(NumberFormatException e){
+               e.printStackTrace();
+           }
        }
 
-
+        Log.d("Dparse","Total Volume["+vol+"]");
 
 
 
