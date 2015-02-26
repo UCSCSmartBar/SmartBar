@@ -23,9 +23,6 @@ public class SystemStatus extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_status);
-
-
-
         //Hides all action bars and other uneccesary things to view
         try {
             final View contentView = findViewById(R.id.system_view);
@@ -50,12 +47,8 @@ public class SystemStatus extends Activity {
                             }
                         }
                     });
-
         }catch(NullPointerException e){
             }
-
-
-
 
     }
 

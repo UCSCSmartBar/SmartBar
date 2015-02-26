@@ -102,9 +102,11 @@ public class PickUpFinger extends Activity {
 
 
         PiComm = new CommStream();
+
         Intent i = getIntent();
         try {
             String s = "$DO," + i.getExtras().getString("tString");
+            s.replace("*","");
             Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
             toast.show();
             PiComm.writeString(s);
@@ -116,6 +118,10 @@ public class PickUpFinger extends Activity {
 
         if(!PiComm.isInitialized()){
             usbConn.setVisibility(View.INVISIBLE);
+                String s = i.getExtras().getString("tString");
+                DrinkOrder a = new DrinkOrder();
+                a.DecodeString(s);
+
         }
 
         new Timer().schedule(FlashFinger,1000,5000);

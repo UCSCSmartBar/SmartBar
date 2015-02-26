@@ -151,7 +151,6 @@ public class MainActivity extends Activity {
             }
             */
             InMessage = PiComm.readString();
-
             if(InMessage != null){
                 mText.post(mUpdateUI2);
             }

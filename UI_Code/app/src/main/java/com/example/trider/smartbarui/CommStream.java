@@ -54,8 +54,6 @@ public class CommStream {
     }
 
     public CommStream(){
-        //mInputStream = null;
-        //mOutputStream = null;
         if(initialized){return;}
         StatusString = Status_Created;
     }
