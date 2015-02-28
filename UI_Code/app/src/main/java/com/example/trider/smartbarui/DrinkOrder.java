@@ -4,11 +4,17 @@ import android.util.Log;
 
 /**
  * Created by trider on 2/13/2015.
+ * The Drink Order class is used for both packing custom drinks(not currently in use), and decoding
+ * sent drinks. A DrinkOrder Object can be split into sub-elements called Liquor and Mixer Objects,
+ * each with data about the spirit,brand and volume of each individual element. Currently the class
+ * is being used as a means to parse the drink orders from the queue, and double check if they are
+ * of a valid amount or if the string is a valid string.
  */
 public class DrinkOrder {
 
 
-    public String DrinkString;
+    public static String InDrinkString = null;
+    public String OutDrinkString;
     private static final String StartOfDString = "$DO";
     private static final Byte EndOfDString = '*';
     private LiquorObj[] liquors;
@@ -188,25 +194,34 @@ public class DrinkOrder {
         return serialMessage;
     }
 
+    public void storeDrinkOrder(String s){
+        InDrinkString = s;
+    }
 
+    public String getCurrentDrinkOrder(){
+        return InDrinkString;
+    }
 //@TODO decode string before forwarding it to Raspberry Pi to check if feasible drink.
 
     public String DecodeString(String s){
         if(s == null){return null;}
 
-       Log.d("DParse","Incoming String:" +s);
+        Log.d("DParse","Incoming String:" +s);
         int NOL;
         int NOM;
         float vol = 0;
-
+        String outGoingTable;
         String[] tokens;
 
         //Takes a String of 1,2@V,0,.1@ ...... and converts it to [0,0,1] [1,2,3]
         tokens = s.split("[@*+]");
 
+
+        outGoingTable = "Spirits:\n";
         //Number of Mixers/Liquors Identifiers
         Log.d("DParse","Token[0]:"+tokens[0] + "\n");
         String[] aTokens =  tokens[0].split("[,*+]");
+
         try{
             NOL = Integer.valueOf(aTokens[0].trim());
             NOM = Integer.valueOf(aTokens[1].trim());
@@ -217,15 +232,19 @@ public class DrinkOrder {
         }
 
 
+
+        outGoingTable = "Spirit:\n";
        int i = 1;
        for(; i < tokens.length - NOM; i++){
            Log.d("Dparse","Tokens["+i+"] Liquor{"+tokens[i] + "}\n");
            String[] lTokens = tokens[i].split("[,+]");
 
-           Log.d("Dparse","Mixer:" + lTokens[0]);
-           Log.d("Dparse","Brand:" + lTokens[1]);
-           Log.d("Dparse","Volume" + lTokens[2]);
+               Log.d("Dparse","Spirit:" + lTokens[0]);
+               Log.d("Dparse","Brand:" + lTokens[1]);
+               Log.d("Dparse","Volume" + lTokens[2]);
+           outGoingTable+=lTokens[0] + ":" + lTokens[1]+":" +lTokens[2]+"\n";
 
+           //Adds to total volume of drink
            try {
                vol += Float.parseFloat(lTokens[2].trim());
            }catch(NumberFormatException e){
@@ -233,15 +252,20 @@ public class DrinkOrder {
            }
 
            }
-        //Loop through Mixers
+
+
+        outGoingTable +="Mixers:\n";
+        //Loop through Mixers and print out individual components
        for(;i < tokens.length;i++) {
            Log.d("Dparse", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
 
            String[] mTokens = tokens[i].split("[,+]");
-           Log.d("Dparse","Mixer:" + mTokens[0]);
-           Log.d("Dparse","Brand:" + mTokens[1]);
-           Log.d("Dparse","Carb:" +  mTokens[2]);
-           Log.d("Dparse","Volume" + mTokens[3]);
+               Log.d("Dparse","Mixer:" + mTokens[0]);
+               Log.d("Dparse","Brand:" + mTokens[1]);
+               Log.d("Dparse","Carb:" +  mTokens[2]);
+               Log.d("Dparse","Volume" + mTokens[3]);
+           outGoingTable+=mTokens[0] + ":" + mTokens[1]+":"+ mTokens[3]+"\n";
+
            try {
                vol += Float.parseFloat(mTokens[3]);
            }catch(NumberFormatException e){
@@ -251,11 +275,11 @@ public class DrinkOrder {
 
         Log.d("Dparse","Total Volume["+vol+"]");
 
-
-
-
-
-        return "Success";
+        return outGoingTable;
     }
+
+
+
+
 
 }

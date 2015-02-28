@@ -5,6 +5,8 @@ package com.example.trider.smartbarui;
  */
 public class SystemCodeParser {
 
+
+
         public String DecodeAccessoryMessage(String message) {
             if (message == null) {
                 return null;
@@ -50,42 +52,42 @@ public class SystemCodeParser {
          * Decodes any message dealing with the Analog To Digital Converter
          * @param message
          */
-        public void DecodeADMessage(String message){
+        private void DecodeADMessage(String message){
 
         }
         /**
          * Decodes any message dealing with the Raspberry Pi Itself
          * @param message
          */
-        public void DecodeSystemMessage(String message){
+        private void DecodeSystemMessage(String message){
 
         }
         /**
          * Decodes any message dealing with the Finger Print Scanner
          * @param message
          */
-        public void DecodeScannerMessage(String message){
+        private void DecodeScannerMessage(String message){
 
         }
         /**
          * Decodes any message dealing with the BAC (Which may just be the AD)
          * @param message
          */
-        public void DecodeBACMessage(String message){
+        private void DecodeBACMessage(String message){
 
         }
         /**
          * Decodes any message dealing with the Pneumatic System
          * @param message
          */
-        public void DecodePneumaticsMessage(String message){
+        private void DecodePneumaticsMessage(String message){
 
         }
         /**
          * Decodes any message dealing with the Liquid Levels of the System
          * @param message
          */
-        public void DecodeLiquidsMessage(String message){
+        private void DecodeLiquidsMessage(String message){
 
         }
 

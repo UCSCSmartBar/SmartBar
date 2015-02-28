@@ -99,8 +99,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_asdf">asdf</string>
     <string name="title_activity_system_status2">SystemStatus2</string>
-
-
+    <string name="bac_prompt">Hello, for your safety please breathe into the Sensor for your BAC</string>
     <string name="Ishmael">Call me Ishmael. Some years ago--never mind how long precisely--having
         little or no money in my purse, and nothing particular to interest me on shore, I thought I
         would sail about a little and see the watery part of the world. It is a way I have of driving
@@ -114,5 +113,16 @@
         sword; I quietly take to the ship. There is nothing surprising in this. If they but knew it,
         almost all men in their degree, some time or other, cherish very nearly the same feelings
         towards the ocean with me.</string>
+    <string name="command_list">Pick Commands</string>
+
+    <string-array name="spinnerItems">
+        <item>PiStatus</item>
+        <item>FingerPrintStatus</item>
+        <item>BACStatus</item>
+        <item>ValveState</item>
+        <item>LiquidLevels</item>
+    </string-array>
+
+    <string name="title_activity_display_queue">DisplayQueue</string>
 
 </resources>

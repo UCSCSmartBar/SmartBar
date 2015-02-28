@@ -109,8 +109,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.NewUser" />
         </activity>
-
-
         <activity
             android:name=".SystemStatus"
             android:label="@string/title_activity_system_status"
@@ -118,6 +116,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.TestActivity" />
+        </activity>
+        <activity
+            android:name=".DisplayQueue"
+            android:label="@string/title_activity_display_queue"
+            android:parentActivityName=".IdleMenu" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.IdleMenu" />
         </activity>
     </application>
 

@@ -22,6 +22,8 @@ public class RegisterFingerPrint extends Activity {
 
 CommStream PiComm = new CommStream();
 
+    String OrderString;
+
 static int trans = 0;
 
 //States for FingerPrint Scanner
@@ -33,6 +35,7 @@ public enum FingerState {
      REGISTERED,
      WARNING
 }
+
 FingerState currentState = FingerState.IDLE;
 FingerState nextState = FingerState.IDLE;
 
@@ -103,12 +106,12 @@ FingerState nextState = FingerState.IDLE;
 
         ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
         Intent intent = getIntent();
-        if(!PiComm.isInitialized()){
-            String s = intent.getExtras().getString("tString");
-            DrinkOrder a = new DrinkOrder();
-            a.DecodeString(s);
+        try {
+            OrderString = intent.getExtras().getString("tString");
+        }catch(NullPointerException e){
+            e.printStackTrace();
         }
-        PiComm.writeString("$FP.First");
+        //PiComm.writeString("$FP.First");
         new Thread(mListenerTask).start();
         new Timer().schedule(ChangeFinger,1000,1000);
 
@@ -117,7 +120,10 @@ FingerState nextState = FingerState.IDLE;
     }
 
 
-
+    /**
+     *
+     * @param s The Parameter to progress the state machine for the fingerprint
+     */
     public void RunPrintStateMachine(String s){
 
         final String T = s;
@@ -196,9 +202,7 @@ FingerState nextState = FingerState.IDLE;
     }
 
 
-
-
-    public void SkipToBAC(View view){startActivity(new Intent(this,CheckBAC.class));}
+    public void SkipToBAC(View view){startActivity(new Intent(this,CheckBAC.class).putExtra("DOrder",OrderString));}
 
 
     @Override

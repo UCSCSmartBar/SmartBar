@@ -2,8 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:background="@drawable/cityscape"
     tools:context="com.example.trider.smartbarui.IdleMenu">
 
@@ -27,8 +26,6 @@
         android:rotation="90"
         android:id="@+id/usbCon" />
 
-
-
     <TextClock
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,14 +38,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-
+        android:layout_marginTop="0dp"
         android:padding="10dp"
-
         android:background="@drawable/cust_butt"
         style="@style/CityTheme"
 
-        android:text="Pickup Drink >"
+        android:text="Pickup Drink                     >"
         android:onClick="onPickUpClick"
         android:id="@+id/button8"
         android:layout_gravity="center_horizontal"/>
@@ -56,16 +51,21 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New User?      >"
+        android:text="Register Finger Print >"
         android:layout_marginTop="25dp"
         android:padding="10dp"
-
         android:background="@drawable/cust_butt"
         style="@style/CityTheme"
-
         android:onClick="GoToNewUser"
         android:id="@+id/button7"
         android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:onClick="GetQueue"
+        android:id="@+id/button19" />
 
 </LinearLayout>
 

@@ -22,9 +22,12 @@ public class PickUpFinger extends Activity {
 
     CommStream PiComm;
     ImageView fingImg;
+
     boolean toggle = false;
     static int failureCount;
-    long Timeout  =0;
+    long Timeout = 0;
+
+    String OrderString;
 
     public enum FingerState {
         IDLE,
@@ -105,11 +108,10 @@ public class PickUpFinger extends Activity {
 
         Intent i = getIntent();
         try {
-            String s = "$DO," + i.getExtras().getString("tString");
-            s.replace("*","");
-            Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
+            OrderString = "$DO," + i.getExtras().getString("tString");
+            Toast toast = Toast.makeText(getApplicationContext(), OrderString, Toast.LENGTH_LONG);
             toast.show();
-            PiComm.writeString(s);
+            //PiComm.writeString(s);
             new Thread(mListenerTask).start();
         }catch(NullPointerException e){
             Toast.makeText(getApplicationContext(), "No Drink Added", Toast.LENGTH_SHORT).show();
@@ -117,10 +119,10 @@ public class PickUpFinger extends Activity {
          }
 
         if(!PiComm.isInitialized()){
-            usbConn.setVisibility(View.INVISIBLE);
-                String s = i.getExtras().getString("tString");
-                DrinkOrder a = new DrinkOrder();
-                a.DecodeString(s);
+                usbConn.setVisibility(View.INVISIBLE);
+            //Already Decoded in last activity
+//                DrinkOrder a = new DrinkOrder();
+//                a.DecodeString(OrderString);
 
         }
 
@@ -130,7 +132,8 @@ public class PickUpFinger extends Activity {
     }
 
     public void SkipFingerPrint(View view){
-        startActivity(new Intent(this,CheckBAC.class));
+        Intent i = new Intent(this,CheckBAC.class).putExtra("DString",OrderString);
+        startActivity(i);
     }
 
     public void CompareFingerSM(String msg) {
