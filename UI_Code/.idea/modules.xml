@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SmartBarUI.iml" filepath="$PROJECT_DIR$/SmartBarUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UI_Code.iml" filepath="$PROJECT_DIR$/UI_Code.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

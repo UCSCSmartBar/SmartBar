@@ -5,60 +5,90 @@ package com.example.trider.smartbarui;
  */
 public class SystemCodeParser {
 
-        public void DecodeAccessoryMessage(String message) {
+
+
+        public String DecodeAccessoryMessage(String message) {
             if (message == null) {
-                return;
+                return null;
             }
-            String aTokens[] = message.split("[@+]");
+            String aTokens[] = message.split("[@,+]");
             switch (aTokens[0].trim()) {
                 case ("$AD"):
                     DecodeADMessage(message);
-                    break;
+                    return "$ACK|AD";
                 case ("$SYS"):
                     DecodeSystemMessage(message);
-                    break;
+                    return "$ACK|SYS";
                 case ("$FP"):
                     DecodeScannerMessage(message);
-                    break;
+                    return "$ACK|FP";
                 case ("$BAC"):
                     DecodeBACMessage(message);
-                    break;
+                    return "$ACK|BAC";
                 case ("$VA"):
                     DecodePneumaticsMessage(message);
-                    break;
+                    return "$ACK|VA";
                 case ("$LI"):
                     DecodeLiquidsMessage(message);
-                    break;
+                    return "$ACK|LI";
                 case ("$SER"):
-                    break;
-
+                    return "$ACK|SER";
+                case("$ACK"):
+                    return "$ACK";
+                case("$NACK"):
+                    return "$NACK";
                 //Unknown Error Code
                 default:
-                    break;
+                    return "NACK|UCMD";
             }
         }
 
 
-            /*
-            **@TODO Fill and decode the various error or warning messages
-             */
-            public void DecodeADMessage(String message){
+        /*
+        **@TODO Fill and decode the various error or warning messages
+         */
 
-            }
-            public void DecodeSystemMessage(String message){
+        /**
+         * Decodes any message dealing with the Analog To Digital Converter
+         * @param message
+         */
+        private void DecodeADMessage(String message){
 
-            }
-            public void DecodeScannerMessage(String message){
+        }
+        /**
+         * Decodes any message dealing with the Raspberry Pi Itself
+         * @param message
+         */
+        private void DecodeSystemMessage(String message){
 
-            }
-            public void DecodeBACMessage(String message){
+        }
+        /**
+         * Decodes any message dealing with the Finger Print Scanner
+         * @param message
+         */
+        private void DecodeScannerMessage(String message){
 
-            }
-            public void DecodePneumaticsMessage(String message){
+        }
+        /**
+         * Decodes any message dealing with the BAC (Which may just be the AD)
+         * @param message
+         */
+        private void DecodeBACMessage(String message){
 
-            }
-            public void DecodeLiquidsMessage(String message){
+        }
+        /**
+         * Decodes any message dealing with the Pneumatic System
+         * @param message
+         */
+        private void DecodePneumaticsMessage(String message){
 
-            }
+        }
+        /**
+         * Decodes any message dealing with the Liquid Levels of the System
+         * @param message
+         */
+        private void DecodeLiquidsMessage(String message){
+
+        }
 
 }

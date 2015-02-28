@@ -22,9 +22,11 @@ public class RegisterFingerPrint extends Activity {
 
 CommStream PiComm = new CommStream();
 
+    String OrderString;
+
 static int trans = 0;
 
-    //States for fingerprints
+//States for FingerPrint Scanner
 public enum FingerState {
      IDLE,
      FIRST_FINGER,
@@ -33,10 +35,13 @@ public enum FingerState {
      REGISTERED,
      WARNING
 }
+
 FingerState currentState = FingerState.IDLE;
 FingerState nextState = FingerState.IDLE;
 
-
+    /**
+     * Changes the transparency of the finger to be shown
+     */
     Runnable ChangeFingerPic = new Runnable() {
         @Override
         public void run() {
@@ -101,28 +106,28 @@ FingerState nextState = FingerState.IDLE;
 
         ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
         Intent intent = getIntent();
-        if(!PiComm.isInitialized()){
-            String s = intent.getExtras().getString("tString");
-            DrinkOrder a = new DrinkOrder();
-            a.DecodeString(s);
+        try {
+            OrderString = intent.getExtras().getString("tString");
+        }catch(NullPointerException e){
+            e.printStackTrace();
         }
-
-        PiComm.writeString("$FP.First");
+        //PiComm.writeString("$FP.First");
         new Thread(mListenerTask).start();
         new Timer().schedule(ChangeFinger,1000,1000);
 
         //For actual implementation of state machine start with Finger Print Invisible
         finger.setVisibility(View.INVISIBLE);
-
-
-
     }
 
 
-
+    /**
+     *
+     * @param s The Parameter to progress the state machine for the fingerprint
+     */
     public void RunPrintStateMachine(String s){
 
         final String T = s;
+        ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
         s= s.trim();
         RegisterFingerPrint.this.runOnUiThread(new Runnable(){
             @Override
@@ -145,7 +150,6 @@ FingerState nextState = FingerState.IDLE;
                     switch(s){
                         case "$FP.1.Success":
                             nextState = FingerState.SECOND_FINGER;
-                            ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
                             finger.setVisibility(View.VISIBLE);
                             finger.setColorFilter(Color.argb(220, 255, 255, 255));
                             break;
@@ -160,7 +164,6 @@ FingerState nextState = FingerState.IDLE;
                     switch(s){
                         case "$FP.2.Success":
                             nextState = FingerState.THIRD_FINGER;
-                            ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
                             finger.setColorFilter(Color.argb(110, 255, 255, 255));
                             break;
                         case "$FP.2.Failure":
@@ -172,7 +175,6 @@ FingerState nextState = FingerState.IDLE;
                     switch(s){
                         case "$FP.3.Success":
                             nextState = FingerState.REGISTERED;
-                            ImageView finger = (ImageView) findViewById(R.id.newFingerImg);
                             finger.setColorFilter(Color.argb(25, 255, 255, 255));
                             break;
                         case "FP.3.Failure":
@@ -190,7 +192,6 @@ FingerState nextState = FingerState.IDLE;
             }
         currentState = nextState;
 
-
         RegisterFingerPrint.this.runOnUiThread(new Runnable(){
             @Override
             public void run(){
@@ -201,11 +202,7 @@ FingerState nextState = FingerState.IDLE;
     }
 
 
-
-
-    public void SkipToBAC(View view){
-        startActivity(new Intent(this,CheckBAC.class));
-    }
+    public void SkipToBAC(View view){startActivity(new Intent(this,CheckBAC.class).putExtra("DOrder",OrderString));}
 
 
     @Override
@@ -217,16 +214,10 @@ FingerState nextState = FingerState.IDLE;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

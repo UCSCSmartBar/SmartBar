@@ -159,6 +159,13 @@ public class ConfirmationActivity extends ActionBarActivity {
     public void customizeDrink(View view) {
         ArrayList<String> liquorList = new ArrayList<>();
         switch (drinkOrder.toUpperCase()) {
+            case "AMF":
+                drinkOrder = "Adios Motherfucker";
+                liquorList.add("Bitters");
+                liquorList.add("Gin");
+                liquorList.add("Rum");
+                liquorList.add("Tequila");
+                liquorList.add("Vodka");
             case "GIN AND TONIC":
                 drinkOrder = "Gin and Tonic";
                 liquorList.add("Gin");

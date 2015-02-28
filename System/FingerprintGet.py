@@ -31,8 +31,10 @@ def get_files(string):
             scp.get(fizzle,'/tmp/Fingers')
         except:
             print(fizzle + ' not found')
+            return 0
     ctime = time.time() - ctime
     print 'finished in ' + str(ctime) + 's'
+    return 1
 
 def clear_files():
     shutil.rmtree('/tmp/Fingers')

@@ -14,6 +14,8 @@ import java.io.OutputStream;
 
 /**
  * Created by trider on 2/6/2015.
+ * @description: The CommStream contains all the information needed to read/write serial data to the
+ * Raspberry Pi, and control the USB Accessory.
  */
 
 
@@ -40,6 +42,15 @@ public class CommStream {
 
 
 
+
+    /**
+     *
+     * @param iStream Input Stream from the Raspberry Pi
+     * @param oStream Output Stream to the Raspberry Pi
+     * @param uAcc The abstract object containing all the information about the AOA.
+     * @param uMan The android hardware level USB manager
+     * @param PFD
+     */
     public CommStream(FileInputStream iStream, FileOutputStream oStream,UsbAccessory uAcc,
                                                   UsbManager uMan,ParcelFileDescriptor PFD){
         if(iStream != null && oStream != null) {
@@ -54,8 +65,6 @@ public class CommStream {
     }
 
     public CommStream(){
-        //mInputStream = null;
-        //mOutputStream = null;
         if(initialized){return;}
         StatusString = Status_Created;
     }
@@ -73,13 +82,14 @@ public class CommStream {
         if(isInitialized()){
             try{
                 ret  = mInputStream.read(readBuffer);
+                return new String(readBuffer);
             }catch(IOException e){
                 e.printStackTrace();
             }
         }else {
             return null;
         }
-        return new String(readBuffer);
+        return null;
     }
     public boolean writeString(String s) {
         if (mOutputStream != null) {

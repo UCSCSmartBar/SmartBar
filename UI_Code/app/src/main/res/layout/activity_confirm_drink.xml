@@ -26,35 +26,14 @@
             android:layout_columnWeight="1"/>
 
         <TextView android:text="WhiskeySour"
+            android:id="@+id/drink_listing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="40sp"
+            android:textSize="20sp"
             android:layout_row="18"
-            android:layout_column="2"
-            />
-        <TextView android:text="Whiskey:    Single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:layout_row="19"
-            android:layout_column="2"
-            />
-        <TextView android:text="Lemon:      Single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:layout_row="20"
-            android:layout_column="2"
-            />
+            android:layout_column="2"/>
 
-        <TextView android:text="S.Syrup:     Single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:layout_row="21"
-            android:layout_column="2"
-            />
 
         <Button
             android:layout_width="wrap_content"

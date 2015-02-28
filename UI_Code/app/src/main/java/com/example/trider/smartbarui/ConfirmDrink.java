@@ -6,17 +6,26 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 
 public class ConfirmDrink extends Activity {
 
     CommStream PiComm = new CommStream();
+    DrinkOrder Do = new DrinkOrder();
 
+    TextView DrinkListing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_drink);
+
+        DrinkListing = (TextView) findViewById(R.id.drink_listing);
+
+        if(Do.getCurrentDrinkOrder() != null){
+            DrinkListing.setText(Do.DecodeString(Do.getCurrentDrinkOrder()));
+        }
     }
 
 
@@ -46,6 +55,6 @@ public class ConfirmDrink extends Activity {
 
 
     public void PourDrink(View view){
-        PiComm.writeString("Drink");
+        PiComm.writeString("$DO,"+Do.getCurrentDrinkOrder());
     }
 }

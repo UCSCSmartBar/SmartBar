@@ -123,13 +123,22 @@ public class NewUser extends Activity {
                         pBar.setVisibility(View.INVISIBLE);
                         searching = false;
                         Intent intent = new Intent(NewUser.this,RegisterFingerPrint.class);
-                        if(searchFailure){return;}
-                        intent.putExtra("tString","$FPQ,"+pinString + "$DO,"+IncomingString);
 
+                        //If nothing came up from search
+                        if(searchFailure){
+                            return;
+                        }
+                        intent.putExtra("tString","$FPQ,"+pinString + "$DO,"+IncomingString);
                         PiComm.writeString("$FPQ,"+pinString);
+
                         DrinkOrder t = new DrinkOrder();
                         t.DecodeString(IncomingString);
+
+                        t.storeDrinkOrder(IncomingString);
+                        IncomingString.replace("*","");
                         PiComm.writeString("$DO,"+IncomingString);
+
+
                         startActivity(intent);
                     }
                 });

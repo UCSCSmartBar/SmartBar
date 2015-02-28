@@ -41,6 +41,7 @@ public class PickUpDrink extends Activity {
     //Objects
     public DrinkOrder testDrink;
     private CommStream PiComm;
+
     JSONParser jsonParser = new JSONParser();
 
     //Views
@@ -80,20 +81,18 @@ public class PickUpDrink extends Activity {
         //Checks and maintains connection with R-Pi
         PiComm = new CommStream();
 
-        //Testing serial link by hard coding the addition of elements to drink order
-        DrinkOrder.LiquorObj newThing = new DrinkOrder.LiquorObj(1,2,3);
-        testDrink.AddToDrinkOrder(newThing);
-
-        DrinkOrder.MixerObj newThing2 = new DrinkOrder.MixerObj(3,4,true,3);
-        testDrink.AddToDrinkOrder(newThing2);
-
-
+//        //Testing serial link by hard coding the addition of elements to drink order
+//        DrinkOrder.LiquorObj newThing = new DrinkOrder.LiquorObj(1,2,3);
+//        testDrink.AddToDrinkOrder(newThing);
+//
+//        DrinkOrder.MixerObj newThing2 = new DrinkOrder.MixerObj(3,4,true,3);
+//        testDrink.AddToDrinkOrder(newThing2);
         //Displays the comm status, and virtual drink order, along with its serial equivalent on
         //the actual UI
-        TextView tView = (TextView) findViewById(R.id.drinkView);
-        //tView.setText("Pi Comm is:" + PiComm.Status()+ "\n" + PiComm.readString());
-        tView.append(testDrink.toString());
-        tView.append(testDrink.serialDrink());
+//        TextView tView = (TextView) findViewById(R.id.drinkView);
+//        //tView.setText("Pi Comm is:" + PiComm.Status()+ "\n" + PiComm.readString());
+//        tView.append(testDrink.toString());
+//        tView.append(testDrink.serialDrink());
 
         //Hides a progress bar that will be used to indicate there order is being searched for
         pBar = (ProgressBar) findViewById(R.id.findUserProgress);
@@ -171,10 +170,16 @@ public class PickUpDrink extends Activity {
                         pBar.setVisibility(View.INVISIBLE);
                         searching = false;
                         Intent intent = new Intent(PickUpDrink.this,PickUpFinger.class);
-                        if(searchFailure){return;}
+
+                        //If nothing came up
+                        if(searchFailure){
+                            return;
+                        }
+                        //Otherwise write the drink order to the Pi
                         PiComm.writeString("$DO,"+ IncomingString );
                         DrinkOrder t = new DrinkOrder();
                         t.DecodeString(IncomingString);
+                        t.storeDrinkOrder(IncomingString);
                         PiComm.writeString("$FPQ," +eText.getText().toString());
                         intent.putExtra("tString",IncomingString);
                         startActivity(intent);
@@ -290,13 +295,6 @@ public class PickUpDrink extends Activity {
 
     }
 
-    public void ParseInputString(String s){
-        ParsedString = s.split("[,]+");
-        for(int i = 0; i < ParsedString.length; i++){
-            PiComm.writeString(ParsedString[i]);
-            Log.d("PS", ParsedString[i]);
-        }
-    }
 
 
 
