@@ -205,7 +205,7 @@ class Response_Packet(Packet):
                     'NACK_FINGER_IS_NOT_PRESSED'    : 0x1012,    # Finger is not pressed
                     'INVALID'                       : 0XFFFF     # Used when parsing fails          
               }
-    
+    ACK=True
     def __init__(self,_buffer=None,UseSerialDebug=False):
         '''
         creates and parses a response packet from the finger print scanner
@@ -216,9 +216,13 @@ class Response_Packet(Packet):
             self.RawBytes = _buffer
             self._lastBuffer = bytes(_buffer)
             if self.UseSerialDebug:
-                print 'readed: %s'% self.serializeToSend(_buffer)
+                print 'read: %s'% self.serializeToSend(_buffer)
             if _buffer.__len__()>=12:
-                self.ACK = True if _buffer[8] == 0x30 else False
+                if _buffer[8] == 0x30:
+                    self.ACK = True
+                else:
+                    ACK=False
+                    self.ACK=False
                 self.ParameterBytes[0] = _buffer[4]
                 self.ParameterBytes[1] = _buffer[5]
                 self.ParameterBytes[2] = _buffer[6]
@@ -231,7 +235,7 @@ class Response_Packet(Packet):
     RawBytes = bytearray(12)
     ParameterBytes=bytearray(4)
     ResponseBytes=bytearray(2)
-    ACK = False
+    #ACK = True
     Error = None
     UseSerialDebug = True
     
@@ -454,6 +458,8 @@ class FPS_GT511C3(SerialCommander):
         del packetbytes
         rp = self.GetResponse()
         retval = 0
+
+        #print 'ACK %s' % rp.ACK
         if not rp.ACK:
             if rp.Error == rp.errors['NACK_DB_IS_FULL']:
                 retval = 1
@@ -479,15 +485,24 @@ class FPS_GT511C3(SerialCommander):
         del cp
         self.SendCommand(packetbytes, 12)
         del packetbytes
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
-        retval = 3 if retval < 200 else 0
+        #print 'RETVAL %d' % retval
+        if retval < 200:
+            retval = 3
+        else:
+            retval = 0
+
+        #print 'ACK %s' % rp.ACK
+        if rp.ACK:
+            return 0
         if not rp.ACK:
             if rp.Error == rp.errors['NACK_ENROLL_FAILED']:
                 retval = 1
             elif rp.Error == rp.errors['NACK_BAD_FINGER']:
                 retval = 2
-        return 0 if rp.ACK else retval
+            return retval
     
     def Enroll2(self):
         '''
@@ -503,15 +518,24 @@ class FPS_GT511C3(SerialCommander):
         del cp
         self.SendCommand(packetbytes, 12)
         del packetbytes
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
-        retval = 3 if retval < 200 else 0
+        #print 'RETVAL %d' % retval
+        if retval < 200:
+            retval = 3
+        else:
+            retval = 0
+        
+        #print 'ACK %s' % rp.ACK
+        if rp.ACK:
+            return 0
         if not rp.ACK:
             if rp.Error == rp.errors['NACK_ENROLL_FAILED']:
                 retval = 1
             elif rp.Error == rp.errors['NACK_BAD_FINGER']:
                 retval = 2
-        return 0 if rp.ACK else retval
+            return retval
         
     
     def Enroll3(self):
@@ -529,15 +553,23 @@ class FPS_GT511C3(SerialCommander):
         del cp
         self.SendCommand(packetbytes, 12)
         del packetbytes
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
-        retval = 3 if retval < 200 else 0
+        #print 'RETVAL %d' % retval
+        if retval < 200:
+            retval = 3
+        else:
+            retval = 0
+        #print 'ACK %s' % rp.ACK
+        if rp.ACK:
+            return 0
         if not rp.ACK:
             if rp.Error == rp.errors['NACK_ENROLL_FAILED']:
                 retval = 1
             elif rp.Error == rp.errors['NACK_BAD_FINGER']:
                 retval = 2
-        return 0 if rp.ACK else retval
+            return retval
     
     
     def IsPressFinger(self):
@@ -604,15 +636,22 @@ class FPS_GT511C3(SerialCommander):
         cp.ParameterFromInt(ID)
         packetbytes = cp.GetPacketBytes()
         self.SendCommand(packetbytes, 12)
+        time.sleep(1)
         rp = self.GetResponse()
-        retval = 0
-        if not rp.ACK:
+        #retval = 0
+        #print 'ACK %s' % rp.ACK
+        if rp.ACK:
+            retval=0
+        else:
+            #print 'RP ERR: %s' % rp.Error
             if rp.Error == rp.errors['NACK_INVALID_POS']:
                 retval = 1
             elif rp.Error == rp.errors['NACK_IS_NOT_USED']:
                 retval = 2
             elif rp.Error == rp.errors['NACK_VERIFY_FAILED']:
                 retval = 3
+            else:
+                retval=-1
         del rp
         del packetbytes
         del cp
@@ -628,8 +667,10 @@ class FPS_GT511C3(SerialCommander):
         cp = Command_Packet('Identify1_N',UseSerialDebug=self.UseSerialDebug)
         packetbytes = cp.GetPacketBytes()
         self.SendCommand(packetbytes, 12)
+        time.sleep(1)
         rp = self.GetResponse()
         retval = rp.IntFromParameter()
+        #print 'RP: %s' % str(rp)
         if retval > 200:
             retval = 200
         del rp
