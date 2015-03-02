@@ -42,8 +42,8 @@
         android:layout_marginLeft="300dp"
         android:layout_height="wrap_content"
         android:hint="Phone Number"
-        android:textSize="40dp"
-        android:inputType="number"
+        android:textSize="40sp"
+        android:inputType="phone"
         android:maxLength="11">
         <requestFocus/>
     </EditText>

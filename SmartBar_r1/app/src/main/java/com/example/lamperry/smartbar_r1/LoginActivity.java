@@ -106,7 +106,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
         return super.onOptionsItemSelected(item);
     }
 
-    // http://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext
+    // http://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-editText
     public void setupUI(View view) {
         // set up touch listener for non-text box views to hide keyboard
         if (!(view instanceof EditText)) {

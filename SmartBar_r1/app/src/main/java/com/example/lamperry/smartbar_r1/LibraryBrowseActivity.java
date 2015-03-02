@@ -1,7 +1,9 @@
 package com.example.lamperry.smartbar_r1;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,7 +20,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 
 /*
@@ -31,13 +39,30 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
 
     // Initializations
     ListView drinkList;
+    ArrayList<String> drinks = new ArrayList<>();
+    ArrayList<String> recipes = new ArrayList<>();
     ArrayList<String> drinkLibrary = new ArrayList<>();
     ArrayList<String> filteredLibrary = new ArrayList<>();
     ArrayAdapter<String> drinkAdapter, filteredAdapter;
+
     String drinkOrder;
     EditText drinkOrderTyped;
     String pin;
     String lastChange = "";
+    String drinkNameString;
+    String drinkRecipeString;
+
+    String receivedString = "";
+    private ProgressDialog pDialog;             // Progress Dialog
+    JSONParser jsonParser = new JSONParser();   // JSON parser class
+
+    //PHPlogin script location:
+    //UCSC Smartbar Server:
+    private static final String GET_LIB_URL = "http://www.ucscsmartbar.com/getLib.php";
+
+    //JSON element ids from response of php script:
+    private static final String TAG_SUCCESS = "success";
+    private static final String TAG_MESSAGE = "message";
 
     // generated activity method
     @Override
@@ -46,64 +71,16 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
         setContentView(R.layout.activity_library_browse);
         setupUI(findViewById(R.id.library_browse_activity));
 
-        populateLibrary(drinkLibrary);
-        populateLibrary(filteredLibrary);
-
         // setup lists and adapters for displaying the library
-        drinkList = (ListView)findViewById(R.id.drinkList);
-        drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
+        drinkList = (ListView) findViewById(R.id.drinkList);
+        drinkOrderTyped = (EditText) findViewById(R.id.typeDrink);
         drinkOrderTyped.addTextChangedListener(filterTextWatcher);
-        drinkAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
-        filteredAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
-        drinkList.setAdapter(drinkAdapter);
 
-        drinkList.setOnItemClickListener(this);
+        // DB CODE
+        new GetLibrary().execute();
 
         pin = ((MyApplication)this.getApplication()).myPin;
     }
-
-    // to filter library as user enters input
-    // all methods necessary to implement TextWatcher
-    private TextWatcher filterTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        // still need logic to update library when user removes characters from constraint
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            Log.d("LAMPERRY", "onTextChanged filtering...");
-
-            if (lastChange.length() < s.toString().length()) {
-                // user has added characters to constraint
-                for (int i = 0; i < filteredLibrary.size(); i++) {
-                    if (!filteredLibrary.get(i).toUpperCase().startsWith(s.toString().toUpperCase())) {
-                        filteredAdapter.remove(filteredLibrary.get(i));
-                    }
-                }
-                filteredAdapter.notifyDataSetChanged();
-                drinkList.setFilterText(s.toString());
-                drinkList.setAdapter(filteredAdapter);
-            }
-            if (lastChange.length() > s.toString().length()) {
-                drinkAdapter.clear();
-                // user has removed characters from constraint
-                for (int i = 0; i < filteredLibrary.size(); i++) {
-                    if (filteredLibrary.get(i).toUpperCase().startsWith(s.toString().toUpperCase())) {
-                        drinkAdapter.add(filteredLibrary.get(i));
-                    }
-                }
-                drinkAdapter.notifyDataSetChanged();
-                drinkList.setFilterText(s.toString());
-                drinkList.setAdapter(drinkAdapter);
-            }
-            lastChange = s.toString();
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-    };
 
     // necessary method when invoking text change listener
     @Override
@@ -152,35 +129,54 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
         startActivity(intent);
     }
 
-    // populates the (prototype) library of drinks
-    private void populateLibrary(ArrayList<String> drinkLibraryList) {
-        drinkLibraryList.clear();
-        drinkLibraryList.add("Adios Motherfucker");
-        drinkLibraryList.add("Bloody Mary");
-        drinkLibraryList.add("Cosmopolitan");
-        drinkLibraryList.add("Gin and Tonic");
-        drinkLibraryList.add("Incredible Hulk");
-        drinkLibraryList.add("Lemon Drop");
-        drinkLibraryList.add("Long Island Iced Tea");
-        drinkLibraryList.add("Mai Tai");
-        drinkLibraryList.add("Manhattan");
-        drinkLibraryList.add("Margarita");
-        drinkLibraryList.add("Martini");
-        drinkLibraryList.add("Mojito");
-        drinkLibraryList.add("Old Fashioned");
-        drinkLibraryList.add("Rum and Coke");
-        drinkLibraryList.add("Screwdriver");
-        drinkLibraryList.add("Sex on the Beach");
-        drinkLibraryList.add("Vodka Cranberry");
-        drinkLibraryList.add("Vodka Soda");
-        drinkLibraryList.add("Whiskey Ginger");
-        drinkLibraryList.add("Whiskey Sour");
-        drinkLibraryList.add("White Russian");
-    }
+    // to filter library as user enters input
+    // all methods necessary to implement TextWatcher
+    private TextWatcher filterTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        // still need logic to update library when user removes characters from constraint
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            Log.d("LAMPERRY", "onTextChanged filtering...");
+
+            if (lastChange.length() < s.toString().length()) {
+                // user has added characters to constraint
+                for (int i = 0; i < filteredLibrary.size(); i++) {
+                    if (!filteredLibrary.get(i).toUpperCase().startsWith(s.toString().toUpperCase())) {
+                        filteredAdapter.remove(filteredLibrary.get(i));
+                    }
+                }
+                filteredAdapter.notifyDataSetChanged();
+                drinkList.setFilterText(s.toString());
+                drinkList.setAdapter(filteredAdapter);
+            }
+            if (lastChange.length() > s.toString().length()) {
+                drinkAdapter.clear();
+                // user has removed characters from constraint
+                for (int i = 0; i < filteredLibrary.size(); i++) {
+                    if (filteredLibrary.get(i).toUpperCase().startsWith(s.toString().toUpperCase())) {
+                        drinkAdapter.add(filteredLibrary.get(i));
+                    }
+                }
+                drinkAdapter.notifyDataSetChanged();
+                drinkList.setFilterText(s.toString());
+                drinkList.setAdapter(drinkAdapter);
+            }
+            lastChange = s.toString();
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
 
     // directs user to Confirmation Screen
     public void libraryBrowseToConfirmation(View view) {
-        drinkOrderTyped = (EditText)findViewById(R.id.typeDrink);
+        String myRecipe = "";
+
+        drinkOrderTyped = (EditText) findViewById(R.id.typeDrink);
         drinkOrder = drinkOrderTyped.getText().toString();
         if (drinkOrder.equals("")) {
             Toast.makeText(this, "You must choose a drink!", Toast.LENGTH_SHORT).show();
@@ -199,13 +195,20 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
             }
         }
         if (!isInLibrary) {
-            Toast.makeText(this, "Sorry, SmartBar does not have that drink in its inventory. Please try again.",
+            Toast.makeText(this, "Sorry, SmartBar does not have that drink in its inventory. Please try again!",
                     Toast.LENGTH_SHORT).show();
             return;
         }
+        // grab recipe string
+        for (int i = 0; i < drinks.size(); i++) {
+            if (drinks.get(i).equals(drinkOrder))
+                myRecipe = recipes.get(i);
+        }
+
         // send drink order to next activity
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
+        intent.putExtra("drinkRecipe", myRecipe);
         startActivity(intent);
     }
 
@@ -222,7 +225,7 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
         drinkOrderTyped.setText(drinkOrder);
     }
 
-    // http://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext
+    // http://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-EditText
     public void setupUI(View view) {
         // set up touch listener for non-text box views to hide keyboard
         if (!(view instanceof EditText)) {
@@ -240,6 +243,120 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
                 View innerView = ((ViewGroup)view).getChildAt(i);
                 setupUI(innerView);
             }
+        }
+    }
+
+    // parse library string from database and create lists
+    private void parseStrings() {
+        Log.d("RECEIVED", receivedString);
+
+        String[] parsedArray;
+        parsedArray = receivedString.split("#");
+        drinkNameString = parsedArray[0];
+        drinkRecipeString = parsedArray[1];
+        String[] tempName, tempRecipe;
+
+        // count how many drinks
+        int drinkCount = 0;
+        drinkRecipeString = drinkRecipeString.replace("#", "");
+
+        // parse names and recipes into separate string lists
+        for (int i = 0; i < drinkNameString.length(); i++) {
+            if (drinkNameString.length() > 0) {
+                if (drinkNameString.charAt(i) == '%') {
+                    drinkCount++;
+                    tempName = drinkNameString.split("%");
+                    drinks.add(tempName[0]);
+                    drinkLibrary.add(tempName[0]);
+                    filteredLibrary.add(tempName[0]);
+                    drinkNameString = drinkNameString.replace(tempName[0] + "%", "");
+                }
+            }
+        }
+        int j = drinkCount;
+        while (j-- != 0) {
+            if (drinkRecipeString.length() > 0) {
+                tempRecipe = drinkRecipeString.split("%");
+                recipes.add(tempRecipe[0]);
+                drinkRecipeString = drinkRecipeString.replace(tempRecipe[0] + "%", "");
+            }
+        }
+
+        drinkAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
+        filteredAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
+
+        drinkList.setAdapter(drinkAdapter);
+        drinkList.setOnItemClickListener(this);
+
+    }
+
+
+    /*
+     * Class to attempt login, call PHP script to query database
+     */
+    class GetLibrary extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        boolean failure = false;
+
+        // set progress dialog
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(LibraryBrowseActivity.this);
+            pDialog.setMessage("Checking Inventory...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        // query database method
+        @Override
+        protected String doInBackground(String... args) {
+            // Check for success tag
+            int success;
+            String placeholder = "";
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+                params.add(new BasicNameValuePair("placeholder", placeholder));
+
+                Log.d("request!", "starting");
+                // getting product details by making HTTP request
+                JSONObject json = jsonParser.makeHttpRequest(
+                        GET_LIB_URL, "POST", params);
+
+                // check your log for json response
+                Log.d("Attempting Inventory Request", json.toString());
+
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("Successful!", json.toString());
+                    receivedString = json.getString(TAG_MESSAGE);
+                    return json.getString(TAG_MESSAGE);
+                }else{
+                    Log.d("Failure!", json.getString(TAG_MESSAGE));
+                    return json.getString(TAG_MESSAGE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog once product deleted
+            pDialog.dismiss();
+            if (file_url != null){
+                receivedString = file_url;
+            }
+            parseStrings();
         }
     }
 }

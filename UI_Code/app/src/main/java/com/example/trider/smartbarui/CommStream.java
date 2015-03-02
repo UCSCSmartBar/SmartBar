@@ -71,13 +71,14 @@ public class CommStream {
         if(isInitialized()){
             try{
                 ret  = mInputStream.read(readBuffer);
+                return new String(readBuffer);
             }catch(IOException e){
                 e.printStackTrace();
             }
         }else {
             return null;
         }
-        return new String(readBuffer);
+        return null;
     }
     public boolean writeString(String s) {
         if (mOutputStream != null) {
