@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:id="@+id/system_view"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:paddingLeft="@dimen/activity_horizontal_margin"
+=======
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
     android:paddingRight="16dp"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -13,6 +16,7 @@
 
     <LinearLayout
         android:layout_width="500dp"
+<<<<<<< HEAD
         android:layout_height="match_parent"
         android:orientation="vertical">
 
@@ -73,6 +77,79 @@
 
 
 
+=======
+        android:paddingStart="25dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/fullscreen_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:keepScreenOn="true"
+            style="@style/CityTheme"
+            android:gravity="center"
+            android:text="System Status"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+                <Spinner
+                    android:layout_width="200dp"
+                    android:background="#88FFFFFF"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/command_spinner"
+                    android:drawSelectorOnTop="true"
+
+                    android:prompt="@string/command_list"
+                    android:entries="@array/spinnerItems" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Send"
+                    android:onClick="SendCommand"
+                    android:id="@+id/button18"
+                    android:layout_gravity="center_horizontal" />
+                </LinearLayout>
+        <SeekBar
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar2"
+            android:paddingStart="10dp"
+            android:layout_marginTop="100dp"/>
+
+        <SeekBar
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar3"
+            android:paddingStart="10dp"
+            android:layout_marginTop="100dp"/>
+
+        <SeekBar
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar4"
+            android:paddingStart = "10dp"
+            android:layout_marginTop="100dp"/>
+
+
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="400dp"
+        android:layout_height="match_parent"
+        android:paddingBottom="0dp"
+        android:background="@drawable/back"
+        android:id="@+id/scrollView" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/Ishmael"
+            android:id="@+id/status_log" />
+    </ScrollView>
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
 
 
