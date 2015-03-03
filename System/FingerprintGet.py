@@ -19,12 +19,16 @@ def update_queue(string):
     ctime = time.time()
     clear_files()
     sList = get_files(string)
-    del sList[0]
-    sList = map(int, sList)
-    queue.refill(sList)
-    queue.printall()
-    ctime = time.time() - ctime
-    print 'finished in ' + str(ctime) + 's'
+    if sList != 0:
+        del sList[0]
+        sList = map(int, sList)
+        queue.refill(sList)
+        queue.printall()
+        ctime = time.time() - ctime
+        print 'finished in ' + str(ctime) + 's'
+        return 1
+    else:
+        return 0
 
 def get_files(string):
     sList = string.split(',')
@@ -61,3 +65,4 @@ def add_files():
     scp.put('/tmp/Fingers/New', 'SmartBar/')
     ctime = time.time() - ctime
     print 'finished in ' + str(ctime) + 's'
+

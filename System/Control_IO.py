@@ -19,12 +19,12 @@ import thread
 # brief: initializes GPIO, setting appropriate pins.
 def CIO_Initialize():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(26, GPIO.OUT)
-    GPIO.setup(20, GPIO.OUT)
+    #GPIO.setup(26, GPIO.OUT)
+    #GPIO.setup(20, GPIO.OUT)
     #OnboardLED
-    GPIO.setup(16,GPIO.OUT) #green
-    GPIO.setup(19,GPIO.OUT) #red
-    GPIO.setup(21,GPIO.OUT) #blue
+    GPIO.setup(16,GPIO.OUT) #red
+    GPIO.setup(20,GPIO.OUT) #blue
+    GPIO.setup(21,GPIO.OUT) #green
     spi.InitSPI()
     print('GPIO initialized')
     SPI.InitSPI()
@@ -44,7 +44,6 @@ def CIO_Free():
 
 def Test_SPI():
     CIO_Initialize()
-    
     ADstr = '$AD.' + str(spi.ReadChannel(0)) 
     print ADstr
 
@@ -52,26 +51,7 @@ def Test_SPI():
 # return: string to be sent back to UI
 # brief: Parses the string and calls appropriate function.
 def Parse_Message(string):
-    if not hasattr(Parse_Message, "led0Val"):   #toggle values
-        Parse_Message.led0Val = 0
-    if not hasattr(Parse_Message, "led1Val"):
-        Parse_Message.led1Val = 0
-    if not hasattr(Parse_Message, "LED_Val"):
-        Parse_Message.LED_Val = 0
-
-        
-    if string == '$LED.0':
-        GPIO.output(26, Parse_Message.led0Val)
-        Parse_Message.led0Val = not Parse_Message.led0Val
-        return
-    elif string == '$LED.1':
-        GPIO.output(20, Parse_Message.led1Val)
-        Parse_Message.led1Val = not Parse_Message.led1Val
-        return
-    elif string == '$LED':
-        Parse_Message.LED_Val = not Parse_Message.LED_Val
-        return
-    elif string == '$Error':
+    if string == '$Error':
         return '$ACK|Error'
     elif string == '$Warn':
         return 'Warning'
