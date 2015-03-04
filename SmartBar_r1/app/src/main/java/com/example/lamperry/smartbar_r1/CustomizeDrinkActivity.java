@@ -28,6 +28,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
     ArrayList<String> liquorList = new ArrayList<>();
     ArrayList<String> liquorReturnList = new ArrayList<>();
     String pin;
+    String recipe = "";
 
     ArrayList<Spinner> spinnerArrayList = new ArrayList<>();
     Spinner liquor1, liquor2, liquor3, liquor4, liquor5;
@@ -37,6 +38,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
     String[] tequila = { "Choose Tequila", "Default: Jose Cuervo", "Milagro", "Patron" };
     String[] vodka = { "Choose Vodka", "Default: Smirnoff", "Svedka", "Absolut" };
     String[] whiskey = { "Choose Whiskey", "Default: Jack Daniels", "Jameson", "Johnny Walker" };
+    String[] bitters = { "Choose Bitters", "Default: Angostura", "Peychaud's Bitters", "The Bitter Truth" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         // grab variables from previous intent
         Intent intent = getIntent();
         drinkOrder = intent.getStringExtra("drinkOrder");
+        recipe = intent.getStringExtra("drinkRecipe");
         liquorList = intent.getStringArrayListExtra("liquorList");
 
         // display which chosen drink user is customizing
@@ -131,7 +134,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         switch (s) {
             case "Bitters":
                 ArrayAdapter<String> bittersAdapter;
-                bittersAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, gin);
+                bittersAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, bitters);
                 bittersAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                 spinnerArrayList.get(i-1).setAdapter(bittersAdapter);
                 spinnerArrayList.get(i-1).setVisibility(View.VISIBLE);
@@ -247,6 +250,7 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         // return list
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
+        intent.putExtra("drinkRecipe", recipe);
         intent.putStringArrayListExtra("liquorReturnList", liquorReturnList);
         startActivity(intent);
     }
