@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -32,6 +33,7 @@ public class ConfirmationActivity extends ActionBarActivity {
     String pin;
     ArrayList<String> liquorReturnList;
     String finalRecipe = "";
+    String sendRecipe = "";
 
     JSONParser jsonParser = new JSONParser();       // JSON parser class
 
@@ -54,6 +56,9 @@ public class ConfirmationActivity extends ActionBarActivity {
         // display data
         Intent intent = getIntent();
         drinkOrder = intent.getStringExtra("drinkOrder");
+        finalRecipe = intent.getStringExtra("drinkRecipe");
+        sendRecipe = finalRecipe;
+
         liquorReturnList = intent.getStringArrayListExtra("liquorReturnList");
         displayDrink = (TextView)findViewById(R.id.drinkOrder);
         displayDrink.setText(drinkOrder);
@@ -147,7 +152,6 @@ public class ConfirmationActivity extends ActionBarActivity {
     // directs user to Drink Ordered Activity
     public void confirmationToDrinkOrdered(View view) {
         // instantiate and execute DrinkOrder to enter pin and drink order to database
-        buildRecipe(drinkOrder);
         new DrinkOrder().execute();
     }
 
@@ -157,61 +161,56 @@ public class ConfirmationActivity extends ActionBarActivity {
      * builds array of liquors present in the chosen drink and sends to customize drink activity
      */
     public void customizeDrink(View view) {
-        ArrayList<String> liquorList = new ArrayList<>();
-        switch (drinkOrder.toUpperCase()) {
-            case "AMF":
-                drinkOrder = "Adios Motherfucker";
-                liquorList.add("Bitters");
-                liquorList.add("Gin");
-                liquorList.add("Rum");
-                liquorList.add("Tequila");
-                liquorList.add("Vodka");
-            case "GIN AND TONIC":
-                drinkOrder = "Gin and Tonic";
-                liquorList.add("Gin");
-                break;
-            case "LONG ISLAND ICED TEA":
-                drinkOrder = "Long Island Iced Tea";
-                liquorList.add("Gin");
-                liquorList.add("Rum");
-                liquorList.add("Tequila");
-                liquorList.add("Vodka");
-                break;
-            case "MANHATTAN":
-                drinkOrder = "Manhattan";
-                liquorList.add("Bitters");
-                liquorList.add("Vermouth");
-                liquorList.add("Whiskey");
-                break;
-            case "WHISKEY SOUR":
-                drinkOrder = "Whiskey Sour";
-                liquorList.add("Whiskey");
-                break;
-            default:
+        if (finalRecipe == null) {
+            Log.e("Customize Error", "Recipe null.");
+            return;
+        } else if (drinkOrder.equals("Carbonated Orange Gatorade")) {
+            Toast.makeText(this, "Sorry, there is no liquor in this drink to customize!", Toast.LENGTH_SHORT).show();
+            return;
         }
+        ArrayList<String> liquorList;
+        liquorList = buildLiquorList(finalRecipe);
 
         Intent intent = new Intent(this, CustomizeDrinkActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
+        intent.putExtra("drinkRecipe", sendRecipe);
         intent.putStringArrayListExtra("liquorList", liquorList);
         startActivity(intent);
     }
 
     // method for sending recipe to database, prototype for now
-    private void buildRecipe(String drink) {
-        switch (drink) {
-            case "Gin and Tonic":
-                finalRecipe = "1,2@G,0,1.0@T,0,1,3.0*";
-                break;
-            case "Long Island Iced Tea":
-                finalRecipe = "";
-                break;
-            case "Manhattan":
-                finalRecipe = "1,2@W,0,4.0@V,0,0,2.0@A,0,0,0.5*";
-                break;
-            case "Whiskey Sour":
-                finalRecipe = "";
-                break;
+    private ArrayList<String> buildLiquorList(String recipe) {
+        ArrayList<String> liquors = new ArrayList<>();
+        String[] temp = recipe.split(",");
+        int numLiquors = Integer.valueOf(temp[0]);
+        recipe = recipe.replace(recipe.split("@")[0] + "@", "");
+        for (int i = 0; i < numLiquors; i++) {
+            switch (recipe.split(",")[0]) {
+                case "B":
+                    liquors.add("Bitters");
+                    break;
+                case "G":
+                    liquors.add("Gin");
+                    break;
+                case "R":
+                    liquors.add("Rum");
+                    break;
+                case "T":
+                    liquors.add("Tequila");
+                    break;
+                case "V":
+                    liquors.add("Vodka");
+                    break;
+                case "W":
+                    liquors.add("Whiskey");
+                    break;
+                default:
+                    Log.e("Build Recipe", "default");
+                    break;
+            }
+            recipe = recipe.replace(recipe.split("@")[0] + "@", "");
         }
+        return liquors;
     }
 
 
@@ -234,7 +233,7 @@ public class ConfirmationActivity extends ActionBarActivity {
                 params.add(new BasicNameValuePair("username", username));
                 params.add(new BasicNameValuePair("pin", pin));
                 params.add(new BasicNameValuePair("drink", drink));
-                //params.add(new BasicNameValuePair("recipe", finalRecipe));
+                params.add(new BasicNameValuePair("recipe", sendRecipe));
 
                 Log.d("request!", "starting");
 

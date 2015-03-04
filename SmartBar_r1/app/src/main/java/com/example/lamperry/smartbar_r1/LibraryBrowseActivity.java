@@ -246,7 +246,7 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
         }
     }
 
-    // parse library string from database and create lists
+    // parse library string from database and create name/recipe lists
     private void parseStrings() {
         Log.d("RECEIVED", receivedString);
 
@@ -258,28 +258,32 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
 
         // count how many drinks
         int drinkCount = 0;
-        drinkRecipeString = drinkRecipeString.replace("#", "");
 
         // parse names and recipes into separate string lists
+//        for (int i = 0; i < drinkNameString.length(); i++) {
+//            if (drinkNameString.length() > 0) {
+//                if (drinkNameString.charAt(i) == '%') {
+//                    drinkCount++;
+//                    tempName = drinkNameString.split("%");
+//                    drinks.add(tempName[0]);
+//                    drinkLibrary.add(tempName[0]);
+//                    filteredLibrary.add(tempName[0]);
+//                    drinkNameString = drinkNameString.replace(tempName[0] + "%", "");
+//                }
+//            }
+//        }
         for (int i = 0; i < drinkNameString.length(); i++) {
-            if (drinkNameString.length() > 0) {
-                if (drinkNameString.charAt(i) == '%') {
-                    drinkCount++;
-                    tempName = drinkNameString.split("%");
-                    drinks.add(tempName[0]);
-                    drinkLibrary.add(tempName[0]);
-                    filteredLibrary.add(tempName[0]);
-                    drinkNameString = drinkNameString.replace(tempName[0] + "%", "");
-                }
+            if (drinkNameString.charAt(i) == '%') {
+                drinkCount++;
             }
         }
-        int j = drinkCount;
-        while (j-- != 0) {
-            if (drinkRecipeString.length() > 0) {
-                tempRecipe = drinkRecipeString.split("%");
-                recipes.add(tempRecipe[0]);
-                drinkRecipeString = drinkRecipeString.replace(tempRecipe[0] + "%", "");
-            }
+        tempName = drinkNameString.split("%");
+        tempRecipe = drinkRecipeString.split("%");
+        for (int k = 0; k < drinkCount; k++) {
+            drinks.add(tempName[k]);
+            drinkLibrary.add(tempName[k]);
+            filteredLibrary.add(tempName[k]);
+            recipes.add(tempRecipe[k]);
         }
 
         drinkAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drinkLibrary);
