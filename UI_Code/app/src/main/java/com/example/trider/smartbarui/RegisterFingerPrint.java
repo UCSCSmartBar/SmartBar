@@ -111,7 +111,11 @@ FingerState nextState = FingerState.IDLE;
         }catch(NullPointerException e){
             e.printStackTrace();
         }
+<<<<<<< HEAD
+        PiComm.writeString("$FP.First");
+=======
         //PiComm.writeString("$FP.First");
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
         new Thread(mListenerTask).start();
         new Timer().schedule(ChangeFinger,1000,1000);
 
@@ -202,7 +206,13 @@ FingerState nextState = FingerState.IDLE;
     }
 
 
+<<<<<<< HEAD
+
+
+    public void SkipToBAC(View view){startActivity(new Intent(this,CheckBAC.class));}
+=======
     public void SkipToBAC(View view){startActivity(new Intent(this,CheckBAC.class).putExtra("DOrder",OrderString));}
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
 
     @Override

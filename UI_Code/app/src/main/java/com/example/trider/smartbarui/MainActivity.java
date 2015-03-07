@@ -135,7 +135,25 @@ public class MainActivity extends Activity {
     Runnable mListenerTask = new Runnable() {
         @Override
         public void run() {
+<<<<<<< HEAD
+            /*
+            byte[] buffer = new byte[128];
+            //ret is the size of the size of the incoming buffer
+            int ret;
+            try {
+                //InMessage = "> ";
+                ret = PiComm.getIStream().read(buffer);
+                if (ret < 128) {
+                    InMessage = new String(buffer);
+                    mText.post(mUpdateUI2);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            */
+=======
 
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
             InMessage = PiComm.readString();
             if(InMessage != null){
                 mText.post(mUpdateUI2);

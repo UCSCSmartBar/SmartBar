@@ -25,6 +25,39 @@ public class SystemStatus extends Activity {
 
 
 
+<<<<<<< HEAD
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_system_status);
+        //Hides all action bars and other uneccesary things to view
+        try {
+            final View contentView = findViewById(R.id.system_view);
+            mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
+            mSystemUiHider.setup();
+            mSystemUiHider.hide();
+            mSystemUiHider
+                    .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
+                        // Cached values.
+                        @Override
+                        @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+                        public void onVisibilityChange(boolean visible) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                                // If the ViewPropertyAnimator API is available
+                                // (Honeycomb MR2 and later), use it to animate the
+                                // in-layout UI controls at the bottom of the
+                                // screen.
+                                if (visible) {
+                                    // Schedule a hide().
+                                    delayedHide(10);
+                                }
+                            }
+                        }
+                    });
+        }catch(NullPointerException e){
+            }
+
+=======
     private Spinner cList;
     private TextView mText;
     CommStream PiComm;
@@ -57,6 +90,7 @@ public class SystemStatus extends Activity {
         new Thread(mListenerTask).start();
 
 
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
     }
 
     public void SendCommand(View view){

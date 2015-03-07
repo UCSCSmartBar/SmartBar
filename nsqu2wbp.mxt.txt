@@ -1,0 +1,70 @@
+﻿Merge branch 'master' of https://github.com/UCSCSmartBar/SmartBar
+
+Conflicts:
+	UI_Code/app/src/main/java/com/example/trider/smartbarui/DrinkOrder.java
+	UI_Code/app/src/main/java/com/example/trider/smartbarui/MainActivity.java
+	UI_Code/app/src/main/java/com/example/trider/smartbarui/NewUser.java
+	UI_Code/app/src/main/java/com/example/trider/smartbarui/PickUpFinger.java
+	UI_Code/app/src/main/java/com/example/trider/smartbarui/RegisterFingerPrint.java
+	UI_Code/app/src/main/java/com/example/trider/smartbarui/SystemCodeParser.java
+	UI_Code/app/src/main/java/com/example/trider/smartbarui/SystemStatus.java
+	UI_Code/app/src/main/res/layout/activity_system_status.xml
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch and 'origin/master' have diverged,
+# and have 4 and 1 different commit each, respectively.
+#   (use "git pull" to merge the remote branch into yours)
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	new file:   SmartBar_r1/app/libs/google-oauth-client-1.18.0-rc.jar
+#	new file:   SmartBar_r1/app/libs/google-oauth-client-appengine-1.18.0-rc.jar
+#	new file:   SmartBar_r1/app/libs/google-oauth-client-java6-1.18.0-rc.jar
+#	new file:   SmartBar_r1/app/libs/google-oauth-client-jetty-1.18.0-rc.jar
+#	new file:   SmartBar_r1/app/libs/google-oauth-client-servlet-1.18.0-rc.jar
+#	modified:   SmartBar_r1/app/src/main/AndroidManifest.xml
+#	modified:   SmartBar_r1/app/src/main/java/com/example/lamperry/smartbar_r1/LibraryBrowseActivity.java
+#	modified:   SmartBar_r1/app/src/main/java/com/example/lamperry/smartbar_r1/LoginActivity.java
+#	modified:   SmartBar_r1/app/src/main/java/com/example/lamperry/smartbar_r1/NewUserActivity.java
+#	modified:   SmartBar_r1/app/src/main/java/com/example/lamperry/smartbar_r1/StartupActivity.java
+#	modified:   SmartBar_r1/app/src/main/res/layout/activity_library_browse.xml
+#	modified:   System/Control_IO.py
+#	modified:   System/Control_IO.pyc
+#	modified:   System/FingerprintGet.py
+#	modified:   UI_Code/app/src/main/AndroidManifest.xml
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/CommStream.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/CommandStrings.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/ConfirmDrink.java
+#	new file:   UI_Code/app/src/main/java/com/example/trider/smartbarui/DisplayQueue.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/DrinkOrder.java
+#	new file:   UI_Code/app/src/main/java/com/example/trider/smartbarui/DrinkStrings.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/IdleMenu.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/MainActivity.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/NewUser.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/PickUpDrink.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/PickUpFinger.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/RegisterFingerPrint.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/SystemCodeParser.java
+#	modified:   UI_Code/app/src/main/java/com/example/trider/smartbarui/SystemStatus.java
+#	new file:   UI_Code/app/src/main/res/drawable/back.xml
+#	modified:   UI_Code/app/src/main/res/layout/activity_check_bac.xml
+#	modified:   UI_Code/app/src/main/res/layout/activity_confirm_drink.xml
+#	new file:   UI_Code/app/src/main/res/layout/activity_display_queue.xml
+#	modified:   UI_Code/app/src/main/res/layout/activity_idle_menu.xml
+#	modified:   UI_Code/app/src/main/res/layout/activity_new_user.xml
+#	modified:   UI_Code/app/src/main/res/layout/activity_pick_up_drink.xml
+#	modified:   UI_Code/app/src/main/res/layout/activity_register_finger_print.xml
+#	modified:   UI_Code/app/src/main/res/layout/activity_system_status.xml
+#	new file:   UI_Code/app/src/main/res/menu/menu_display_queue.xml
+#	modified:   UI_Code/app/src/main/res/values/strings.xml
+#
+

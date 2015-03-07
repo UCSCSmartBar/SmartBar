@@ -78,10 +78,14 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         // instantiate and execute CreateUser class to query database and create account
+        String age = agesb.getText().toString();
         if ((agesb.getText().toString().equals("")) || (weightsb.getText().toString().equals(""))) {
             Toast.makeText(this, "All fields required", Toast.LENGTH_LONG).show();
-            return;
         } else {
+            if (Integer.valueOf(age) < 21) {
+                Toast.makeText(this, "Sorry, you must be 21 to use the Smart Bar.", Toast.LENGTH_LONG).show();
+                return;
+            }
             new CreateUser().execute();
         }
     }

@@ -133,8 +133,11 @@ public class NewUser extends Activity {
 
                         DrinkOrder t = new DrinkOrder();
                         t.DecodeString(IncomingString);
+<<<<<<< HEAD
+=======
 
                         t.storeDrinkOrder(IncomingString);
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
                         IncomingString.replace("*","");
                         PiComm.writeString("$DO,"+IncomingString);
 

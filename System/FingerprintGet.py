@@ -3,7 +3,9 @@ from scp import SCPClient
 import time
 import os
 import shutil
+import phalange
 
+queue = phalange.phalangeList()
 
 def fpget_init():
     if not os.path.exists('/tmp/Fingers'):
@@ -12,29 +14,40 @@ def fpget_init():
     else:
         print 'directory exists'
 
+def update_queue(string):
+    sList = []
+    ctime = time.time()
+    clear_files()
+    sList = get_files(string)
+    if sList != 0:
+        del sList[0]
+        sList = map(int, sList)
+        queue.refill(sList)
+        queue.printall()
+        ctime = time.time() - ctime
+        print 'finished in ' + str(ctime) + 's'
+        return 1
+    else:
+        return 0
 
 def get_files(string):
     sList = string.split(',')
     print sList
-    ctime = time.time()
     ssh = SSHClient()
     ssh.load_system_host_keys()
     print 'connecting'
     ssh.connect('unix.ucsc.edu',22,'masierra','Coralsandus24482')
     print 'getting transport'
     scp = SCPClient(ssh.get_transport())
-
     print 'getting files'
     for i in range(1,len(sList)):
         fizzle = 'SmartBar/' + sList[i]
         try:
-            scp.get(fizzle,'/tmp/Fingers')
+            scp.get(fizzle,'/tmp.Fingers')
         except:
-            print(fizzle + ' not found')
+            print 'file not found: ' + fizzle
             return 0
-    ctime = time.time() - ctime
-    print 'finished in ' + str(ctime) + 's'
-    return 1
+    return sList
 
 def clear_files():
     shutil.rmtree('/tmp/Fingers')

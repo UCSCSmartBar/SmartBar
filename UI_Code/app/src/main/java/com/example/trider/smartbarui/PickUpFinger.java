@@ -108,8 +108,14 @@ public class PickUpFinger extends Activity {
 
         Intent i = getIntent();
         try {
+<<<<<<< HEAD
+            String s = "$DO," + i.getExtras().getString("tString");
+            s.replace("*","");
+            Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
+=======
             OrderString = "$DO," + i.getExtras().getString("tString");
             Toast toast = Toast.makeText(getApplicationContext(), OrderString, Toast.LENGTH_LONG);
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
             toast.show();
             //PiComm.writeString(s);
             new Thread(mListenerTask).start();
@@ -119,10 +125,17 @@ public class PickUpFinger extends Activity {
          }
 
         if(!PiComm.isInitialized()){
+<<<<<<< HEAD
+            usbConn.setVisibility(View.INVISIBLE);
+                String s = i.getExtras().getString("tString");
+                DrinkOrder a = new DrinkOrder();
+                a.DecodeString(s);
+=======
                 usbConn.setVisibility(View.INVISIBLE);
             //Already Decoded in last activity
 //                DrinkOrder a = new DrinkOrder();
 //                a.DecodeString(OrderString);
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         }
 

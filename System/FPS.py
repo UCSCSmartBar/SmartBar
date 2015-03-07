@@ -1,9 +1,3 @@
-'''
-Created on 21/03/2014
-
-@author: Jean Machuca <correojean@gmail.com> @jeanmachuca
-'''
-
 import os
 import serial
 from serial.tools import list_ports

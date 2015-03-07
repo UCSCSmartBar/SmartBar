@@ -210,12 +210,19 @@ public class DrinkOrder {
         int NOL;
         int NOM;
         float vol = 0;
+<<<<<<< HEAD
+
+=======
         String outGoingTable;
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
         String[] tokens;
 
         //Takes a String of 1,2@V,0,.1@ ...... and converts it to [0,0,1] [1,2,3]
         tokens = s.split("[@*+]");
+<<<<<<< HEAD
+=======
 
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         outGoingTable = "Spirits:\n";
         //Number of Mixers/Liquors Identifiers
@@ -239,6 +246,20 @@ public class DrinkOrder {
            Log.d("Dparse","Tokens["+i+"] Liquor{"+tokens[i] + "}\n");
            String[] lTokens = tokens[i].split("[,+]");
 
+<<<<<<< HEAD
+           Log.d("Dparse","Mixer:" + lTokens[0]);
+           Log.d("Dparse","Brand:" + lTokens[1]);
+           Log.d("Dparse","Volume" + lTokens[2]);
+
+           try {
+               vol += Float.parseFloat(lTokens[2].trim());
+           }catch(NumberFormatException e){
+               e.printStackTrace();
+           }
+
+           }
+        //Loop through Mixers
+=======
                Log.d("Dparse","Spirit:" + lTokens[0]);
                Log.d("Dparse","Brand:" + lTokens[1]);
                Log.d("Dparse","Volume" + lTokens[2]);
@@ -256,16 +277,24 @@ public class DrinkOrder {
 
         outGoingTable +="Mixers:\n";
         //Loop through Mixers and print out individual components
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
        for(;i < tokens.length;i++) {
            Log.d("Dparse", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
 
            String[] mTokens = tokens[i].split("[,+]");
+<<<<<<< HEAD
+           Log.d("Dparse","Mixer:" + mTokens[0]);
+           Log.d("Dparse","Brand:" + mTokens[1]);
+           Log.d("Dparse","Carb:" +  mTokens[2]);
+           Log.d("Dparse","Volume" + mTokens[3]);
+=======
                Log.d("Dparse","Mixer:" + mTokens[0]);
                Log.d("Dparse","Brand:" + mTokens[1]);
                Log.d("Dparse","Carb:" +  mTokens[2]);
                Log.d("Dparse","Volume" + mTokens[3]);
            outGoingTable+=mTokens[0] + ":" + mTokens[1]+":"+ mTokens[3]+"\n";
 
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
            try {
                vol += Float.parseFloat(mTokens[3]);
            }catch(NumberFormatException e){
@@ -274,9 +303,12 @@ public class DrinkOrder {
        }
 
         Log.d("Dparse","Total Volume["+vol+"]");
+<<<<<<< HEAD
+=======
 
         return outGoingTable;
     }
+>>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
 
 
