@@ -1,4 +1,5 @@
 '''
+EDITED 3:56PM ON 7 MAR
 Created on 21/03/2014
 
 @author: Jean Machuca <correojean@gmail.com> @jeanmachuca
@@ -216,7 +217,10 @@ class Response_Packet(Packet):
             self.RawBytes = _buffer
             self._lastBuffer = bytes(_buffer)
             if self.UseSerialDebug:
-                print 'read: %s'% self.serializeToSend(_buffer)
+                s=self.serializeToSend(_buffer)
+                #c=self.unserializeFromRead(s,_buffer)
+                print 'read: %s'% s
+                #print 'read %d'%c
             if _buffer.__len__()>=12:
                 if _buffer[8] == 0x30:
                     self.ACK = True
@@ -269,7 +273,12 @@ class SerialCommander:
         return bytes(bytearray([v for v in kwargs.values()]))
     
     def serializeToSend(self,bytearr):
-        return ' '.join(binascii.hexlify(ch) for ch in bytes(bytearr))
+        retval=' '.join(binascii.hexlify(ch) for ch in bytes(bytearr))
+##        f=open("test.txt","a")
+##        f.write(retval)
+##        f.close()
+        #print 'up in dat cereal%s'%retval
+        return retval
     
     def unserializeFromRead(self,char_readed,bytearr):
         bytearr.append(char_readed)
@@ -742,7 +751,12 @@ class FPS_GT511C3(SerialCommander):
         cp.ParameterFromInt(ID)
         packetbytes = cp.GetPacketBytes()
         self.SendCommand(packetbytes, 12)
+        time.sleep(1)
+        #f=open("test.txt","a")
+        #print 'here'
         rp = self.GetResponse()
+        #f.write(rp)
+        #f.close()
         retval = 0
         if not rp.ACK:
             if rp.Error == rp.errors['NACK_INVALID_POS']:
@@ -797,8 +811,9 @@ class FPS_GT511C3(SerialCommander):
             self._serial.write(bytes(cmd))
             if self.UseSerialDebug:
                 print self.serializeToSend(cmd)
-                print bytes(cmd)
-                print repr(bytes(cmd))[1:-1]
+                print  ' '
+                #print bytes(cmd)
+                #print repr(bytes(cmd))[1:-1]
         else:
             if self.UseSerialDebug:
                 print '[SendCommand] No es posible escribir en %s' % self._device_name
@@ -814,7 +829,9 @@ class FPS_GT511C3(SerialCommander):
             print '[GetResponse] No es posible leer desde: %s' % self._device_name
         else:
             r = bytearray(self._serial.read(self._serial.inWaiting()))
+            print 'begin %s'%self._serial.read(self._serial.inWaiting())
             rp = Response_Packet(r,self.UseSerialDebug)
+            print 'end'
         
         if rp.ACK:
             delay(interval)
