@@ -37,13 +37,24 @@ WaterOutputValveNumber = 4
 CO2WaterOutputValveNumber = 5
 SBDispenser_CommandResults = ["Fail","Success"]
 SBDispenser_MixType = ["Alcohol","Mixer"]
-SBDispenser_InventoryFilePath = "UCSC_SmartBar_CurrentInventory.txt"
+SBDispenser_CurrentInventoryFilePath = "UCSC_SmartBar_InventoryStatus.txt"
+
+SBDispenser_SystemDataLogFilePath = "Logs/UCSC_SmartBar_DataSystemLog.txt"
+SBDispenser_SystemTextLogFilePath = "Logs/UCSC_SmartBar_TextSystemLog.txt"
+SBDispenser_ErrorDataLogFilePath = "Logs/UCSC_SmartBar_DataErrorLog.txt"
+SBDispenser_ErrorTextLogFilePath = "Logs/UCSC_SmartBar_TextErrorLog.txt"
+SBDispenser_FullDataLogFilePath = "Logs/UCSC_SmartBar_DataFullLog.txt"
+SBDispenser_FullTextLogFilePath = "Logs/UCSC_SmartBar_TextFullLog.txt"
+SBDispenser_DrinkDataLogFilePath = "Logs/UCSC_SmartBar_DataDrinkLog.txt"
+SBDispenser_DrinkTextLogFilePath = "Logs/UCSC_SmartBar_TextDrinkLog.txt"
 
 SBDispenser_LineSplittingCharacter = ","
 
 SBDispenser_PacketSplittingCharacter = "@"
 
 SBDispenser_MinimumContainerContents = .5
+
+
 ######################################################################################        
     
 # Class: SmartBar_Dispenser
@@ -91,7 +102,7 @@ class SmartBar_Dispenser():
 
     AlcoholDispenseTimePerOz = 4 # time in seconds to dispense one fluid ounce of alcohol
 
-    MixerDispenseTimePerOz = 5 # time in seconds to dispense one fluid ounce of mixer
+    MixerDispenseTimePerOz = 5/6 # time in seconds to dispense one fluid ounce of mixer - Calculated by time for 1oz of mixer / 1oz mixer + 5 oz water
 
     WaterValveNumber = 18
 
@@ -111,22 +122,31 @@ class SmartBar_Dispenser():
     def ReceiveCommand(self, incoming_command):
 
 
-        self.CommandStatus = 1
-        self.CommandReturnMessage = "Incomplete"
-        self.CommandPacket = incoming_command # store incoming command packet
+        SmartBar_Dispenser.CommandStatus = 1
+        SmartBar_Dispenser.CommandReturnMessage = "Incomplete"
+        SmartBar_Dispenser.CommandPacket = incoming_command # store incoming command packet
 
-        self.CommandType = incoming_command.split(SmartBar_Dispenser.PacketSplittingCharacter)[0].split(SmartBar_Dispenser.LineSplittingCharacter)[0] # get the incoming command
+        SmartBar_Dispenser.CommandType = incoming_command.split(SmartBar_Dispenser.PacketSplittingCharacter)[0].split(SmartBar_Dispenser.LineSplittingCharacter)[0] # get the incoming command
 
-        SmartBar_Dispenser.PrintFilter.System(("Received Command : "+self.CommandPacket),SmartBar_Dispenser.PrintFilter.Title)
+        SmartBar_Dispenser.PrintFilter.System(("Received Command : "+SmartBar_Dispenser.CommandPacket),SmartBar_Dispenser.PrintFilter.Title)
+        SmartBar_Dispenser.PrintFilter.WriteToSystemTextLogFile()
         
-        if (self.CommandType == "$DO"):
+        if (SmartBar_Dispenser.CommandType == "$DO"):
 
-            self.DispenseDrinkOrder(self.CommandPacket)
+            self.DispenseDrinkOrder(SmartBar_Dispenser.CommandPacket)
 
-            self.DrinkPouredUpdate()
+        elif (SmartBar_Dispenser.CommandType == "$GI"):
 
-        SmartBar_Dispenser.PrintFilter.System((str(self.CommandType)+" - "+SBDispenser_CommandResults[SmartBar_Dispenser.CommandStatus]+" - "+str(SmartBar_Dispenser.CommandReturnMessage)),SmartBar_Dispenser.PrintFilter.Title)
+            SmartBar_Dispenser.CommandReturnMessage = SmartBar_Dispenser.InventoryManager.GetInventoryString()
+            SmartBar_Dispenser.InventoryManager.PrintInventory()
+
+        elif (SmartBar_Dispenser.CommandType == "$SI"):
+
+            SmartBar_Dispenser.CommandReturnMessage = SmartBar_Dispenser.InventoryManager.UserSetInventory(SmartBar_Dispenser.CommandPacket)
+            SmartBar_Dispenser.InventoryManager.PrintInventory()
         
+        SmartBar_Dispenser.PrintFilter.System((str(SmartBar_Dispenser.CommandType)+" "+SBDispenser_CommandResults[SmartBar_Dispenser.CommandStatus]+" : Return -> "+str(SmartBar_Dispenser.CommandReturnMessage)),SmartBar_Dispenser.PrintFilter.Title)
+        SmartBar_Dispenser.PrintFilter.WriteToSystemTextLogFile()
         
 
 
@@ -138,8 +158,10 @@ class SmartBar_Dispenser():
             self.ProcessDrinkOrder()
             if (SmartBar_Dispenser.CommandStatus == 1):
                 SmartBar_Dispenser.ValveManager.OpenQueuedValves()
-        else:
-            SmartBar_Dispenser.CommandReturnMessage = ("$ER,DD,RO@"+incoming_drink_order)
+                self.DrinkPouredUpdate()
+                SmartBar_Dispenser.CommandReturnMessage = ("$DS,SA,DO")
+
+        return
 
 
 
@@ -153,11 +175,11 @@ class SmartBar_Dispenser():
             #                                            :
 
         
-        SmartBar_Dispenser.PrintFilter.Debug("Start Receive Drink Order",SmartBar_Dispenser.PrintFilter.Title)
-        SmartBar_Dispenser.PrintFilter.Debug("Input String: "+drink_order+"\n",SmartBar_Dispenser.PrintFilter.Standard)            
- 
+        SmartBar_Dispenser.PrintFilter.System("Receive Drink Order",SmartBar_Dispenser.PrintFilter.SubTitle)
+        SmartBar_Dispenser.PrintFilter.System("Order String: "+drink_order,SmartBar_Dispenser.PrintFilter.Standard)            
+
         try: # try to break up the drink order packet and get general drink order info
-            
+
             self.OrderPacket = drink_order.split(SmartBar_Dispenser.PacketSplittingCharacter) # break up the order into rows to be processed               
             self.GeneralDrinkInfo = self.OrderPacket[0].split(SmartBar_Dispenser.LineSplittingCharacter) # get the general drink info - $DO.X.Y where $DO is the drink order command, X is the number of alcohol components, and Y is the number of conentrate components
             self.NumOfAlcoholComponents = int(self.GeneralDrinkInfo[1]) # number of alcohol components
@@ -173,43 +195,45 @@ class SmartBar_Dispenser():
         except: # couldn't break up drink order packet or couldn't get general drink order info
             SmartBar_Dispenser.CommandStatus = 0
             SmartBar_Dispenser.CommandReturnMessage = ("$ER,DD,RO@"+drink_order)
-            SmartBar_Dispenser.PrintFilter.Error('Failed to receive general drink order information',SmartBar_Dispenser.PrintFilter.SubTitle)
+            SmartBar_Dispenser.PrintFilter.Error('Invalid drink order packet',SmartBar_Dispenser.PrintFilter.SubTitle)
             SmartBar_Dispenser.PrintFilter.Error(('Input String: '+drink_order),SmartBar_Dispenser.PrintFilter.Standard)
   
 
 
     def ProcessDrinkOrder(self):
         
-        SmartBar_Dispenser.PrintFilter.System('Processing Order and Loading Valve Controller Queue',SmartBar_Dispenser.PrintFilter.SubTitle)
+        SmartBar_Dispenser.PrintFilter.System('Processing Order & Loading Valve Queue',SmartBar_Dispenser.PrintFilter.SubTitle)
         self.AlcoholValveDelay = 0
         
         for i in range(self.CurrentDrink.NumberOfAlcoholComponents): # scan through all alcohol components of current drink
-           
-            Drink_Category = 0 # Alcohol
-            AlcoholType = self.CurrentDrink.Alcohols[i].Type 
-            AlcoholBrand = self.CurrentDrink.Alcohols[i].Brand
-            DispenseVolume = self.CurrentDrink.Alcohols[i].Volume
-            ValveNumber = self.SetupValve(Drink_Category,AlcoholType,AlcoholBrand,0,DispenseVolume)
-            self.CurrentDrink.Alcohols[i].ValveNumber = ValveNumber
-            
+            if (SmartBar_Dispenser.CommandStatus == 1):
+                Drink_Category = 0 # Alcohol
+                AlcoholType = self.CurrentDrink.Alcohols[i].Type 
+                AlcoholBrand = self.CurrentDrink.Alcohols[i].Brand
+                DispenseVolume = self.CurrentDrink.Alcohols[i].Volume
+                ValveNumber = self.SetupValve(Drink_Category,AlcoholType,AlcoholBrand,0,DispenseVolume)
+                self.CurrentDrink.Alcohols[i].ValveNumber = ValveNumber
+            else:
+                return
         self.MixerValveDelay = 0
 
         for i in range(self.CurrentDrink.NumberOfMixerComponents): # scan through all alcohol components of current drink
-           
-            Drink_Category = 1
-            MixerType = self.CurrentDrink.Mixers[i].Type
-            MixerBrand = self.CurrentDrink.Mixers[i].Brand
-            MixerCarbonation = self.CurrentDrink.Mixers[i].Carbonated
-            DispenseVolume = self.CurrentDrink.Mixers[i].Volume
-            ValveNumber = self.SetupValve(Drink_Category,MixerType,MixerBrand,MixerCarbonation,DispenseVolume)        
-            self.CurrentDrink.Mixers[i].ValveNumber = ValveNumber
-            
 
+            if (SmartBar_Dispenser.CommandStatus == 1):           
+                Drink_Category = 1
+                MixerType = self.CurrentDrink.Mixers[i].Type
+                MixerBrand = self.CurrentDrink.Mixers[i].Brand
+                MixerCarbonation = self.CurrentDrink.Mixers[i].Carbonated
+                DispenseVolume = self.CurrentDrink.Mixers[i].Volume
+                ValveNumber = self.SetupValve(Drink_Category,MixerType,MixerBrand,MixerCarbonation,DispenseVolume)        
+                self.CurrentDrink.Mixers[i].ValveNumber = ValveNumber
+            else:
+                return
     
 
     def SetupValve(self,item_category,item_type,item_brand,item_carbonation,item_volume):
 
-        SmartBar_Dispenser.PrintFilter.Debug('Searching for '+str(SBDispenser_MixType[int(item_category)]+' T:'+str(item_type)+' B:'+str(item_brand)),SmartBar_Dispenser.PrintFilter.Standard)
+        SmartBar_Dispenser.PrintFilter.System('## Searching for '+str(SBDispenser_MixType[int(item_category)]+' T:'+str(item_type)+' B:'+str(item_brand)),SmartBar_Dispenser.PrintFilter.Standard)
         MixType_Alcohol = 0
         MixType_H2OMixer = 1
         MixType_CO2Mixer = 2
@@ -233,7 +257,7 @@ class SmartBar_Dispenser():
                                 ValveTime = float((float(item_volume/SmartBar_Dispenser.OzScalingFactor)) * SmartBar_Dispenser.AlcoholDispenseTimePerOz) # calculating valve open time
                                 ValveNumber = SmartBar_Dispenser.InventoryManager.Alcohols[i].ValveNumber
                                 ValveDelay = self.AlcoholValveDelay
-                                SmartBar_Dispenser.PrintFilter.Debug((SBDispenser_MixType[int(item_category)]+' T:'+str(item_type)+' B:'+str(item_brand)+' Found - '+str(ValveTime)+' to dispense '+str(item_volume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)
+                                SmartBar_Dispenser.PrintFilter.System((SBDispenser_MixType[int(item_category)]+' T:'+str(item_type)+' B:'+str(item_brand)+' Found - '+str(ValveTime)+'s to dispense '+str(item_volume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)
 
                                 SmartBar_Dispenser.ValveManager.QueueValve(ValveNumber, ValveTime, ValveDelay,MixType_Alcohol)
 
@@ -270,7 +294,7 @@ class SmartBar_Dispenser():
                                     ValveNumber = SmartBar_Dispenser.InventoryManager.Mixers[i].ValveNumber
                                     ValveDelay = self.MixerValveDelay
                                     self.MixerValveDelay = self.MixerValveDelay + ValveTime
-                                    SmartBar_Dispenser.PrintFilter.Debug((SBDispenser_MixType[int(item_category)]+' T:'+str(item_type)+' B:'+str(item_brand)+' Found - '+str(ValveTime)+' to dispense '+str(item_volume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)
+                                    SmartBar_Dispenser.PrintFilter.System((SBDispenser_MixType[int(item_category)]+' T:'+str(item_type)+' B:'+str(item_brand)+' Found - '+str(ValveTime)+'s to dispense '+str(item_volume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)
 
                                     if (item_carbonation == 0):
 
@@ -303,11 +327,11 @@ class SmartBar_Dispenser():
 
         SmartBar_Dispenser.CommandStatus = 1
         SmartBar_Dispenser.CommandReturnMessage = "Inactive"
-        SmartBar_Dispenser.PrintFilter = Print_Filter(1,1,1,1,2)
+        SmartBar_Dispenser.PrintFilter = PrintLogFilter(1,1,1,1,2)
         SmartBar_Dispenser.PrintFilter.System("Starting Dispenser Initialization",SmartBar_Dispenser.PrintFilter.Title)
         self.GPIO_Initialize() # initialize GPIO
         SmartBar_Dispenser.ValveManager = SmartBar_ValveController(SmartBar_Dispenser.TotalDispensingValves) # initialize valve manager
-        SmartBar_Dispenser.InventoryManager = SmartBar_Inventory(SBDispenser_InventoryFilePath) # initialize inventory manager
+        SmartBar_Dispenser.InventoryManager = SmartBar_Inventory() # initialize inventory manager
         SmartBar_Dispenser.PrintFilter.System("Dispenser Initialization Complete",SmartBar_Dispenser.PrintFilter.Title)
                                             
 
@@ -339,15 +363,16 @@ class SmartBar_Dispenser():
             self.DispenseQuantity = self.CurrentDrink.Alcohols[i].Volume
             self.VolumeBeforeDispense = SmartBar_Dispenser.InventoryManager.Alcohols[int(self.ValveNumber)].Volume
             SmartBar_Dispenser.InventoryManager.Alcohols[int(self.ValveNumber)].Volume = self.VolumeBeforeDispense-self.DispenseQuantity
-            SmartBar_Dispenser.PrintFilter.System(('Alcohol T:'+str(SmartBar_Dispenser.InventoryManager.Alcohols[int(self.ValveNumber)].Type)+' B:'+str(SmartBar_Dispenser.InventoryManager.Alcohols[int(self.ValveNumber)].Brand)+' Updated '+str(self.VolumeBeforeDispense)+'->'+str(SmartBar_Dispenser.InventoryManager.Alcohols[self.ValveNumber].Volume)),SmartBar_Dispenser.PrintFilter.Standard)
+            SmartBar_Dispenser.PrintFilter.System(('Alcohol T:'+str(SmartBar_Dispenser.InventoryManager.Alcohols[int(self.ValveNumber)].Type)+' B:'+str(SmartBar_Dispenser.InventoryManager.Alcohols[int(self.ValveNumber)].Brand)+' Updated '+str(self.VolumeBeforeDispense)+'oz ->'+str(SmartBar_Dispenser.InventoryManager.Alcohols[self.ValveNumber].Volume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)
 
         for i in range(self.CurrentDrink.NumberOfMixerComponents):
             self.ValveNumber = (self.CurrentDrink.Mixers[i].ValveNumber -len(SmartBar_Dispenser.InventoryManager.Alcohols))
             self.DispenseQuantity = self.CurrentDrink.Mixers[i].Volume
             self.VolumeBeforeDispense = SmartBar_Dispenser.InventoryManager.Mixers[int(self.ValveNumber)].Volume
             SmartBar_Dispenser.InventoryManager.Mixers[int(self.ValveNumber)].Volume = self.VolumeBeforeDispense-self.DispenseQuantity
-            SmartBar_Dispenser.PrintFilter.System(('Alcohol T:'+str(SmartBar_Dispenser.InventoryManager.Mixers[int(self.ValveNumber)].Type)+' B:'+str(SmartBar_Dispenser.InventoryManager.Mixers[int(self.ValveNumber)].Brand)+' Updated '+str(self.VolumeBeforeDispense)+'->'+str(SmartBar_Dispenser.InventoryManager.Mixers[self.ValveNumber].Volume)),SmartBar_Dispenser.PrintFilter.Standard)      
+            SmartBar_Dispenser.PrintFilter.System(('Alcohol T:'+str(SmartBar_Dispenser.InventoryManager.Mixers[int(self.ValveNumber)].Type)+' B:'+str(SmartBar_Dispenser.InventoryManager.Mixers[int(self.ValveNumber)].Brand)+' Updated '+str(self.VolumeBeforeDispense)+'oz ->'+str(SmartBar_Dispenser.InventoryManager.Mixers[self.ValveNumber].Volume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)      
 
+        SmartBar_Dispenser.InventoryManager.UpdateInventoryFile()
 ##    def TimerThread(self):
 ##        
 ##        self.MaxDispenseTime = self.MaximumValveTime/1000 + .5
@@ -416,7 +441,8 @@ class SmartBar_DrinkOrder():
             AlcoholBrand = int(ComponentInfo[1]) # get alcohol brand
             AlcoholDispenseVolume = float(ComponentInfo[2]) # get alcohol dispense volume
             self.Alcohols.append(SmartBar_DrinkComponent_Alcohol(AlcoholType,AlcoholBrand,AlcoholDispenseVolume)) # store alcohol component data
-
+            SmartBar_Dispenser.PrintFilter.System(('Alcohol Drink Component Stored: T:'+str(AlcoholType)+' B:'+str(AlcoholBrand)+
+                                                  ' - '+str(AlcoholDispenseVolume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)  
         except: # couldn't break up drink order packet or couldn't get general drink order info
 
             SmartBar_Dispenser.CommandStatus = 0
@@ -437,7 +463,8 @@ class SmartBar_DrinkOrder():
             MixerCarbonation = int(ComponentInfo[2]) # get carbonation choice
             MixerDispenseVolume = float(ComponentInfo[3]) # get mixer  dispense volume
             self.Mixers.append(SmartBar_DrinkComponent_Mixer(MixerType,MixerBrand,MixerCarbonation,MixerDispenseVolume)) # store Mixer component data
-
+            SmartBar_Dispenser.PrintFilter.System(('Mixer Drink Component Stored: T:'+str(MixerType)+' B:'+str(MixerBrand)+
+                                                  ' - '+str(MixerDispenseVolume)+'oz'),SmartBar_Dispenser.PrintFilter.Standard)  
         except:
             
             SmartBar_Dispenser.CommandStatus = 0
@@ -505,12 +532,12 @@ class SmartBar_DrinkComponent_Mixer():
 
 class SmartBar_Inventory():
 
-    def __init__(self,inventory_file):
+    def __init__(self):
 
         SmartBar_Inventory.Alcohols = [] # set up list of alcohols to be filled
         SmartBar_Inventory.Mixers = [] # set up list of Mixers to be filled
         SmartBar_Dispenser.PrintFilter.System("Importing Inventory",SmartBar_Dispenser.PrintFilter.SubTitle)
-        self.ImportInventory(inventory_file)
+        self.ImportInventory(SBDispenser_CurrentInventoryFilePath)
         
     def ImportInventory(self,inventory_file_name):     
         try:
@@ -544,7 +571,7 @@ class SmartBar_Inventory():
             MixerName = "Need Import"
             MixerCarbonation = "Need Import"
             SmartBar_Inventory.Mixers.append(SmartBar_Inventory_Mixer(MixerActive,MixerValveNumber,MixerName,MixerType,
-                                                                                  MixerBrand,MixerCarbonation,MixerVolume)) # store Mixer inventory data
+                                                                                  MixerBrand,MixerCarbonation,MixerVolume,MixerFullVolume)) # store Mixer inventory data
         
             SmartBar_Dispenser.PrintFilter.System('Mixer'+str(i+1)+' ;  Valve # '
                   +str(SmartBar_Inventory.Mixers[i].ValveNumber)+' ;  Type(#): '+str(SmartBar_Inventory.Mixers[i].Type)+
@@ -567,13 +594,79 @@ class SmartBar_Inventory():
             AlcoholActive = 1
             AlcoholName = "Need Import"
             SmartBar_Inventory.Alcohols.append(SmartBar_Inventory_Alcohol(AlcoholActive,AlcoholValveNumber,AlcoholName,AlcoholType,
-                                                                          AlcoholBrand,AlcoholVolume)) # store Alcohol inventory data      
+                                                                          AlcoholBrand,AlcoholVolume,AlcoholFullVolume)) # store Alcohol inventory data      
             SmartBar_Dispenser.PrintFilter.System('Alcohol'+str(i+1)+' ;  Valve # '
                   +str(SmartBar_Inventory.Alcohols[i].ValveNumber)+' ;  Type: '+str(SmartBar_Inventory.Alcohols[i].Type)+
                   ' ;  Brand(#): '+str(SmartBar_Inventory.Alcohols[i].Brand)+' ;  Volume: '+str(SmartBar_Inventory.Alcohols[i].Volume),
                                                   SmartBar_Dispenser.PrintFilter.Standard)
 
+    def UpdateInventoryFile(self):
+    
+        InventoryFile = open(SBDispenser_CurrentInventoryFilePath,'w')
+        self.UpdateInventoryString = SBDispenser_LineSplittingCharacter.join(['$IV',str(len(SmartBar_Dispenser.InventoryManager.Alcohols)),
+                           str(len(SmartBar_Dispenser.InventoryManager.Mixers))])
+        for i in range(len(SmartBar_Dispenser.InventoryManager.Alcohols)):
+            ItemString = SBDispenser_LineSplittingCharacter.join([str(SmartBar_Dispenser.InventoryManager.Alcohols[i].ValveNumber),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].Type),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].Brand),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].Volume),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].FullVolume)])
+            self.UpdateInventoryString = SBDispenser_PacketSplittingCharacter.join([self.UpdateInventoryString,ItemString])
+            
+        for i in range(len(SmartBar_Dispenser.InventoryManager.Mixers)):
+            ItemString = SBDispenser_LineSplittingCharacter.join([str(SmartBar_Dispenser.InventoryManager.Mixers[i].ValveNumber),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].Type),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].Brand),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].Volume),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].FullVolume)])
+            self.UpdateInventoryString = SBDispenser_PacketSplittingCharacter.join([self.UpdateInventoryString,ItemString])
+            
+        InventoryFile.write(self.UpdateInventoryString)                       
+        InventoryFile.close()
 
+    def GetInventoryString(self):
+        
+        self.ReturnInventoryString = SBDispenser_LineSplittingCharacter.join(['$IV',str(len(SmartBar_Dispenser.InventoryManager.Alcohols)),
+                           str(len(SmartBar_Dispenser.InventoryManager.Mixers))])
+        for i in range(len(SmartBar_Dispenser.InventoryManager.Alcohols)):
+            ItemString = SBDispenser_LineSplittingCharacter.join([str(SmartBar_Dispenser.InventoryManager.Alcohols[i].ValveNumber),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].Type),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].Brand),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].Volume),
+                               str(SmartBar_Dispenser.InventoryManager.Alcohols[i].FullVolume)])
+            self.ReturnInventoryString = SBDispenser_PacketSplittingCharacter.join([self.ReturnInventoryString,ItemString])
+            
+        for i in range(len(SmartBar_Dispenser.InventoryManager.Mixers)):
+            ItemString = SBDispenser_LineSplittingCharacter.join([str(SmartBar_Dispenser.InventoryManager.Mixers[i].ValveNumber),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].Type),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].Brand),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].Volume),
+                               str(SmartBar_Dispenser.InventoryManager.Mixers[i].FullVolume)])
+            self.ReturnInventoryString = SBDispenser_PacketSplittingCharacter.join([self.ReturnInventoryString,ItemString])
+
+        return self.ReturnInventoryString
+
+    def PrintInventory(self):
+        
+        for i in range(len(SmartBar_Dispenser.InventoryManager.Alcohols)):
+            SmartBar_Dispenser.PrintFilter.System((SmartBar_Inventory.Alcohols[i].Name+' ;Valve#'
+                  +str(SmartBar_Inventory.Alcohols[i].ValveNumber)+' ;Type: '+str(SmartBar_Inventory.Alcohols[i].Type)+
+                  ' ;Brand: '+str(SmartBar_Inventory.Alcohols[i].Brand)+' ;Volume: '+str(SmartBar_Inventory.Alcohols[i].Volume)+'oz/'+ str(SmartBar_Inventory.Alcohols[i].FullVolume)+'oz'),
+                                                  SmartBar_Dispenser.PrintFilter.Standard)
+        for i in range(len(SmartBar_Dispenser.InventoryManager.Mixers)):
+            SmartBar_Dispenser.PrintFilter.System((SmartBar_Inventory.Mixers[i].Name+' ;Valve#'
+                  +str(SmartBar_Inventory.Mixers[i].ValveNumber)+' ;Type: '+str(SmartBar_Inventory.Mixers[i].Type)+
+                  ' ;Brand: '+str(SmartBar_Inventory.Mixers[i].Brand)+' ;Volume: '+str(SmartBar_Inventory.Mixers[i].Volume)+'oz/'+ str(SmartBar_Inventory.Mixers[i].FullVolume)+'oz'),
+                                                  SmartBar_Dispenser.PrintFilter.Standard)
+
+    def UserSetInventory(self,inventory_string):
+
+        ReplaceInventoryFile = open(SBDispenser_CurrentInventoryFilePath,'w')
+        ReplaceInventoryFile.write(inventory_string)
+        self.UpdateInventoryFile()
+        
+
+        
 ##    def DrinkPouredUpdate(self):
 ##        
 ##        for i in range(SmartBar_Dispenser.CurrentDrink.Alcohols):
@@ -594,7 +687,7 @@ class SmartBar_Inventory():
 
 class SmartBar_Inventory_Mixer(): # class to store individual Mixer properties
 
-    def __init__(self,Mixer_active,valve_number,Mixer_name,Mixer_type,Mixer_brand,Mixer_carbonation,Mixer_volume): # import properties
+    def __init__(self,Mixer_active,valve_number,Mixer_name,Mixer_type,Mixer_brand,Mixer_carbonation,Mixer_volume,full_volume): # import properties
 
         self.Active = Mixer_active # flag indicating if Mixer is available to be mixed - in stock
 
@@ -610,7 +703,7 @@ class SmartBar_Inventory_Mixer(): # class to store individual Mixer properties
 
         self.Volume = Mixer_volume # amount of Mixer remaining
 
-   
+        self.FullVolume = full_volume 
             
 
 #Class: SmartBar_Inventory_Alcohol
@@ -620,20 +713,15 @@ class SmartBar_Inventory_Mixer(): # class to store individual Mixer properties
         
 class SmartBar_Inventory_Alcohol(): 
     
-    def __init__(self,alcohol_active,valve_number,alcohol_name,alcohol_type,alcohol_brand,alcohol_volume): # import properties
+    def __init__(self,alcohol_active,valve_number,alcohol_name,alcohol_type,alcohol_brand,alcohol_volume,full_volume): # import properties
 
         self.Active = alcohol_active # flag indicating if Mixer is available to be mixed - in stock
-
         self.ValveNumber = valve_number # number of the valve connected to the corresponding dispensing pump
-
         self.Name = alcohol_name # alcohol name - ie: "Smirnoff Vodka"
-
         self.Type = alcohol_type # alcohol type (#) - ie: tequila = 1, rum = 2, vodka
-        
         self.Brand = alcohol_brand # alcohol brand (#) - ie: grey goose = 1, smirnoff = 2
-    
         self.Volume = alcohol_volume # amount of alcohol remaining
-
+        self.FullVolume = full_volume 
 
 
 #Class: SmartBar_Valve Controller
@@ -992,29 +1080,27 @@ class ValveDispenseData():
 # Author: Brendan Short
 # Last Modified: 2/13/2015
 
-class Print_Filter():
+class PrintLogFilter():
 
     def __init__(self,system_info_enabled,debugging_info_enabled,warnings_enabled,error_messages_enabled,spacing_size):
-
-        self.SystemInfoEnabled = system_info_enabled # system information on/off
-        self.DebuggingEnabled = debugging_info_enabled # debugging messages on/off
-        self.WarningsEnabled = warnings_enabled # display warnings on/off
-        self.ErrorMessagesEnabled = error_messages_enabled
         self.Spacing = spacing_size
         self.Title = 1
         self.SubTitle = 2
         self.Standard = 0
         self.MessageIndicators = ['$',"*","@","&"]
         self.SystemIndex = 0
+        self.CommandIndex = 5
         self.DebugIndex = 1
         self.WarnIndex = 2
         self.ErrorIndex = 3
-        self.MessagePrefix = ["System : ","Debug : ","Warning : ", "Error : "]
+        self.WriteToAllLogs = 4
+        self.MessagePrefix = ["Dispensing System : ","Debug : ","Warning : ", "Error : "]
         self.Space = " "
         self.NoSpace = ""
         self.MessageBarIndent = 5
         self.MessageBarSize = 75
         self.SpaceAfterLastPrinted = 0
+        
         if (self.Spacing == 0):
             self.SpaceBeforeTitle = self.NoSpace
             self.SpaceAfterTitle = self.NoSpace
@@ -1043,6 +1129,29 @@ class Print_Filter():
             self.SpaceAfterSubTitle = '\n'
             self.SpaceBeforeStandard = '\n'
             self.SpaceAfterStandard = '\n'
+
+        self.CurrentMessageToLog = 'Empty'
+
+
+
+        self.LocalTime = time.localtime(time.time())
+        self.SystemInfoEnabled = system_info_enabled # system information on/off
+        self.DebuggingEnabled = debugging_info_enabled # debugging messages on/off
+        self.WarningsEnabled = warnings_enabled # display warnings on/off
+        self.ErrorMessagesEnabled = error_messages_enabled
+
+        self.SystemDataLogEnabled = 1
+        self.SystemTextLogEnabled = 1
+        self.ErrorDataLogEnabled = 1
+        self.ErrorTextLogEnabled = 1
+        self.FullDataLogEnabled = 1
+        self.FullTextLogEnabled = 1
+        self.DrinkDataLogEnabled = 1
+        self.DrinkTextLogEnabled = 1
+        
+        self.LogStartingCode = "$SD"
+        self.StartDataLogger()
+
             
     def System(self, system_message, message_type):     
         if (self.SystemInfoEnabled == 1):
@@ -1051,13 +1160,16 @@ class Print_Filter():
             else:
                 if (self.SpaceAfterLastPrinted == 1):
                     print(system_message+self.SpaceAfterStandard)
+                    self.CurrentMessageToLog = (system_message+self.SpaceAfterStandard)
                 else:
                     print(self.SpaceBeforeStandard+system_message+self.SpaceAfterStandard)
+                    self.CurrentMessageToLog = (system_message+self.SpaceAfterStandard)
 
                 if (self.SpaceAfterStandard == '\n'):
                     self.SpaceAfterLastPrinted = 1
                 else:
                     self.SpaceAfterLastPrinted = 0
+        self.WriteToSpecificTextLogFiles(self.SystemIndex)
                     
     def Debug(self, debug_message,message_type):
         
@@ -1085,12 +1197,16 @@ class Print_Filter():
             else:
                 if (self.SpaceAfterLastPrinted == 1):
                     print(self.MessageIndicators[self.WarnIndex]+self.MessagePrefix[self.WarnIndex]+warning_message+self.SpaceAfterStandard)
+                    self.CurrentMessageToLog = (self.MessageIndicators[self.WarnIndex]+self.MessagePrefix[self.WarnIndex]+warning_message+self.SpaceAfterStandard)
                 else:
                     print(self.SpaceBeforeStandard+self.MessageIndicators[self.WarnIndex]+self.MessagePrefix[self.WarnIndex]+warning_message+self.SpaceAfterStandard)
+                    self.CurrentMessageToLog = (self.SpaceBeforeStandard+self.MessageIndicators[self.WarnIndex]+self.MessagePrefix[self.WarnIndex]+warning_message+self.SpaceAfterStandard)
+                    
                 if (self.SpaceAfterStandard == '\n'):
                     self.SpaceAfterLastPrinted = 1
                 else:
                     self.SpaceAfterLastPrinted = 0
+                    
                     
     def Error(self, error_message, message_type):          
         if (self.ErrorMessagesEnabled == 1):
@@ -1098,34 +1214,47 @@ class Print_Filter():
                 self.TitleMessage(self.ErrorIndex,message_type,error_message)
             else:
                 if (self.SpaceAfterLastPrinted == 1):
-                    print(self.MessageIndicators[self.ErrorIndex]+self.MessagePrefix[self.ErrorIndex]+error_message+self.SpaceAfterStandard)            
+                    print(self.MessageIndicators[self.ErrorIndex]+self.MessagePrefix[self.ErrorIndex]+error_message+self.SpaceAfterStandard)
+                    self.CurrentMessageToLog = (self.MessageIndicators[self.ErrorIndex]+self.MessagePrefix[self.ErrorIndex]+error_message+self.SpaceAfterStandard)
                 else:
                     print(self.SpaceBeforeStandard+self.MessageIndicators[self.ErrorIndex]+self.MessagePrefix[self.ErrorIndex]+error_message+self.SpaceAfterStandard)            
-
+                    self.CurrentMessageToLog = (self.SpaceBeforeStandard+self.MessageIndicators[self.ErrorIndex]+self.MessagePrefix[self.ErrorIndex]+error_message+self.SpaceAfterStandard)
+                    
                 if (self.SpaceAfterStandard == '\n'):
                     self.SpaceAfterLastPrinted = 1
                 else:
                     self.SpaceAfterLastPrinted = 0
-                    
-    def TitleMessage(self, filter_type, message_type,message_content):     
+        self.WriteToSpecificTextLogFiles(self.ErrorIndex)
+        
+    def TitleMessage(self, filter_type, message_type,message_content):
+
 
         MessageLength = len(message_content) + len(self.MessagePrefix[filter_type]) + self.MessageBarIndent + 3*len(self.Space)                                                
         MessageBar = self.NoSpace.join([self.MessageIndicators[filter_type]] * self.MessageBarSize )  # state (open/closed) of all of the valves, initialized to 0 (closed)
         if (len(message_content) > (self.MessageBarSize - len(self.Space.join((self.NoSpace.join([self.MessageIndicators[filter_type]] * self.MessageBarIndent),self.MessagePrefix[filter_type]))))):
-            Message = self.Space.join((self.NoSpace.join([self.MessageIndicators[filter_type]] * self.MessageBarIndent),self.MessagePrefix[filter_type],MessageBar[(int(MessageLength)-1-len(message_content)):],'\n',message_content))
+            Message = self.Space.join((self.NoSpace.join([self.MessageIndicators[filter_type]] * self.MessageBarIndent),
+                                       self.MessagePrefix[filter_type],MessageBar[(int(MessageLength)-1-len(message_content)):],'\n',message_content))
         else:
             Message = self.Space.join((self.NoSpace.join([self.MessageIndicators[filter_type]] * self.MessageBarIndent),self.MessagePrefix[filter_type],message_content,MessageBar[int(MessageLength):]))
-
         if (message_type == self.Title):
-            
+
+            CurrentDate = time.time()
+            TimeLogBar = (self.NoSpace.join([self.MessageIndicators[filter_type]] * self.MessageBarIndent)+' '+str(self.LocalTime[2])+
+                          '/'+str(self.LocalTime[1])+'/'+str(self.LocalTime[0])+' @ '+str(self.LocalTime[3])+':'+
+                          str(self.LocalTime[4])+':'+str(self.LocalTime[5])+' ')
+
+            TimeLogBarLength = len(TimeLogBar)
+            TimeLogBar = TimeLogBar+MessageBar[TimeLogBarLength:]
             if (self.SpaceAfterLastPrinted == 1):
-                print(MessageBar)
+                print(MessageBar+'\n'+TimeLogBar)
+                self.CurrentMessageToLog = MessageBar+'\n'+TimeLogBar
             else:
-                print(self.SpaceBeforeTitle+MessageBar)
+                print(self.SpaceBeforeTitle+MessageBar+'\n'+TimeLogBar)
+                self.CurrentMessageToLog = (self.SpaceBeforeTitle+MessageBar+'\n'+TimeLogBar)
                                     
             print(Message)
             print(MessageBar +self.SpaceAfterTitle)
-            
+            self.CurrentMessageToLog = self.CurrentMessageToLog+'\n'+str(Message)+'\n'+(MessageBar +self.SpaceAfterTitle)
             if (self.SpaceAfterTitle == '\n'):
                 self.SpaceAfterLastPrinted = 1
             else:
@@ -1135,8 +1264,10 @@ class Print_Filter():
 
             if (self.SpaceAfterLastPrinted == 1):
                 print(Message+self.SpaceAfterSubTitle)
+                self.CurrentMessageToLog = (Message+self.SpaceAfterSubTitle)
             else:
                 print(self.SpaceBeforeSubTitle+Message +self.SpaceAfterSubTitle)
+                self.CurrentMessageToLog = (self.SpaceBeforeSubTitle+Message +self.SpaceAfterSubTitle)
 
             if (self.SpaceAfterSubTitle == '\n'):
                 self.SpaceAfterLastPrinted = 1
@@ -1144,8 +1275,107 @@ class Print_Filter():
                 self.SpaceAfterLastPrinted = 0
 
 
+    def StartDataLogger(self):
+
+        StartUpTimeCode = SBDispenser_LineSplittingCharacter.join(([str(self.LocalTime[0]),str(self.LocalTime[1]),str(self.LocalTime[2]),
+                                                                           str(self.LocalTime[3]),str(self.LocalTime[4]),str(self.LocalTime[5])]))        
+        LogStartDateCode = SBDispenser_PacketSplittingCharacter.join([self.LogStartingCode,(StartUpTimeCode+'\n')])
+        StartUpDateString = ('Start Up #  - '+str(self.LocalTime[2])+'/'+str(self.LocalTime[1])+'/'+str(self.LocalTime[0])+' at '+
+                                                                           str(self.LocalTime[3])+':'+str(self.LocalTime[4])+':'+str(self.LocalTime[5]))
+        self.System(StartUpDateString,self.Title)
+        self.OpenLogFiles()
+   #     self.WriteToAllTextLogFiles(StartUpDateString)
+        self.WriteToAllDataLogFiles(LogStartDateCode)
+        self.CloseLogFiles()                    
 
 
+
+    def OpenLogFiles(self):
+
+        if (self.SystemDataLogEnabled == 1):
+            self.SystemDataFile = open(SBDispenser_SystemDataLogFilePath,'a')
+        if (self.SystemTextLogEnabled == 1):
+            self.SystemTextFile = open(SBDispenser_SystemTextLogFilePath,'a')
+        if (self.ErrorDataLogEnabled == 1):
+            self.ErrorDataFile = open(SBDispenser_ErrorDataLogFilePath,'a')
+        if (self.ErrorTextLogEnabled == 1):
+            self.ErrorTextFile = open(SBDispenser_ErrorTextLogFilePath,'a')
+        if (self.FullDataLogEnabled == 1):
+            self.FullDataFile = open(SBDispenser_FullDataLogFilePath,'a')
+        if (self.FullTextLogEnabled == 1):
+            self.FullTextFile = open(SBDispenser_FullTextLogFilePath,'a')
+        if (self.DrinkDataLogEnabled == 1):
+            self.DrinkDataFile = open(SBDispenser_DrinkDataLogFilePath,'a')
+        if (self.DrinkTextLogEnabled == 1):
+            self.DrinkTextFile = open(SBDispenser_DrinkTextLogFilePath,'a')  
+
+    def CloseLogFiles(self):
+
+        if (self.SystemDataLogEnabled == 1):
+            self.SystemDataFile.close()
+        if (self.SystemTextLogEnabled == 1):
+            self.SystemTextFile.close()
+        if (self.ErrorDataLogEnabled == 1):
+            self.ErrorDataFile.close()
+        if (self.ErrorTextLogEnabled == 1):
+            self.ErrorTextFile.close()
+        if (self.FullDataLogEnabled == 1):
+            self.FullDataFile.close()
+        if (self.FullTextLogEnabled == 1):
+            self.FullTextFile.close()
+        if (self.DrinkDataLogEnabled == 1):
+            self.DrinkDataFile.close()
+        if (self.DrinkTextLogEnabled == 1):
+            self.DrinkTextFile.close() 
+
+    def WriteToAllTextLogFiles(self,message):
+
+        if (self.SystemTextLogEnabled == 1):
+            self.SystemDataFile.write(message)
+        if (self.ErrorTextLogEnabled == 1):
+            self.ErrorTextFile.write(message)
+        if (self.FullTextLogEnabled == 1):
+            self.FullTextFile.write(message)
+        if (self.DrinkTextLogEnabled == 1):
+            self.DrinkTextFile.write(message)
+
+    def WriteToSpecificTextLogFiles(self,message_type):
+        self.OpenLogFiles() 
+        if (message_type == self.ErrorIndex):
+            if (self.ErrorTextLogEnabled == 1):
+                self.ErrorTextFile.write((self.CurrentMessageToLog+'\n'))
+        if (self.FullTextLogEnabled == 1):
+            self.FullTextFile.write((self.CurrentMessageToLog+'\n'))
+        self.CloseLogFiles() 
+
+    def WriteToSystemTextLogFile(self):
+        self.OpenLogFiles() 
+        if (self.SystemTextLogEnabled == 1):
+            self.SystemTextFile.write((self.CurrentMessageToLog+'\n'))
+        self.CloseLogFiles()
+        
+    def WriteToAllDataLogFiles(self,message):
+
+        if (self.SystemDataLogEnabled == 1):
+            self.SystemDataFile.write(message)
+        if (self.ErrorDataLogEnabled == 1):
+            self.ErrorDataFile.write(message)
+        if (self.FullDataLogEnabled == 1):
+            self.FullDataFile.write(message)
+        if (self.DrinkDataLogEnabled == 1):
+            self.DrinkDataFile.write(message)        
+  #  def DataLogger(self,message)
+
+##class DataLogger():
+##
+##    def __init__(self,inventory_log_enabled,drink_log_enabled):
+##
+##        self.InventoryLoggingEnabled = inventory_log_enabled
+##        self.DrinkLoggingEnabled = drink_log_enabled
+##
+##    def PrintDateBar()
+
+        
 ##def main():
 ##
 ##                                            
