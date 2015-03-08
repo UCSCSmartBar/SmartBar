@@ -1,9 +1,35 @@
 '''
-EDITED 3:56PM ON 7 MAR
-
-Code created 02/22/2015
+Code altered and drastically modified as of 02/22/2015
 
 @author: Molly Graham
+
+This program is being modified to design and test fingerprint functions to be carried onto final project
+
+    Original created on 08/04/2014
+
+    @author: jeanmachuca
+
+    SAMPLE CODE:
+
+    This script is a test for device connected to GPIO port in raspberry pi 
+
+    For test purpose:
+
+    Step 1:
+    Connect the TX pin of the fingerprint GT511C3 to RX in the GPIO
+
+    Step 2:
+    Connect the RX pin of the fingerprint GT511C3 to TX in the GPIO 
+
+    Step 3: 
+    Connect the VCC pin of the fingerprint GTC511C3 to VCC 3,3 in GPIO
+
+    Step 4: 
+    Connect the Ground pin of fingerprint GT511C3 to ground pin in GPIO
+
+
+    This may be works fine, if don't, try to change the fingerprint baud rate with baud_to_115200.py sample code
+
 
 '''
 import FPS, sys, time
@@ -31,7 +57,7 @@ def enroll(fps):
     while fps.IsPressFinger()==False:
         FPS.delay(1)
 
-    capt=fps.CaptureFinger(True)
+    capt=fps.CaptureFinger(False)
     captErr=0
 
     #if capture was successful, proceed to enroll1
@@ -51,7 +77,7 @@ def enroll(fps):
         while fps.IsPressFinger()==False:
             FPS.delay(1)
 
-        capt=fps.CaptureFinger(True)
+        capt=fps.CaptureFinger(False)
 
         if capt==True:
             print 'Please remove finger'
@@ -67,7 +93,7 @@ def enroll(fps):
             while fps.IsPressFinger()==False:
                 FPS.delay(1)
 
-            capt=fps.CaptureFinger(True)
+            capt=fps.CaptureFinger(False)
 
             if capt==True:
                 print 'Please remove finger'
@@ -135,22 +161,10 @@ if __name__ == '__main__':
     fps.UseSerialDebug = True
     fps.SetLED(True) # Turns ON the CMOS LED
     FPS.delay(2) # wait 1 second
-
-##    a=7
-##    t="I'm hungry %d"%a
-##    f=open("test.txt","w")
-##    f.write(t)
-##    f.close()
-    
-    #fps.DeleteID(13)
-    #time.sleep(1)
-    #err=fps.GetTemplate(11)
-    #print 'Err: %d'%err
-
     #fps.DeleteAll()
     #fps.DeleteID(5)
-    enroll(fps)
-    #identify(fps,1,0)
+    #enroll(fps)
+    identify(fps,1,0)
     enrollcount=fps.GetEnrollCount()
     print 'Enroll count: %d' % enrollcount
 
