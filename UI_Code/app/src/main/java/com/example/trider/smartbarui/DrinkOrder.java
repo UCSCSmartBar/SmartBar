@@ -15,11 +15,13 @@ public class DrinkOrder {
 
     public static String InDrinkString = null;
     public String OutDrinkString;
+    public static String InUserPinString = null;
+
     private static final String StartOfDString = "$DO";
     private static final Byte EndOfDString = '*';
     private LiquorObj[] liquors;
     private MixerObj[]  mixers;
-    private int MAX_DRINKS = 20;
+    private int MAX_INGREDIENTS = 20;
     private int numLiquors = 0;
     private int numMixers = 0;
     private int lIndex;
@@ -123,29 +125,56 @@ public class DrinkOrder {
 
     //Declares new DrinkOrder that can have multiple items added to it
     public DrinkOrder(){
-        liquors = new LiquorObj[10];
-        mixers = new MixerObj[10];
+        liquors = new LiquorObj[MAX_INGREDIENTS ];
+        mixers = new MixerObj[MAX_INGREDIENTS ];
+        lIndex = 0;
+        mIndex = 0;
+    }
+    public DrinkOrder(int nMixers,int nLiquors){
+        if((nMixers > MAX_INGREDIENTS) || (nMixers > MAX_INGREDIENTS) ||(nLiquors < 0) || (nMixers < 0)) {
+            Log.d("DO","Invalid dimensions");
+    }
+
+        liquors = new LiquorObj[nLiquors];
+        mixers = new MixerObj[nMixers];
         lIndex = 0;
         mIndex = 0;
     }
 
     //Adds one liquor Object to the order
-    public void AddToDrinkOrder(LiquorObj liquor){
+    public void AddLiqDrinkOrder(LiquorObj liquor){
         if((lIndex + mIndex) >= 18){
             return;
         }else if(liquor == null){
             Log.d("DO","Tried adding Null Drink");
             return;
         }
-
         liquors[lIndex] = liquor;
         lIndex++;
         numLiquors++;
         Log.d("DO","Succesfully Added \n"+liquor+ "\n to Drink Order:" + liquors[lIndex-1]);
     }
 
+    /**
+     * Adds a liquor object to the order
+     * @param type Type of alcohol being added
+     * @param brand Brand of Liquor
+     * @param oz The volume
+     */
+    public void AddLiqDrinkOrder(int type, int brand, int oz){
+        if((lIndex + mIndex) >= 18){
+            Log.d("DO","Tried adding too much to order");
+            return;
+        }
+
+        liquors[lIndex] = new LiquorObj(type,brand,oz);
+        lIndex++;
+        numLiquors++;
+        Log.d("DO","Succesfully Added \n"+liquors[lIndex-1].toString()+ "\n to Drink Order:" + liquors[lIndex-1]);
+    }
+
     //Adds one mixer Object to the order
-    public void AddToDrinkOrder(MixerObj mixer){
+    public void AddMixDrinkOrder(MixerObj mixer){
         if((lIndex + mIndex) >= 18){
             return;
         }else if(mixer == null){
@@ -154,6 +183,24 @@ public class DrinkOrder {
         mixers[mIndex] = mixer;
         mIndex++;
         numMixers++;
+        Log.d("DO","Succesfully Added \n"+mixer+ "\n to Drink Order:" + liquors[lIndex-1]);
+    }
+
+    /**
+     * Adds a liquor object to the order
+     * @param type Type of alcohol being added
+     * @param brand Brand of Liquor
+     * @param oz The volume
+     */
+    public void AddMixDrinkOrder(int type, int brand, Boolean carbonated, int oz){
+        if((lIndex + mIndex) >= 18){
+            return;
+        }
+
+        mixers[mIndex] = new MixerObj(type,brand,carbonated,oz);
+        mIndex++;
+        numMixers++;
+        Log.d("DO","Succesfully Added \n"+mixers[lIndex-1].toString()+ "\n to Drink Order:" + liquors[lIndex-1]);
     }
 
     //Gives a data dump about the onGoing Drink Order
@@ -203,6 +250,11 @@ public class DrinkOrder {
     }
 //@TODO decode string before forwarding it to Raspberry Pi to check if feasible drink.
 
+    /**
+     * Parses Up an incoming string into a drink order, and a table of information about drink
+     * @param s
+     * @return A table about the drink order
+     */
     public String DecodeString(String s){
         if(s == null){return null;}
 
@@ -210,19 +262,12 @@ public class DrinkOrder {
         int NOL;
         int NOM;
         float vol = 0;
-<<<<<<< HEAD
-
-=======
         String outGoingTable;
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
         String[] tokens;
 
         //Takes a String of 1,2@V,0,.1@ ...... and converts it to [0,0,1] [1,2,3]
         tokens = s.split("[@*+]");
-<<<<<<< HEAD
-=======
 
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         outGoingTable = "Spirits:\n";
         //Number of Mixers/Liquors Identifiers
@@ -238,28 +283,14 @@ public class DrinkOrder {
             return "Error";
         }
 
-
+        DrinkOrder newOrder = new DrinkOrder(NOL,NOM);
 
         outGoingTable = "Spirit:\n";
-       int i = 1;
-       for(; i < tokens.length - NOM; i++){
+        int i = 1;
+        //Todo Convert the strings incoming strings to the approriate drink order code.
+        for(; i < tokens.length - NOM; i++){
            Log.d("Dparse","Tokens["+i+"] Liquor{"+tokens[i] + "}\n");
            String[] lTokens = tokens[i].split("[,+]");
-
-<<<<<<< HEAD
-           Log.d("Dparse","Mixer:" + lTokens[0]);
-           Log.d("Dparse","Brand:" + lTokens[1]);
-           Log.d("Dparse","Volume" + lTokens[2]);
-
-           try {
-               vol += Float.parseFloat(lTokens[2].trim());
-           }catch(NumberFormatException e){
-               e.printStackTrace();
-           }
-
-           }
-        //Loop through Mixers
-=======
                Log.d("Dparse","Spirit:" + lTokens[0]);
                Log.d("Dparse","Brand:" + lTokens[1]);
                Log.d("Dparse","Volume" + lTokens[2]);
@@ -275,40 +306,29 @@ public class DrinkOrder {
            }
 
 
-        outGoingTable +="Mixers:\n";
+         outGoingTable +="Mixers:\n";
         //Loop through Mixers and print out individual components
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
-       for(;i < tokens.length;i++) {
+        for(;i < tokens.length;i++) {
            Log.d("Dparse", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
 
            String[] mTokens = tokens[i].split("[,+]");
-<<<<<<< HEAD
-           Log.d("Dparse","Mixer:" + mTokens[0]);
-           Log.d("Dparse","Brand:" + mTokens[1]);
-           Log.d("Dparse","Carb:" +  mTokens[2]);
-           Log.d("Dparse","Volume" + mTokens[3]);
-=======
                Log.d("Dparse","Mixer:" + mTokens[0]);
                Log.d("Dparse","Brand:" + mTokens[1]);
                Log.d("Dparse","Carb:" +  mTokens[2]);
                Log.d("Dparse","Volume" + mTokens[3]);
            outGoingTable+=mTokens[0] + ":" + mTokens[1]+":"+ mTokens[3]+"\n";
 
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
            try {
                vol += Float.parseFloat(mTokens[3]);
            }catch(NumberFormatException e){
                e.printStackTrace();
            }
-       }
+        }
 
         Log.d("Dparse","Total Volume["+vol+"]");
-<<<<<<< HEAD
-=======
 
         return outGoingTable;
     }
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
 
 

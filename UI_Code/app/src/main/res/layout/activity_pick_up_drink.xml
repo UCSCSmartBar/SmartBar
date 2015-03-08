@@ -38,20 +38,19 @@
 
     <EditText
         android:id="@+id/txtPin"
-        android:layout_width="300dp"
-        android:layout_marginLeft="300dp"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:hint="Phone Number"
+        android:hint="e.g. 15555555555"
         android:textSize="40sp"
         android:inputType="phone"
         android:maxLength="11">
-        <requestFocus/>
     </EditText>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="300dp"
+        android:layout_gravity="center_horizontal"
         android:hint="Password"
         android:text="Enter"
         android:textSize="40dp"

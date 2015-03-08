@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +30,6 @@ import java.util.TimerTask;
 
 
 public class NewUser extends Activity {
-
 
     public DrinkOrder testDrink;
     private CommStream PiComm = new CommStream();
@@ -57,14 +58,18 @@ public class NewUser extends Activity {
 
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
         pBar = (ProgressBar) findViewById(R.id.newUserProgress);
         pBar.setVisibility(View.INVISIBLE);
+
+        EditText eText = (EditText) findViewById(R.id.txtPin);
+
+        eText.setFilters(new InputFilter[]{filter, new InputFilter.LengthFilter(11)});
+
+        //startWatch(10000);
     }
 
 
@@ -78,14 +83,6 @@ public class NewUser extends Activity {
                 InputMethodManager.HIDE_NOT_ALWAYS);
 
 
-        //If the pin has already been entered and is currently being searched for, alert user
-        /*
-        if(searching){
-            toast = Toast.makeText(context, "Please Wait While Your Order Is Being Found", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
-*/
         //Grabs the entered pin number
         eText = (EditText) findViewById(R.id.txtPin);
         long Pin;
@@ -97,15 +94,6 @@ public class NewUser extends Activity {
             toast.show();
             return;
         }
-
-        //Checking Numeric-based String for errors
-        /*try {
-            Pin = Integer.decode(pinString);
-        }catch(NumberFormatException e){
-            toast = Toast.makeText(context, "Warn: Pin decoded incorrectly. ", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }*/
 
         new AttemptGetDrink().execute();
 
@@ -123,7 +111,6 @@ public class NewUser extends Activity {
                         pBar.setVisibility(View.INVISIBLE);
                         searching = false;
                         Intent intent = new Intent(NewUser.this,RegisterFingerPrint.class);
-
                         //If nothing came up from search
                         if(searchFailure){
                             return;
@@ -133,15 +120,10 @@ public class NewUser extends Activity {
 
                         DrinkOrder t = new DrinkOrder();
                         t.DecodeString(IncomingString);
-<<<<<<< HEAD
-=======
 
                         t.storeDrinkOrder(IncomingString);
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
                         IncomingString.replace("*","");
                         PiComm.writeString("$DO,"+IncomingString);
-
-
                         startActivity(intent);
                     }
                 });
@@ -151,10 +133,18 @@ public class NewUser extends Activity {
 
     }
 
-
-
-
-
+    /*Limits the User to only put in 11-digits of numerical  characters*/
+    InputFilter filter = new InputFilter() {
+        public CharSequence filter(CharSequence source, int start, int end,
+                                   Spanned dest, int dstart, int dend) {
+            for (int i = start; i < end; i++) {
+                if (!Character.isDigit(source.charAt(i))) {
+                    return "";
+                }
+            }
+            return null;
+        }
+    };
 
 
 
@@ -238,21 +228,25 @@ public class NewUser extends Activity {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     public void GoToRegister(View view){
         startActivity(new Intent(this,RegisterFingerPrint.class));
     }
+
+
+    /***********System Level Functions*******/
+    public void startWatch(int watch_t) {
+        new Timer().schedule(new TimerTask() {
+            public void run() {
+               startActivity(new Intent(NewUser.this, IdleMenu.class));
+            }
+
+        }, watch_t);
+    }
+
+
+
+
+    /*Default Functions*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -271,7 +265,10 @@ public class NewUser extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }
+
+
+
+

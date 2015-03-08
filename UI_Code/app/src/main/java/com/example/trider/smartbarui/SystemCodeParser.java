@@ -1,20 +1,20 @@
 package com.example.trider.smartbarui;
 
+import android.util.Log;
+
 /**
  * Created by trider on 2/23/2015.
  */
 public class SystemCodeParser {
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
         public String DecodeAccessoryMessage(String message) {
             if (message == null) {
                 return null;
             }
             String aTokens[] = message.split("[@,+]");
+            Log.d("SCP","Parsing Command " + aTokens[0]);
             switch (aTokens[0].trim()) {
                 case ("$AD"):
                     DecodeADMessage(message);
@@ -31,8 +31,8 @@ public class SystemCodeParser {
                 case ("$VA"):
                     DecodePneumaticsMessage(message);
                     return "$ACK|VA";
-                case ("$LI"):
-                    DecodeLiquidsMessage(message);
+                case ("$IV"):
+                    DecodeInventoryMessage(message);
                     return "$ACK|LI";
                 case ("$SER"):
                     return "$ACK|SER";
@@ -55,67 +55,98 @@ public class SystemCodeParser {
          * Decodes any message dealing with the Analog To Digital Converter
          * @param message
          */
-<<<<<<< HEAD
-        public void DecodeADMessage(String message){
-=======
         private void DecodeADMessage(String message){
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         }
         /**
          * Decodes any message dealing with the Raspberry Pi Itself
          * @param message
          */
-<<<<<<< HEAD
-        public void DecodeSystemMessage(String message){
-=======
         private void DecodeSystemMessage(String message){
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         }
         /**
          * Decodes any message dealing with the Finger Print Scanner
          * @param message
          */
-<<<<<<< HEAD
-        public void DecodeScannerMessage(String message){
-=======
         private void DecodeScannerMessage(String message){
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         }
         /**
          * Decodes any message dealing with the BAC (Which may just be the AD)
          * @param message
          */
-<<<<<<< HEAD
-        public void DecodeBACMessage(String message){
-=======
         private void DecodeBACMessage(String message){
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         }
         /**
          * Decodes any message dealing with the Pneumatic System
          * @param message
          */
-<<<<<<< HEAD
-        public void DecodePneumaticsMessage(String message){
-=======
         private void DecodePneumaticsMessage(String message){
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         }
         /**
          * Decodes any message dealing with the Liquid Levels of the System
          * @param message
          */
-<<<<<<< HEAD
-        public void DecodeLiquidsMessage(String message){
-=======
-        private void DecodeLiquidsMessage(String message){
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
+        private void DecodeInventoryMessage(String message){
+
+        Inventory INV = new Inventory();
+        Log.d("DIM", "In Message:" + message);
+         //Full message e.g. $IV,2,2@0,WH,1,54.3,59.2@...
+        String[] iTokens = message.split("[@+]");
+            //Split message: [IV,2,2][0,WH,1,54.3,59.2]
+
+            //[IV][2][2]
+            Log.d("DIM","Inventory == [IV,i,i]?"+iTokens[0]+"\n");
+
+
+            for(int i = 1; i < iTokens.length; i++){
+
+                Log.d("DIM","Parsed Message"+iTokens[i]+"\n");
+
+                String[] infoTokens = iTokens[i].split("[,+]");
+                  // [Con#],[Type],[Brand],[curVol],[maxVol]
+
+
+                    Log.d("DIM","   Number of Comp: " + infoTokens.length);
+                    if(infoTokens.length < 5){
+                        Log.d("DIM","Not enough info");
+                        return;
+                    }
+                    Log.d("DIM","Container #: " + infoTokens[0]);
+                    Log.d("DIM","Type: " +  infoTokens[1]);
+                    Log.d("DIM","Brand: " + infoTokens[2]);
+                    Log.d("DIM","CurVol " + infoTokens[3]);
+                    Log.d("DIM","MaxVol " + infoTokens[4]);
+
+                try {
+                    int conNum = Integer.parseInt(infoTokens[0].trim()) + 1;
+                    String type  = infoTokens[1];
+                    String brand = infoTokens[2];
+                    float CurVol= Float.parseFloat(infoTokens[3].trim());
+                    float MaxVol= Float.parseFloat(infoTokens[4].trim());
+
+                    INV.AddToInventory(conNum,type,brand,CurVol,MaxVol);
+
+                    Log.d("DIM","New Container: "+INV.getContainer(conNum).PrintContainer());
+
+                }catch(NumberFormatException nfe){
+                    nfe.printStackTrace();
+                }catch(NullPointerException npe){
+                    npe.printStackTrace();
+                }
+                //Log.d("SCP","\n");
+            }
+
+
+
+           //INV.AddToInventory();
 
         }
+
+
+
 
 }

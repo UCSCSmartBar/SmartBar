@@ -56,7 +56,7 @@
         <item>Cognac</item>
         <item>Bourbon</item>
         <item>Scotch</item>
-        <item>Jagermeister</item>
+        <item>Jaegermeister</item>
     </string-array>
     <string-array name="quant_array">
         <item>1</item>
@@ -113,6 +113,13 @@
         sword; I quietly take to the ship. There is nothing surprising in this. If they but knew it,
         almost all men in their degree, some time or other, cherish very nearly the same feelings
         towards the ocean with me.</string>
+    <string name="BestOTimes">It was the best of times, it was the worst of times, it was the age of
+        wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of
+        incredulity, it was the season of Light, it was the season of Darkness, it was the spring
+        of hope, it was the winter of despair, we had everything before us, we had nothing before
+        us, we were all going direct to Heaven, we were all going direct the other way - in short,
+        the period was so far like the present period, that some of its noisiest authorities insisted
+        on its being received, for good or for evil, in the superlative degree of comparison only.</string>
     <string name="command_list">Pick Commands</string>
 
     <string-array name="spinnerItems">
@@ -124,20 +131,39 @@
     </string-array>
 
     <string name="title_activity_display_queue">DisplayQueue</string>
+    <string name="title_activity_liquid_levels">LiquidLevels</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_smart_bar_loading_screen">SmartBarLoadingScreen</string>
 
+    <string-array name="vol_array">
+        <item>Handle</item>
+        <item>Fifth</item>
+        <item>Liter</item>
+        <item>Flask</item>
+    </string-array>
+    <string-array name="brand_array">
+        <item>Windsor Canadian</item>
+        <item>Rich and Rare</item>
+        <item>Wild Turkey</item>
+        <item>Seagram\'s</item>
+        <item>Kessler</item>
+        <item>Canadian Club</item>
+        <item>Dewar\'s Scotch</item>
+        <item>Canadian Mist</item>
+        <item>Jack Daniels Tennessee Honey</item>
+        <item>Evan William\'s</item>
+        <item>Southern Comfort</item>
+        <item>Maker\'s Mark</item>
+        <item>Johnnie Walker</item>
+        <item>Black Velvet</item>
+        <item>Jameson Irish</item>
+        <item>Seagram\'s 7 Crown</item>
+        <item>Fireball</item>
+        <item>Jim Bean</item>
+        <item>Crown Royal</item>
+        <item>Jack Daniels No.7</item>
+    </string-array>
 
-    <string name="Ishmael">Call me Ishmael. Some years ago--never mind how long precisely--having
-        little or no money in my purse, and nothing particular to interest me on shore, I thought I
-        would sail about a little and see the watery part of the world. It is a way I have of driving
-        off the spleen and regulating the circulation. Whenever I find myself growing grim about the
-        mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily
-        pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and
-        especially whenever my hypos get such an upper hand of me, that it requires a strong moral
-        principle to prevent me from deliberately stepping into the street, and methodically knocking
-        people\'s hats off--then, I account it high time to get to sea as soon as I can. This is my
-        substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his
-        sword; I quietly take to the ship. There is nothing surprising in this. If they but knew it,
-        almost all men in their degree, some time or other, cherish very nearly the same feelings
-        towards the ocean with me.</string>
+    <string name="title_activity_container__screen">Container_Screen</string>
 
 </resources>

@@ -74,6 +74,7 @@ public class MainActivity extends Activity {
     String TAG = "DebugPy";
 
     static boolean AppStarted = false;
+    boolean isActive = true;
 
     // Toggle values for Toggle Buttons
     boolean[] toggle_val = {false,false,false,false,false,false};
@@ -83,13 +84,33 @@ public class MainActivity extends Activity {
     DetectUSB detectUSB = new DetectUSB();
 
 
-    /*Will update the screen based on whatever message was received
-    Runnable mUpdateUI = new Runnable() {
+    /**
+     * @title: mListenerTask
+     * @description: The background thread that receives serial communication from the raspberry pi,
+     *
+     */
+    Runnable mListenerTask = new Runnable() {
         @Override
         public void run() {
-            mText.setText(InMessage);
+
+            InMessage = PiComm.readString();
+            if(InMessage != null){
+                mText.post(mUpdateUI2);
+            }
+            //Waits for new input communication
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //Restarts this thread.
+//            if(isActive) {
+                new Thread(this).start();
+//            }
         }
-    };*/
+    };
+
+
 
     /**
      * @title: mUpdateUI2
@@ -125,51 +146,89 @@ public class MainActivity extends Activity {
         }
     };
 
+//    protected void onStop(){
+//        super.onStop();
+//        PiComm.writeString("STOP");
+//        isActive = false;
+//    }
+//    protected void onResume(){
+//        super.onResume();
+//        PiComm.writeString("Resume");
+//        isActive = true;
+//    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-    /**
-     * @title: mListenerTask
-     * @description: The background thread that receives serial communication from the raspberry pi,
-     *
-     */
-    Runnable mListenerTask = new Runnable() {
-        @Override
-        public void run() {
-<<<<<<< HEAD
-            /*
-            byte[] buffer = new byte[128];
-            //ret is the size of the size of the incoming buffer
-            int ret;
-            try {
-                //InMessage = "> ";
-                ret = PiComm.getIStream().read(buffer);
-                if (ret < 128) {
-                    InMessage = new String(buffer);
-                    mText.post(mUpdateUI2);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            */
-=======
+        //Creates the incoming buffer text box
+        mText = (TextView) findViewById(R.id.display_area);
+        mText.setMovementMethod(new ScrollingMovementMethod());
+        eText = (EditText) findViewById(R.id.editText);
+        sBar = (SeekBar) findViewById(R.id.seekBar);
 
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
-            InMessage = PiComm.readString();
-            if(InMessage != null){
-                mText.post(mUpdateUI2);
+        sBar.setProgress((int)(System.currentTimeMillis() % 100));
+        intent = getIntent();
+
+        /**
+         * On Opening the app or app getting started by accessory;
+         */
+        if (!AppStarted) {
+            //Creates a new PiComm
+            PiComm = new CommStream("hey");
+            mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+            mAccessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+
+            //Updates USB image indicator
+            ImageView usbConn = (ImageView) findViewById(R.id.usbCon3);
+            if(DetectUSB.Connection){
+                usbConn.setVisibility(View.VISIBLE);
+            }else{
+                usbConn.setVisibility(View.INVISIBLE);
             }
-            //Waits for new input communication
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+            //If the accessory is not there, the PiComm class has yet to be made/instantiated
+            //Most likely caused by being opened by User first
+            if (mAccessory == null) {
+                mText.append("Not started by the Accessory directly" + System.getProperty("line.separator"));
+                PiComm.SetStatus(CommStream.Status_Created);
+                return;
             }
-            //Restarts this thread.
-            new Thread(this).start();
+            //If the device was successfully connected, open open new file streams as per the
+            //Android Open Accessory Protocol(AOA).
+            Log.v(TAG, mAccessory.toString());
+            mFileDescriptor = mUsbManager.openAccessory(mAccessory);
+            if (mFileDescriptor != null) {
+                FileDescriptor fd = mFileDescriptor.getFileDescriptor();
+                mInputStream = new FileInputStream(fd);
+                mOutputStream = new FileOutputStream(fd);
+                DetectUSB.Connection = true;
+                //Creates Singleton class for other activities to use
+                PiComm = new CommStream(mInputStream, mOutputStream, mAccessory, mUsbManager, mFileDescriptor);
+                AppStarted = true;
+            }
+            Log.v(TAG, mFileDescriptor.toString());
+            eText.clearFocus();
+            new Thread(mListenerTask).start();
+            /**
+             * Returning to this screen for a second time
+             */
+        }else {
+        /*PiComm gets initialized once, and if returning to the main activity, do not make another one*/
+            if (PiComm.isInitialized()) {
+                context = getApplicationContext();
+                Toast toast = Toast.makeText(context, "PiComm already initialized", Toast.LENGTH_LONG);
+                toast.show();
+                new Thread(mListenerTask).start();
+                return;
+            }
+            //Trying again to get usb upon return to main screen
+            //the Usb manager and USB accessory is declared and connected here
+            TryToReconnect(null);
+
         }
-    };
-
-
+    }
 
 /**
  * @title SendCustomText()
@@ -177,7 +236,6 @@ public class MainActivity extends Activity {
  * text in the editText box, converting it to an array of bytes,
  * and tries to write to the output stream contained in separate class*/
     public void SendCustomText(View view){
-
 
         //Hides the keyboard after hitting enter.
         InputMethodManager inputManager = (InputMethodManager)
@@ -216,6 +274,36 @@ public class MainActivity extends Activity {
 
     }
 
+        public void tryParse(View view) {
+            eText = (EditText) findViewById(R.id.editText);
+            OutMessage = eText.getText().toString();
+            OutMessage = "$IV,2,2@0,WH,1,54.3,59.2@1,GN,1,49.9,59.2@16,BO,2,3.4,37.1";
+            String s = new SystemCodeParser().DecodeAccessoryMessage(OutMessage);
+            Inventory inventory = new Inventory();
+            inventory.AddToInventory(3,"WH","Windsor Canadian",39.2,39.2);
+            inventory.AddToInventory(4,"WH","Rich and Rare",39.2,39.2);
+            inventory.AddToInventory(5,"WH","Wild Turkey",39.2,39.2);
+            inventory.AddToInventory(6,"WH","Seagram's",39.2,39.2);
+            inventory.AddToInventory(7,"WH","Kessler",39.2,39.2);
+            inventory.AddToInventory(8,"WH","Canadian Club",39.2,39.2);
+            inventory.AddToInventory(9,"WH","Dewar's Scotch",39.2,39.2);
+            inventory.AddToInventory(10,"WH","Candian Mist",39.2,39.2);
+            inventory.AddToInventory(11,"WH","Jack Daniel's Tennessee Honey",39.2,39.2);
+            inventory.AddToInventory(12,"WH","Evan William's",39.2,39.2);
+            inventory.AddToInventory(13,"WH","Southern Comfort",39.2,39.2);
+            inventory.AddToInventory(14,"WH","Black Velvet",39.2,39.2);
+            inventory.AddToInventory(15,"WH","Jameson Irish",39.2,39.2);
+            inventory.AddToInventory(16,"WH","Seagram's 7 Crown",39.2,39.2);
+            inventory.AddToInventory(18,"WH","Fireball",39.2,39.2);
+//            inventory.AddToInventory(19,"WH","Jim Bean",39.2,39.2);
+//            inventory.AddToInventory(20,"WH","Crown Royal",39.2,39.2);
+
+
+
+
+        }
+
+
     /**
      * @title: sendMessage()
      * @description Called when the user clicks one of several buttons. The method sends a preset
@@ -225,7 +313,6 @@ public class MainActivity extends Activity {
 
         //ToggleButton tBut;
         //Button b;
-
         //view.getId() is the corresponding button that called the method.
         switch (view.getId()) {
             case R.id.hello_pi:
@@ -281,78 +368,7 @@ public class MainActivity extends Activity {
 
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        //Creates the incoming buffer text box
-        mText = (TextView) findViewById(R.id.display_area);
-        mText.setMovementMethod(new ScrollingMovementMethod());
-        eText = (EditText) findViewById(R.id.editText);
-        sBar = (SeekBar) findViewById(R.id.seekBar);
-
-        sBar.setProgress((int)(System.currentTimeMillis() % 100));
-        intent = getIntent();
-
-        /**
-        * On Opening the app or app getting started by accessory;
-        */
-        if (!AppStarted) {
-            //Creates a new PiComm
-            PiComm = new CommStream("hey");
-            mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-            mAccessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-
-            //Updates USB image indicator
-            ImageView usbConn = (ImageView) findViewById(R.id.usbCon3);
-            if(DetectUSB.Connection){
-                usbConn.setVisibility(View.VISIBLE);
-            }else{
-                usbConn.setVisibility(View.INVISIBLE);
-            }
-
-            //If the accessory is not there, the PiComm class has yet to be made/instantiated
-            //Most likely caused by being opened by User first
-            if (mAccessory == null) {
-                mText.append("Not started by the Accessory directly" + System.getProperty("line.separator"));
-                PiComm.SetStatus(CommStream.Status_Created);
-                return;
-            }
-            //If the device was successfully connected, open open new file streams as per the
-            //Android Open Accessory Protocol(AOA).
-            Log.v(TAG, mAccessory.toString());
-            mFileDescriptor = mUsbManager.openAccessory(mAccessory);
-            if (mFileDescriptor != null) {
-                FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-                mInputStream = new FileInputStream(fd);
-                mOutputStream = new FileOutputStream(fd);
-                DetectUSB.Connection = true;
-                //Creates Singleton class for other activities to use
-                PiComm = new CommStream(mInputStream, mOutputStream, mAccessory, mUsbManager, mFileDescriptor);
-                AppStarted = true;
-            }
-            Log.v(TAG, mFileDescriptor.toString());
-            eText.clearFocus();
-            new Thread(mListenerTask).start();
-            /**
-             * Returning to this screen for a second time
-              */
-        }else {
-        /*PiComm gets initialized once, and if returning to the main activity, do not make another one*/
-            if (PiComm.isInitialized()) {
-                context = getApplicationContext();
-                Toast toast = Toast.makeText(context, "PiComm already initialized", Toast.LENGTH_LONG);
-                toast.show();
-                new Thread(mListenerTask).start();
-                return;
-            }
-            //Trying again to get usb upon return to main screen
-            //the Usb manager and USB accessory is declared and connected here
-            TryToReconnect(null);
-
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -420,6 +436,11 @@ public class MainActivity extends Activity {
     public void ClearWindow(View view){
         mText.setText("");
     }
+
+
+
+
+
 }
 
 
