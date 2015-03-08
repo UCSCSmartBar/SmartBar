@@ -40,7 +40,5 @@ public class DetectUSB extends BroadcastReceiver {
                 toast.show();
             }
 
-
-
         }
     }

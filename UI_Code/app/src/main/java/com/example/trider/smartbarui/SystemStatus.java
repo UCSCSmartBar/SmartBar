@@ -3,6 +3,7 @@ package com.example.trider.smartbarui;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
@@ -23,41 +24,8 @@ public class SystemStatus extends Activity {
     private static final String Vs ="ValveState";
     private static final String Ll ="LiquidLevels";
 
+    public Inventory INV = new Inventory();
 
-
-<<<<<<< HEAD
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_system_status);
-        //Hides all action bars and other uneccesary things to view
-        try {
-            final View contentView = findViewById(R.id.system_view);
-            mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
-            mSystemUiHider.setup();
-            mSystemUiHider.hide();
-            mSystemUiHider
-                    .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-                        // Cached values.
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-                        public void onVisibilityChange(boolean visible) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                                // If the ViewPropertyAnimator API is available
-                                // (Honeycomb MR2 and later), use it to animate the
-                                // in-layout UI controls at the bottom of the
-                                // screen.
-                                if (visible) {
-                                    // Schedule a hide().
-                                    delayedHide(10);
-                                }
-                            }
-                        }
-                    });
-        }catch(NullPointerException e){
-            }
-
-=======
     private Spinner cList;
     private TextView mText;
     CommStream PiComm;
@@ -87,14 +55,15 @@ public class SystemStatus extends Activity {
         mText = (TextView) findViewById(R.id.status_log);
         PiComm = new CommStream();
         SCP = new SystemCodeParser();
-        new Thread(mListenerTask).start();
+        if(PiComm.isInitialized()) {
+            new Thread(mListenerTask).start();
+        }
 
 
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
     }
 
     public void SendCommand(View view){
-        if(!PiComm.isInitialized()){return;}
+        //if(!PiComm.isInitialized()){return;}
 
         String s = String.valueOf(cList.getSelectedItem());
         Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
@@ -114,9 +83,15 @@ public class SystemStatus extends Activity {
                 break;
             case Ll:
                 PiComm.writeString(CommandStrings.RequestLiquid_Levels);
+                mText.setText(INV.PrintInventory());
+
                 break;
         }
 
+    }
+
+    public void CheckLiquidLevels(View v){
+        startActivity(new Intent(this,Container_Screen.class));
     }
 
     @Override

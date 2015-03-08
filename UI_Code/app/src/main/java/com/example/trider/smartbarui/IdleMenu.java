@@ -1,5 +1,6 @@
 package com.example.trider.smartbarui;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -38,12 +39,36 @@ public class IdleMenu extends Activity {
     Boolean searchFailure = false;
     JSONParser jsonParser = new JSONParser();
 
+    String QueueString =null;
+    String OldQueueString = null;
+      int counter = 0;
 
-
-    Timer timer;
-    static long count = 0;
-
+    //PI comunications
     CommStream PiComm;
+    boolean isActive = true;
+    String InMessage = null;
+    static Boolean IdleMenuActive = true;
+
+    Runnable mListenerTask = new Runnable() {
+        @Override
+        public void run() {
+            InMessage = PiComm.readString();
+            if(InMessage != null){
+                Toast.makeText(getApplicationContext(),InMessage,Toast.LENGTH_SHORT).show();
+            }
+            //Waits for new input communication
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //Restarts this thread only if active
+            if(isActive) {
+                new Thread(this).start();
+            }
+        }
+    };
+
 
 
     class BackGTask extends TimerTask {
@@ -52,17 +77,57 @@ public class IdleMenu extends Activity {
             IdleMenu.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if((count++)%10 == 0) {
-                        if(toggle){
-                            textClock.setFormat12Hour("hh:mm");
+                    if (IdleMenuActive) {
+                        //Periodically gets the queue and forwards it to the Pi
+                        if(counter > 100) {
+                            new AttemptGetQ().execute();
+                            counter = 0;
+
+                            //makes sure queue is non-null
+                            if((QueueString!=null) && !QueueString.equalsIgnoreCase(OldQueueString)){
+                                PiComm.writeString("$FPQ," + QueueString);
+                                OldQueueString = QueueString;
+                                Log.d("IDLE","Theres a new Queue:"+QueueString);
+                            }
+
                         }else{
-                            textClock.setFormat12Hour("hh mm");
+                            counter++;
                         }
-                        toggle = !toggle;
+                        if(counter%10 == 0) {
+                            if (toggle) {
+                                textClock.setFormat12Hour("hh:mm");
+                                toggle = false;
+                            } else {
+                                textClock.setFormat12Hour("hh mm");
+                                toggle = true;
+                            }
+                        }
+
                     }
+                    hideSystemUI();
                 }
             });
         }
+    }
+
+
+    public void onResume(){
+        super.onResume();
+        if(PiComm.isInitialized()){
+            PiComm.writeString("Resume");
+        }
+        hideSystemUI();
+        isActive = true;
+        IdleMenuActive = true;
+    }
+
+    public void onStop(){
+        super.onStop();
+        if(PiComm.isInitialized()){
+            PiComm.writeString("Stop");
+        }
+        isActive = false;
+        IdleMenuActive = false;
     }
 
 
@@ -73,31 +138,27 @@ public class IdleMenu extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_idle_menu);
 
+        // Hide the status bar.
+        hideSystemUI();
+       IdleMenuActive = true;
 
        textClock = (TextClock) findViewById(R.id.textClock);
        textClock.setFormat12Hour("hh:mm");
+
        new Timer().scheduleAtFixedRate(new BackGTask(),1000,100);
-
-
-        ImageView usbConn = (ImageView) findViewById(R.id.usbCon);
-        PiComm = new CommStream();
-        if(!PiComm.isInitialized()){
+       ImageView usbConn = (ImageView) findViewById(R.id.usbCon);
+       PiComm = new CommStream();
+       if(!PiComm.isInitialized()){
             usbConn.setVisibility(View.INVISIBLE);
-        }
-
+       }
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_idle_menu, menu);
-        return true;
-    }
+
 
     public void onPickUpClick(View view){
-
         Intent intent = new Intent(this,PickUpDrink.class);
+
         startActivity(intent);
     }
 
@@ -115,8 +176,6 @@ public class IdleMenu extends Activity {
 
 
     class AttemptGetQ extends AsyncTask<String, String, String> {
-
-
             int success;
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -155,25 +214,39 @@ public class IdleMenu extends Activity {
                     }
 
             return null;
-
         }
 
             protected void onPostExecute(String file_url) {
                 // dismiss the dialog once product deleted
-
                 if (file_url != null){
-                    Toast.makeText(IdleMenu.this, file_url, Toast.LENGTH_LONG).show();
+                    Log.d("IDLE",file_url);
+                    QueueString = file_url;
                 }else{
                     Toast.makeText(IdleMenu.this,"Failure to Access Server. Check Internet Connection"
                             , Toast.LENGTH_SHORT).show();
                 }
 
             }
-
-
     }
 
 
+/*System Functions*/
+
+
+    private void hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the system bars hide and show.
+        View mDecorView;
+        mDecorView = getWindow().getDecorView();
+        mDecorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -189,4 +262,15 @@ public class IdleMenu extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_idle_menu, menu);
+        return true;
+    }
+
+
+
 }

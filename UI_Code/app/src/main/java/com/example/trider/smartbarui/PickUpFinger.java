@@ -69,6 +69,7 @@ public class PickUpFinger extends Activity {
             byte[] buffer = new byte[128];
             //ret is the size of the size of the incoming buffer
             int ret;
+            //TODO switch to PiComm.read()
             try {
                 if(PiComm.isInitialized()) {
                     ret = PiComm.getIStream().read(buffer);
@@ -93,12 +94,17 @@ public class PickUpFinger extends Activity {
 
 
 
+    public void onResume(){
+        super.onResume();
+        hideSystemUI();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_up_finger);
 
+        hideSystemUI();
 
         ImageView usbConn = (ImageView) findViewById(R.id.usbCon1);
         fingImg= (ImageView) findViewById(R.id.fingerImg);
@@ -108,14 +114,8 @@ public class PickUpFinger extends Activity {
 
         Intent i = getIntent();
         try {
-<<<<<<< HEAD
-            String s = "$DO," + i.getExtras().getString("tString");
-            s.replace("*","");
-            Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
-=======
             OrderString = "$DO," + i.getExtras().getString("tString");
             Toast toast = Toast.makeText(getApplicationContext(), OrderString, Toast.LENGTH_LONG);
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
             toast.show();
             //PiComm.writeString(s);
             new Thread(mListenerTask).start();
@@ -125,23 +125,14 @@ public class PickUpFinger extends Activity {
          }
 
         if(!PiComm.isInitialized()){
-<<<<<<< HEAD
-            usbConn.setVisibility(View.INVISIBLE);
-                String s = i.getExtras().getString("tString");
-                DrinkOrder a = new DrinkOrder();
-                a.DecodeString(s);
-=======
                 usbConn.setVisibility(View.INVISIBLE);
             //Already Decoded in last activity
 //                DrinkOrder a = new DrinkOrder();
 //                a.DecodeString(OrderString);
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
         }
 
         new Timer().schedule(FlashFinger,1000,5000);
-
-
     }
 
     public void SkipFingerPrint(View view){
@@ -192,8 +183,22 @@ public class PickUpFinger extends Activity {
     }
 
 
+    /**System functions*****/
 
-
+    private void hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the system bars hide and show.
+        View mDecorView;
+        mDecorView = getWindow().getDecorView();
+        mDecorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

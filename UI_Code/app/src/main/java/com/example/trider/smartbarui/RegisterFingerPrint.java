@@ -111,16 +111,13 @@ FingerState nextState = FingerState.IDLE;
         }catch(NullPointerException e){
             e.printStackTrace();
         }
-<<<<<<< HEAD
-        PiComm.writeString("$FP.First");
-=======
         //PiComm.writeString("$FP.First");
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
         new Thread(mListenerTask).start();
         new Timer().schedule(ChangeFinger,1000,1000);
 
         //For actual implementation of state machine start with Finger Print Invisible
         finger.setVisibility(View.INVISIBLE);
+        //startWatch();
     }
 
 
@@ -206,15 +203,21 @@ FingerState nextState = FingerState.IDLE;
     }
 
 
-<<<<<<< HEAD
-
-
-    public void SkipToBAC(View view){startActivity(new Intent(this,CheckBAC.class));}
-=======
     public void SkipToBAC(View view){startActivity(new Intent(this,CheckBAC.class).putExtra("DOrder",OrderString));}
->>>>>>> 313167a7340a7180bd643478785395b38af4d4d3
 
 
+
+
+
+    /***********System Level Functions*******/
+    public void startWatch() {
+        new Timer().schedule(new TimerTask() {
+            public void run() {
+                startActivity(new Intent(RegisterFingerPrint.this, IdleMenu.class));
+            }
+
+        }, 1000);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

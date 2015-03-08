@@ -1,0 +1,271 @@
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="0dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <GridLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="25dp"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            tools:context="com.example.trider.smartbarui.Container_Screen">
+
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con1_button"
+                android:onClick="onContainerClick"
+                android:layout_margin="1dp"
+                android:text="Container One"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con2_button"
+                android:onClick="onContainerClick"
+                android:layout_margin="1dp"
+                android:padding="5dp"
+                android:text="Container Two"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con3_button"
+                android:padding="5dp"
+                android:onClick="onContainerClick"
+                android:layout_margin="1dp"
+                android:text="Container Three"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con4_button"
+                android:onClick="onContainerClick"
+                android:layout_margin="1dp"
+                android:text="Container Four"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con5_button"
+                android:onClick="onContainerClick"
+                android:text="Container Five"
+                android:layout_margin="1dp"
+                android:background="@drawable/cust_butt"/>
+
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con6_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Six"
+
+                android:background="@drawable/cust_butt"/>
+
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con7_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Seven"
+                android:background="@drawable/cust_butt"/>
+
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con8_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Eight"
+                android:background="@drawable/cust_butt"/>
+
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con9_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Nine"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con10_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Ten"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con11_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Eleven"
+                android:layout_column="1"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con12_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Twelve"
+                android:layout_column="2"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con13_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Thirteen"
+                android:layout_column="3"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con14_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Fourteen"
+                android:layout_column="4"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con15_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Fifteen"
+                android:layout_column="5"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con16_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Sixteen"
+                android:layout_column="6"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con17_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Seventeen"
+                android:layout_column="7"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/con18_button"
+                android:layout_margin="1dp"
+                android:onClick="onContainerClick"
+                android:text="Container Eighteen"
+                android:layout_column="8"
+                android:layout_row="1"
+                android:background="@drawable/cust_butt"/>
+
+            </GridLayout>
+        </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Click Container for Info"
+        android:id="@+id/cont_tview"/>
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Replace Container"
+            android:onClick="ReplaceContainer"
+            android:id="@+id/button22" />
+
+
+        <EditText
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:background="#FFFFFFFF"
+            android:layout_margin="5dp"
+            android:hint="Type"
+            android:id="@+id/typeView"
+            android:layout_row="1"
+            android:layout_column="0" />
+
+        <EditText
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:background="#FFFFFFFF"
+            android:hint="Brand"
+            android:id="@+id/brandView"
+
+            android:layout_row="1"
+            android:layout_column="1" />
+
+        <EditText
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:background="#FFFFFFFF"
+            android:hint="MaxV"
+            android:id="@+id/maxView"
+            android:layout_row="1"
+            android:layout_column="2" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send Inventory"
+            android:onClick = "SendInventory"
+            android:id="@+id/button23"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:text="Medium Text"-->
+        <!--android:id="@+id/cont_tview"/>-->
+    </LinearLayout>

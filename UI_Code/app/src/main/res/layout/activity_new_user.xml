@@ -48,7 +48,7 @@
 
         android:textSize="40sp"
         android:textColor="@color/white">
-        <requestFocus/>
+        
     </EditText>
 
     <Button

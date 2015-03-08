@@ -64,6 +64,7 @@
         <activity
             android:name=".PickUpDrink"
             android:label="@string/title_activity_new_user"
+            android:noHistory="true"
             android:parentActivityName=".IdleMenu" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -72,6 +73,7 @@
         <activity
             android:name=".PickUpFinger"
             android:label="@string/title_activity_pick_up_finger"
+            android:noHistory="true"
             android:parentActivityName=".PickUpDrink" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -80,6 +82,7 @@
         <activity
             android:name=".CheckBAC"
             android:label="@string/title_activity_check_bac"
+            android:noHistory="true"
             android:parentActivityName=".PickUpFinger" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -88,6 +91,7 @@
         <activity
             android:name=".ConfirmDrink"
             android:label="@string/title_activity_confirm_drink"
+            android:noHistory="true"
             android:parentActivityName=".PickUpDrink" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -124,6 +128,26 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.IdleMenu" />
+        </activity>
+        <activity
+            android:name=".LiquidLevels"
+            android:label="@string/title_activity_liquid_levels"
+            android:parentActivityName=".SystemStatus" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.SystemStatus" />
+        </activity>
+        <activity
+            android:name=".SmartBarLoadingScreen"
+            android:label="@string/title_activity_smart_bar_loading_screen" >
+        </activity>
+        <activity
+            android:name=".Container_Screen"
+            android:label="@string/title_activity_container__screen"
+            android:parentActivityName=".SystemStatus" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.SystemStatus" />
         </activity>
     </application>
 
