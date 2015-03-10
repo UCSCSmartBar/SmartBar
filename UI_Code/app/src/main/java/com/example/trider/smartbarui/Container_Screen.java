@@ -23,6 +23,8 @@ public class Container_Screen extends Activity {
 
     Inventory INV = new Inventory();
     String ContainerString;
+    Button curButt;
+    Button preButt;
 
     int SelectedContainer;
 
@@ -33,9 +35,14 @@ public class Container_Screen extends Activity {
 
 
         EditText myEditText = (EditText) findViewById(R.id.typeView);
-        InputMethodManager imm = (InputMethodManager)getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
+        try {
+            InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }catch(NullPointerException n){}
+        myEditText.clearFocus();
+
     }
 
 
@@ -43,9 +50,15 @@ public class Container_Screen extends Activity {
 
     public void onContainerClick(View view) {
 
-
-        Button button = (Button) view;
-
+        preButt = curButt;
+        curButt = (Button) view;
+        if(preButt!=null){
+            preButt.setBackground(getResources().getDrawable(R.drawable.cont_butt));
+            preButt.setTextColor(getResources().getColor(R.color.white));
+        }
+        curButt.setBackground(getResources().getDrawable(R.drawable.cont_butt_high));
+        curButt.setTextColor(getResources().getColor(R.color.black));
+        //button.setStyler
         //Opens up corresponding container with information
         switch (view.getId()) {
             case R.id.con1_button:
@@ -122,7 +135,7 @@ public class Container_Screen extends Activity {
                 SelectedContainer = 18;
                 break;
         }
-        Toast.makeText(getApplicationContext(), ContainerString, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), ContainerString, Toast.LENGTH_LONG).show();
 
 
         TextView tView = (TextView) findViewById(R.id.cont_tview);
@@ -132,34 +145,10 @@ public class Container_Screen extends Activity {
     public void ReplaceContainer(View view){
 
         r.run();
-        //
-        //The inflater is the actual box that pops up
-//        LayoutInflater inflater= LayoutInflater.from(this);
-//
-//        //The view being uploaded is formatted in the fragment_change_liquor_inv_inv.xml file is in the text
-//        //box area
-//        View v = inflater.inflate(R.layout.fragment_change_liquor_inv, null);
-//
-//        AlertDialog.Builder ad =new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.SmartUIDialog))
-//                .setTitle("Current Liquor Inventory")
-//                .setMessage("Change Parameters for Container")
-//                .setView(v)
-//                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // continue with delete
-//                        runOnUiThread(r);
-//
-//                    }
-//                })
-//                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // do nothing
-//                    }
-//                });
-
-                        //.setIcon(android.R.drawable.ic_dialog_alert)
-
-//                ad.show();
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
 Runnable r = new Runnable(){

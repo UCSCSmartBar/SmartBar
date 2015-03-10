@@ -23,7 +23,7 @@ public class CheckBAC extends Activity {
         WARNINING,
     }
 
-    public void onResum(){
+    public void onResume(){
         super.onResume();
         hideSystemUI();
     }
@@ -33,6 +33,7 @@ public class CheckBAC extends Activity {
         setContentView(R.layout.activity_check_bac);
         hideSystemUI();
         //startWatch(5000);
+        new Timer().scheduleAtFixedRate(HideTask,100,10);
     }
 
 
@@ -71,6 +72,17 @@ public class CheckBAC extends Activity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
+    TimerTask HideTask = new TimerTask() {
+        @Override
+        public void run(){
+            CheckBAC.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hideSystemUI();
+                }
+            });
+        }
+    };
 /*Default Functions*/
 
     @Override

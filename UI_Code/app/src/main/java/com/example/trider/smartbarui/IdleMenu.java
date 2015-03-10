@@ -43,6 +43,8 @@ public class IdleMenu extends Activity {
     String OldQueueString = null;
       int counter = 0;
 
+
+    long testCount = 0;
     //PI comunications
     CommStream PiComm;
     boolean isActive = true;
@@ -52,6 +54,8 @@ public class IdleMenu extends Activity {
     Runnable mListenerTask = new Runnable() {
         @Override
         public void run() {
+            testCount++;
+            Log.d("TCNT","Current Count is at:"+testCount);
             InMessage = PiComm.readString();
             if(InMessage != null){
                 Toast.makeText(getApplicationContext(),InMessage,Toast.LENGTH_SHORT).show();
@@ -79,32 +83,28 @@ public class IdleMenu extends Activity {
                 public void run() {
                     if (IdleMenuActive) {
                         //Periodically gets the queue and forwards it to the Pi
-                        if(counter > 100) {
+                        if(counter > 10) {
                             new AttemptGetQ().execute();
                             counter = 0;
-
                             //makes sure queue is non-null
                             if((QueueString!=null) && !QueueString.equalsIgnoreCase(OldQueueString)){
                                 PiComm.writeString("$FPQ," + QueueString);
                                 OldQueueString = QueueString;
                                 Log.d("IDLE","Theres a new Queue:"+QueueString);
                             }
-
                         }else{
                             counter++;
                         }
-                        if(counter%10 == 0) {
-                            if (toggle) {
-                                textClock.setFormat12Hour("hh:mm");
-                                toggle = false;
-                            } else {
-                                textClock.setFormat12Hour("hh mm");
-                                toggle = true;
-                            }
-                        }
 
+                        if (toggle) {
+                            textClock.setFormat12Hour("hh:mm");
+                            toggle = false;
+                        } else {
+                            textClock.setFormat12Hour("hh mm");
+                            toggle = true;
+                        }
                     }
-                    hideSystemUI();
+                    //hideSystemUI();
                 }
             });
         }
@@ -145,7 +145,8 @@ public class IdleMenu extends Activity {
        textClock = (TextClock) findViewById(R.id.textClock);
        textClock.setFormat12Hour("hh:mm");
 
-       new Timer().scheduleAtFixedRate(new BackGTask(),1000,100);
+       new Timer().scheduleAtFixedRate(new BackGTask(),1000,1000);
+       new Timer().scheduleAtFixedRate(HideTask,100,100);
        ImageView usbConn = (ImageView) findViewById(R.id.usbCon);
        PiComm = new CommStream();
        if(!PiComm.isInitialized()){
@@ -158,7 +159,6 @@ public class IdleMenu extends Activity {
 
     public void onPickUpClick(View view){
         Intent intent = new Intent(this,PickUpDrink.class);
-
         startActivity(intent);
     }
 
@@ -233,7 +233,7 @@ public class IdleMenu extends Activity {
 /*System Functions*/
 
 
-    private void hideSystemUI() {
+  private void hideSystemUI() {
         // Set the IMMERSIVE flag.
         // Set the content to appear under the system bars so that the content
         // doesn't resize when the system bars hide and show.
@@ -247,6 +247,17 @@ public class IdleMenu extends Activity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
+    TimerTask HideTask = new TimerTask() {
+        @Override
+        public void run(){
+            IdleMenu.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hideSystemUI();
+                }
+            });
+        }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

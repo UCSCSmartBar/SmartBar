@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 
 
 public class ConfirmDrink extends Activity {
@@ -58,13 +59,13 @@ public class ConfirmDrink extends Activity {
 
         //The view being uploaded is formatted in the fragment_change_liquor_inv.xml.xml file is in the text
         //box area
-        View v = inflater.inflate(R.layout.fragment_change_liquor_inv, null);
+        View v = inflater.inflate(R.layout.fragment_confirm_drink, null);
         TextView tView = (TextView) findViewById(R.id.confmsg);
 
         //Print the drink obtained
-        if(Do.getCurrentDrinkOrder()!=null){
-            tView.append(Do.DecodeString(Do.getCurrentDrinkOrder()));
-        }
+//        if(Do.getCurrentDrinkOrder()!= null){
+//            tView.append(Do.DecodeString(Do.getCurrentDrinkOrder()));
+//        }
         //Builds the actual pop up with custom style
         new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.SmartUIDialog))
                 .setTitle("Are you sure you didn't order this Drink?")
@@ -90,7 +91,9 @@ public class ConfirmDrink extends Activity {
 
     public void PourDrink(View view){
         PiComm.writeString("$DO,"+Do.getCurrentDrinkOrder());
-        startActivity(new Intent(this,IdleMenu.class));
+        new AttemptDeleteQ().execute();
+
+        startActivity(new Intent(this, IdleMenu.class));
     }
 
 
@@ -147,6 +150,8 @@ public class ConfirmDrink extends Activity {
             if (file_url != null) {
                 //Toast.makeText(DisplayQueue.this, file_url, Toast.LENGTH_LONG).show();
                 Log.d("DelQ","Returned URL:"+ file_url);
+                DrinkOrder.InUserPinString = "";
+                DrinkOrder.InDrinkString="";
 
             } else {
                 Toast.makeText(ConfirmDrink.this, "Failure to Access Server. Check Internet Connection"
@@ -175,6 +180,17 @@ public class ConfirmDrink extends Activity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
+    TimerTask HideTask = new TimerTask() {
+        @Override
+        public void run(){
+            ConfirmDrink.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hideSystemUI();
+                }
+            });
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

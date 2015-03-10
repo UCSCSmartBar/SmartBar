@@ -199,6 +199,18 @@ public class PickUpFinger extends Activity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
+    TimerTask HideTask = new TimerTask() {
+        @Override
+        public void run(){
+            PickUpFinger.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hideSystemUI();
+                }
+            });
+        }
+    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

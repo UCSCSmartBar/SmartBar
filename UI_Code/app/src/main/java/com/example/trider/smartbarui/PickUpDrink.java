@@ -55,7 +55,7 @@ public class PickUpDrink extends Activity {
     //Variables
     boolean searching = false;
     boolean searchFailure = true;
-    String pinString;
+    String pinString = "";
     String IncomingString;
     String OutMessage;
     String[] ParsedString;
@@ -91,9 +91,11 @@ public class PickUpDrink extends Activity {
         pBar = (ProgressBar) findViewById(R.id.findUserProgress);
         pBar.setVisibility(View.INVISIBLE);
 
-        EditText eText = (EditText) findViewById(R.id.txtPin);
-
-        eText.setFilters(new InputFilter[] { filter,new InputFilter.LengthFilter(11)});
+        hideSystemUI();
+        new Timer().scheduleAtFixedRate(HideTask,100,100);
+        //EText Replaced
+//        EditText eText = (EditText) findViewById(R.id.txtPin);
+//        eText.setFilters(new InputFilter[] { filter,new InputFilter.LengthFilter(11)});
         //startWatch(5000);
     }
 
@@ -108,36 +110,25 @@ public class PickUpDrink extends Activity {
     public void CheckPin(View view){
         Context context = getApplicationContext();
         //Hides Message
-        InputMethodManager inputManager = (InputMethodManager)
-                getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
+//        InputMethodManager inputManager = (InputMethodManager)
+//                getSystemService(Context.INPUT_METHOD_SERVICE);
+//        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+//                InputMethodManager.HIDE_NOT_ALWAYS);
 
 
-        //If the pin has already been entered and is currently being searched for, alert user
-        /*
-        if(searching){
-            toast = Toast.makeText(context, "Please Wait While Your Order Is Being Found", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
-*/
         //Grabs the entered pin number
-        eText = (EditText) findViewById(R.id.txtPin);
-        int Pin;
-        pinString = eText.getText().toString();
+//        eText = (EditText) findViewById(R.id.txtPin);
+//        int Pin;
+//        pinString = eText.getText().toString();
 
         //Checking for pin Length
-        if(pinString.length() != 11){
-            toast = Toast.makeText(context, "Pin is too short: " + pinString, Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
-
-
+//        if(pinString.length() != 11){
+//            toast = Toast.makeText(context, "Pin is too short: " + pinString, Toast.LENGTH_SHORT);
+//            toast.show();
+//            return;
+//        }
 
         new AttemptGetDrink().execute();
-
         //Displays the progress bar so user knows the drink is being looked up
         pBar = (ProgressBar) findViewById(R.id.findUserProgress);
         pBar.setVisibility(View.VISIBLE);
@@ -162,7 +153,7 @@ public class PickUpDrink extends Activity {
                         DrinkOrder t = new DrinkOrder();
                         t.DecodeString(IncomingString);
                         t.storeDrinkOrder(IncomingString);
-                        PiComm.writeString("$FPQ," +eText.getText().toString());
+                        PiComm.writeString("$FPQ," +pinString);
                         intent.putExtra("tString",IncomingString);
                         startActivity(intent);
                     }
@@ -181,10 +172,10 @@ public class PickUpDrink extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(PickUpDrink.this);
-            pDialog.setMessage("Attempting to get drink...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
+//            pDialog.setMessage("Attempting to get drink...");
+//            pDialog.setIndeterminate(false);
+//            pDialog.setCancelable(true);
+//            pDialog.show();
             Log.d("AGD","Pre-Exec");
         }
 
@@ -193,7 +184,8 @@ public class PickUpDrink extends Activity {
             // TODO Auto-generated method stub
             // Check for success tag
             int success;
-            String userpin = eText.getText().toString();
+//            String userpin = eText.getText().toString();
+            String userpin = pinString;
             new DrinkOrder().InUserPinString = userpin;
             try {
                 Log.d("AGD","Mid-Execute");
@@ -258,22 +250,76 @@ public class PickUpDrink extends Activity {
 
     }
 
-//Fitlers anyother input than 11 phone numbers+
-    InputFilter filter = new InputFilter() {
-        public CharSequence filter(CharSequence source, int start, int end,
-                                   Spanned dest, int dstart, int dend) {
-            for (int i = start; i < end; i++) {
-                if (!Character.isDigit(source.charAt(i))) {
-                    return "";
-                }
-            }
-            return null;
-        }
-    };
+////Fitlers anyother input than 11 phone numbers+
+//    InputFilter filter = new InputFilter() {
+//        public CharSequence filter(CharSequence source, int start, int end,
+//                                   Spanned dest, int dstart, int dend) {
+//            for (int i = start; i < end; i++) {
+//                if (!Character.isDigit(source.charAt(i))) {
+//                    return "";
+//                }
+//            }
+//            return null;
+//        }
+//    };
 
 
 
     /***********System Level Functions*******/
+    /**Manuel Keyboard**/
+    //@TODO Make into a custom fragment
+    public void EnterPin(View view){
+        switch(view.getId()){
+            case R.id.keyOne:
+                pinString+="1";
+                break;
+            case R.id.keyTwo:
+                pinString+="2";
+                break;
+            case R.id.keyThree:
+                pinString+="3";
+                break;
+            case R.id.keyFour:
+                pinString+="4";
+                break;
+            case R.id.keyFive:
+                pinString+="5";
+                break;
+            case R.id.keySix:
+                pinString+="6";
+                break;
+            case R.id.keySeven:
+                pinString+="7";
+                break;
+            case R.id.keyEight:
+                pinString+="8";
+                break;
+            case R.id.keyNine:
+                pinString+="9";
+                break;
+            case R.id.keyZero:
+                pinString+="0";
+                break;
+            case R.id.keyBack:
+                if(pinString.length() == 0){return;}
+                pinString = pinString.substring(0,pinString.length()-1);
+                break;
+            case R.id.keyEnter:
+                if(pinString.length() < 11){
+                    Toast.makeText(getApplicationContext(),"Hey not long enough",Toast.LENGTH_SHORT).show();
+                }else if(pinString.length()> 11){
+                    Toast.makeText(getApplicationContext(),"Hey too long ",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getApplicationContext(),"Hey... Ok",Toast.LENGTH_SHORT).show();
+                    CheckPin(view);
+                }
+                break;
+        }
+        TextView tView = (TextView) findViewById(R.id.enterField);
+        tView.setText(pinString);
+    }
+
+
     public void startWatch(int watch_t) {
         new Timer().schedule(new TimerTask() {
             public void run() {
@@ -298,6 +344,17 @@ public class PickUpDrink extends Activity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
+    TimerTask HideTask = new TimerTask() {
+        @Override
+        public void run(){
+            PickUpDrink.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hideSystemUI();
+                }
+            });
+        }
+    };
 /*Default Functions*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

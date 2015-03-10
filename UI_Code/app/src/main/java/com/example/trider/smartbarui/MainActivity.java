@@ -9,13 +9,10 @@
 
 
 package com.example.trider.smartbarui;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
-import android.nfc.FormatException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -25,21 +22,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import java.io.BufferedInputStream;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -67,11 +65,20 @@ public class MainActivity extends Activity {
     //Singleton Class which contains all communication statically
     static CommStream PiComm;
 
+    private static final String Q_URL = "http://www.ucscsmartbar.com/getQ.php";
+    private static final String TAG_SUCCESS = "success";
+    private static final String TAG_MESSAGE = "message";
+    Boolean searchFailure = false;
+    JSONParser jsonParser = new JSONParser();
+    Boolean searching = false;
+
     //Default strings for sending/receiving messages
     String[] tokens;
     String InMessage;
     String OutMessage;
     String TAG = "DebugPy";
+    String[] ltokens;
+
 
     static boolean AppStarted = false;
     boolean isActive = true;
@@ -157,6 +164,10 @@ public class MainActivity extends Activity {
 //        isActive = true;
 //    }
 
+    /**
+     * OnCreate goes through a system walkthrough and sets appropriate flags for program use
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,6 +182,8 @@ public class MainActivity extends Activity {
         sBar.setProgress((int)(System.currentTimeMillis() % 100));
         intent = getIntent();
 
+        //mText.setText("Current Time....%l",System.currentTimeMillis());
+
         /**
          * On Opening the app or app getting started by accessory;
          */
@@ -184,8 +197,10 @@ public class MainActivity extends Activity {
             ImageView usbConn = (ImageView) findViewById(R.id.usbCon3);
             if(DetectUSB.Connection){
                 usbConn.setVisibility(View.VISIBLE);
+                mText.append("USB Connection..... Detected\n");
             }else{
                 usbConn.setVisibility(View.INVISIBLE);
+                mText.setText("USB Connection.......... Not Detected\n");
             }
 
             //If the accessory is not there, the PiComm class has yet to be made/instantiated
@@ -193,10 +208,21 @@ public class MainActivity extends Activity {
             if (mAccessory == null) {
                 mText.append("Not started by the Accessory directly" + System.getProperty("line.separator"));
                 PiComm.SetStatus(CommStream.Status_Created);
+                //TODO Add loop to continuously try to connect to R-Pi
+                mText.append("Raspberry Pi........... Not Connected\n");
+                //Try Server anyway
+                new AttemptGetQ().execute();
+                searching = true;
+                mText.append("Checking Server communication......\n");
+                //while(searching);
+                //Trying again to get usb upon return to main screen
+                //the Usb manager and USB accessory is declared and connected here
+                TryToReconnect(null);
                 return;
             }
             //If the device was successfully connected, open open new file streams as per the
             //Android Open Accessory Protocol(AOA).
+            mText.append("Raspberry Pi......... Connected\n");
             Log.v(TAG, mAccessory.toString());
             mFileDescriptor = mUsbManager.openAccessory(mAccessory);
             if (mFileDescriptor != null) {
@@ -204,13 +230,28 @@ public class MainActivity extends Activity {
                 mInputStream = new FileInputStream(fd);
                 mOutputStream = new FileOutputStream(fd);
                 DetectUSB.Connection = true;
+                mText.append("\tFileDescriptor....."+mFileDescriptor.toString()+"\n");
+                mText.append("\tInputString....."+mInputStream.toString()+"\n");
+                mText.append("\tOutputString....."+mOutputStream.toString()+"\n");
                 //Creates Singleton class for other activities to use
                 PiComm = new CommStream(mInputStream, mOutputStream, mAccessory, mUsbManager, mFileDescriptor);
+                mText.append("CommStream......... created\n");
+
+                PiComm.writeString("Hello Raspberry");
                 AppStarted = true;
+                new AttemptGetQ().execute();
+                searching = true;
+                mText.append("Checking Server communication......\n");
+
+                //while(searching);
+                new Thread(mListenerTask).start();
+                //Trying again to get usb upon return to main screen
+                //the Usb manager and USB accessory is declared and connected here
+                //TryToReconnect(null);
             }
             Log.v(TAG, mFileDescriptor.toString());
             eText.clearFocus();
-            new Thread(mListenerTask).start();
+
             /**
              * Returning to this screen for a second time
              */
@@ -223,9 +264,6 @@ public class MainActivity extends Activity {
                 new Thread(mListenerTask).start();
                 return;
             }
-            //Trying again to get usb upon return to main screen
-            //the Usb manager and USB accessory is declared and connected here
-            TryToReconnect(null);
 
         }
     }
@@ -274,7 +312,8 @@ public class MainActivity extends Activity {
 
     }
 
-        public void tryParse(View view) {
+    //For testing Inventory, it automatically stocks it with different types of whiskey
+    public void stockInventory(View view) {
             eText = (EditText) findViewById(R.id.editText);
             OutMessage = eText.getText().toString();
             OutMessage = "$IV,2,2@0,WH,1,54.3,59.2@1,GN,1,49.9,59.2@16,BO,2,3.4,37.1";
@@ -297,8 +336,7 @@ public class MainActivity extends Activity {
             inventory.AddToInventory(18,"WH","Fireball",39.2,39.2);
 //            inventory.AddToInventory(19,"WH","Jim Bean",39.2,39.2);
 //            inventory.AddToInventory(20,"WH","Crown Royal",39.2,39.2);
-
-
+            mText.append("Stocking Bar.......... Whiskey\n");
 
 
         }
@@ -368,15 +406,6 @@ public class MainActivity extends Activity {
 
     }
 
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
     /*
     *Warns that USB is not connected.
      */
@@ -389,11 +418,14 @@ public class MainActivity extends Activity {
     *Moves onto next windows
     */
     public void TryNewWindow(View view){
-        Intent intent = new Intent(this,TestActivity.class);
+        Intent intent = new Intent(this,MainMenu.class);
         startActivity(intent);
     }
 
 
+    public void TestKeyboard(View view){
+        startActivity(new Intent(this,TestKeyBoard.class));
+    }
     //Attempts to Reconnect. Currently not working.
     public void TryToReconnect(View view){
 
@@ -405,7 +437,7 @@ public class MainActivity extends Activity {
 
 
         if (mAccessory == null) {
-            mText.append("Still not connected" + System.getProperty("line.separator"));
+            //mText.append("Still not connected" + System.getProperty("line.separator"));
             ImageView usbConn = (ImageView) findViewById(R.id.usbCon3);
             usbConn.setVisibility(View.INVISIBLE);
             return;
@@ -426,19 +458,76 @@ public class MainActivity extends Activity {
         new Thread(mListenerTask).start();
     }
 
-    /*
-    public void DecodeString(String s){
-
-    }
-    */
-
 
     public void ClearWindow(View view){
         mText.setText("");
     }
 
+    /**Grabs the Queue Initially**/
+    class AttemptGetQ extends AsyncTask<String, String, String> {
+        int success;
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d("AGD","Pre-Exec");
+        }
 
+        @Override
+        protected String doInBackground(String... args) {
+            try
+            {
+                Log.d("AGD", "Mid-Execute");
+                Log.d("request!", "starting");
+                // getting product details by making HTTP request
 
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("pin", "1"));
+                JSONObject json = jsonParser.makeHttpRequest(Q_URL, "POST", params);
+
+                // check your log for json response
+                Log.d("Q", json.toString());
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("Q", json.toString());
+                    searchFailure = false;
+                    return json.getString(TAG_MESSAGE);
+                } else {
+                    Log.d("Q", json.getString(TAG_MESSAGE));
+                    searchFailure = true;
+                    return json.getString(TAG_MESSAGE);
+                }
+            }catch(JSONException e){
+                e.printStackTrace();
+            } catch(NullPointerException npe){
+                npe.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog once product deleted
+            searching = false;
+            if (file_url != null){
+                Log.d("IDLE",file_url);
+                ltokens = file_url.split("[,]");
+                mText.append("Connection to server...........Success\n");
+                mText.append("\t......."+ltokens.length+" drink(s) on Q\n");
+                mText.append("\t Current Q:"+file_url+"\n");
+            }else{
+                mText.append("Connection to server.......Failed\n");
+            }
+
+        }
+    }
+
+/**Default System Functions**/
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
 
 }
