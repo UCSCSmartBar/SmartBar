@@ -71,7 +71,12 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
 
         mRegister = (Button)findViewById(R.id.login_button);
         mRegister.setOnClickListener(this);
-        pin = ((MyApplication)this.getApplication()).myPin;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, StartupActivity.class);
+        startActivity(intent);
     }
 
     // generated activity method
@@ -194,6 +199,7 @@ public class NewUserActivity extends ActionBarActivity implements View.OnClickLi
                 if (success == 1) {
                     Log.d("User Created!", json.toString());
                     ((MyApplication)NewUserActivity.this.getApplication()).myUsername = username;
+                    ((MyApplication)NewUserActivity.this.getApplication()).setLoggedIn(true);
                     Intent intent = new Intent(NewUserActivity.this, WelcomeActivity.class);
                     finish();
                     startActivity(intent);

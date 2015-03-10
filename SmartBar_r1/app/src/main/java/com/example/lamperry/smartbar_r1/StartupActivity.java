@@ -22,6 +22,10 @@ public class StartupActivity extends ActionBarActivity {
         ((MyApplication)this.getApplication()).setLoggedIn(false);
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     // method to direct user to login screen
     public void startupToLogin(View view) {
         //Intent intent = new Intent(this, LibraryBrowseActivity.class);

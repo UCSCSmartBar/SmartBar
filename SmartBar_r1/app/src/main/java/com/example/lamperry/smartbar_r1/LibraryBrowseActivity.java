@@ -212,6 +212,12 @@ public class LibraryBrowseActivity extends ActionBarActivity implements View.OnC
         startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, WelcomeActivity.class);
+        startActivity(intent);
+    }
+
     // necessary method to implement AdapterView and View classes
     @Override
     public void onClick(View v) {

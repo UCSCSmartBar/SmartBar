@@ -52,7 +52,7 @@
     <!-- Order Confirmed Activity -->
     <string name="done">Done!</string>
     <string name="drink_sent">Your order has been sent to the Smart Bar!
-        When you\'re ready, enter your phone number into the touch screen interface.</string>
+        Proceed to the SmartBar touch screen interface to pick up your order.</string>
     <string name="thank_you">Thank you!</string>
     <string name="back_to_library_button">Back to Drink Library</string>
 
