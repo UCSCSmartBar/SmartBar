@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:name=".MyApplication"
@@ -48,8 +50,8 @@
         </activity>
         <activity
             android:name=".WelcomeActivity"
-            android:parentActivityName=".StartupActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".WelcomeActivity" >
         </activity>
         <activity
             android:name=".LibraryBrowseActivity"
@@ -59,18 +61,22 @@
         </activity>
         <activity
             android:name=".ConfirmationActivity"
-            android:parentActivityName=".LibraryBrowseActivity"
-            android:label="@string/confirmation_actionbar" >
+            android:label="@string/confirmation_actionbar"
+            android:parentActivityName=".LibraryBrowseActivity" >
         </activity>
         <activity
             android:name=".DrinkOrderedActivity"
-            android:parentActivityName=".ConfirmationActivity"
-            android:label="@string/done" >
+            android:label="@string/done"
+            android:parentActivityName=".ConfirmationActivity" >
         </activity>
         <activity
             android:name=".CustomizeDrinkActivity"
-            android:parentActivityName=".ConfirmationActivity"
-            android:label="@string/customize" >
+            android:label="@string/customize"
+            android:parentActivityName=".ConfirmationActivity" >
+        </activity>
+        <activity
+            android:name=".BACtrackActivity"
+            android:label="@string/title_activity_bactrack" >
         </activity>
     </application>
 

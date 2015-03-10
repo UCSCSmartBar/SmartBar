@@ -40,6 +40,16 @@ public class DrinkOrderedActivity extends ActionBarActivity {
         pinDisplay = (TextView)findViewById(R.id.displayPin);
         // format phone number
         pinDisplay.setText(((MyApplication)this.getApplication()).myPin);
+
+        // BACtrack
+        float measuredBac = 0;
+        boolean bacDone = false;
+        Intent intent = getIntent();
+        bacDone = intent.getBooleanExtra("bac?", false);
+        measuredBac = intent.getFloatExtra("measuredBac", 0);
+        if (bacDone) {
+            pinDisplay.setText(String.valueOf(measuredBac));
+        }
     }
 
     @Override
@@ -92,21 +102,24 @@ public class DrinkOrderedActivity extends ActionBarActivity {
     }
 
     public void openBACtrack(View view) {
-        final String playStoreBACtrack = "com.bactrack.bactrack_mobile";
-        Intent intent;
-        PackageManager manager = getPackageManager();
-        try {
-            intent = manager.getLaunchIntentForPackage(playStoreBACtrack);
-            if (intent == null)
-                throw new PackageManager.NameNotFoundException();
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            startActivity(intent);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e("BACtrack Error", "App not found.");
-            Toast.makeText(this, "You must download the BACtrack app!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + playStoreBACtrack)));
-        } catch (ActivityNotFoundException e) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + playStoreBACtrack)));
-        }
+//        final String playStoreBACtrack = "com.bactrack.bactrack_mobile";
+//        Intent intent;
+//        PackageManager manager = getPackageManager();
+//        try {
+//            intent = manager.getLaunchIntentForPackage(playStoreBACtrack);
+//            if (intent == null)
+//                throw new PackageManager.NameNotFoundException();
+//            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//            startActivity(intent);
+//        } catch (PackageManager.NameNotFoundException e) {
+//            Log.e("BACtrack Error", "App not found.");
+//            Toast.makeText(this, "You must download the BACtrack app!", Toast.LENGTH_SHORT).show();
+//            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + playStoreBACtrack)));
+//        } catch (ActivityNotFoundException e) {
+//            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + playStoreBACtrack)));
+//        }
+
+        Intent intent = new Intent(this, BACtrackActivity.class);
+        startActivity(intent);
     }
 }
