@@ -1,0 +1,14 @@
+INDEX VERSION 1.127+C:\Users\eloys\Desktop\Oauth\.metadata\.plugins\org.eclipse.jdt.core
+1390607028.index
+4125012862.index
+3999693959.index
+2186592054.index
+1085876326.index
+3946613177.index
+2910584223.index
+204077618.index
+3722800117.index
+2607421795.index
+2401544016.index
+306529496.index
+616376207.index
