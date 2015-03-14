@@ -11,7 +11,7 @@ import string
 import threading
 
 
-
+Hello = 1
 ValveOpen = 1
 
 ValveClosed = 0
