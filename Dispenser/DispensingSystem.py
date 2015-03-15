@@ -11,13 +11,13 @@ import string
 import threading
 
 
-Hello = 1
+
 ValveOpen = 1
 
 ValveClosed = 0
  
 ValveHasNotOpened = 0
-
+ 
 ValveHasOpened = 1
 
 AlcoholValveDelayEnabled = 1
@@ -54,7 +54,11 @@ SBDispenser_PacketSplittingCharacter = "@"
 
 SBDispenser_MinimumContainerContents = .5
 
+SBDispenser_ATXPin = 19
 
+SBDispenser_CoolCarbPowerPin = 21 # pin number of relay control to the cooling and carbonation system
+    
+SBDispenser_WaterPumpPowerPin = 26 # pin number of relay control to the water pump
 ######################################################################################        
     
 # Class: SmartBar_Dispenser
@@ -91,9 +95,6 @@ class SmartBar_Dispenser():
 
     # Variables
     
-    CoolCarbPower = 21 # pin number of relay control to the cooling and carbonation system
-    
-    WaterPumpPower = 26 # pin number of relay control to the water pump
 
     TotalDispensingValves = 22 # number of dispensing valves in use
 
@@ -330,11 +331,11 @@ class SmartBar_Dispenser():
         SmartBar_Dispenser.PrintFilter = PrintLogFilter(1,1,1,1,2)
         SmartBar_Dispenser.PrintFilter.System("Starting Dispenser Initialization",SmartBar_Dispenser.PrintFilter.Title)
         self.GPIO_Initialize() # initialize GPIO
+        SmartBar_Dispenser.SystemManager =  PowerSystemManager(SBDispenser_ATXPin,SBDispenser_WaterPumpPowerPin,SBDispenser_CoolCarbPowerPin)
         SmartBar_Dispenser.ValveManager = SmartBar_ValveController(SmartBar_Dispenser.TotalDispensingValves) # initialize valve manager
         SmartBar_Dispenser.InventoryManager = SmartBar_Inventory() # initialize inventory manager
         SmartBar_Dispenser.PrintFilter.System("Dispenser Initialization Complete",SmartBar_Dispenser.PrintFilter.Title)
                                             
-
 
    
     def GPIO_Initialize(self): # Sets gpio mode, configures dispensing pins to be outputs
@@ -342,12 +343,7 @@ class SmartBar_Dispenser():
         SmartBar_Dispenser.PrintFilter.System("Power Control GPIO Initialize",SmartBar_Dispenser.PrintFilter.SubTitle)
         GPIO.setmode(GPIO.BCM) # set GPIO mode
         GPIO.setwarnings(False)                                        
-        GPIO.setup(SmartBar_Dispenser.CoolCarbPower,GPIO.OUT) # set cooling/carbonation system control pin as an output
-        GPIO.output(SmartBar_Dispenser.CoolCarbPower,GPIO.LOW) # set cooling/carbonation control pin low - cooling/carbonation system off - MUST REMAIN OFF UNTIL WATER PUMP HAS STARTED
-        SmartBar_Dispenser.PrintFilter.System(("Cooling/Carbonation System GPIO Pin #"+str(SmartBar_Dispenser.CoolCarbPower)+" Initialized"),SmartBar_Dispenser.PrintFilter.Standard)
-        GPIO.setup(SmartBar_Dispenser.WaterPumpPower,GPIO.OUT) # set water pump control pin as an output
-        GPIO.output(SmartBar_Dispenser.WaterPumpPower,GPIO.LOW) # set water pump control pin low - water pump off                                    
-
+ 
     def GPIO_Free(self): # releases all GPIO pins
 
         GPIO.cleanup() # unexport all GPIO
@@ -1025,10 +1021,10 @@ class SmartBar_ValveController():
 
     def TestAllValves(self):
 
-        TestPause = 2
+        TestPause = .3
         
         self.ClearQueuedValves()
-        (self.TotalValves) = 4
+        (self.TotalValves) = 6
         for i in range (self.TotalValves):
 
             self.CurrentValveState[i] = 1
@@ -1072,6 +1068,60 @@ class ValveDispenseData():
         self.Delay = valve_delay # delay time
 
         self.Mix = mix_type # mix with carbonated water or water or nothing
+
+
+
+class PowerSystemManager():
+
+    def __init__(self, atx_pin, water_pump_pin, cooling_system_pin):
+
+        self.ATXPin = atx_pin
+        self.CoolingSystemPin = cooling_system_pin
+        self.WaterPumpPin = water_pump_pin
+
+        GPIO.setup(self.ATXPin,GPIO.OUT) # set cooling/carbonation system control pin as an output
+        GPIO.output(self.ATXPin,GPIO.LOW) # set cooling/carbonation control pin low - cooling/carbonation system off - MUST REMAIN OFF UNTIL WATER PUMP HAS STARTED
+            
+        GPIO.setup(self.CoolingSystemPin,GPIO.OUT) # set cooling/carbonation system control pin as an output
+        GPIO.output(self.CoolingSystemPin,GPIO.LOW) # set cooling/carbonation control pin low - cooling/carbonation system off - MUST REMAIN OFF UNTIL WATER PUMP HAS STARTED
+        
+        GPIO.setup(self.WaterPumpPin,GPIO.OUT) # set water pump control pin as an output
+        GPIO.output(self.WaterPumpPin,GPIO.LOW) # set water pump control pin low - water pump off                                    
+
+
+    def TurnATXOnOff(self,on_off):
+
+        if (on_off == 1):
+            GPIO.output(self.ATXPin,GPIO.HIGH)
+            SmartBar_Dispenser.PrintFilter.System('ATX Turned On',SmartBar_Dispenser.PrintFilter.Standard) 
+
+        else:
+            GPIO.output(self.ATXPin,GPIO.LOW)
+            SmartBar_Dispenser.PrintFilter.System('ATX Turned Off',SmartBar_Dispenser.PrintFilter.Standard) 
+
+
+
+    def TurnWaterPumpOnOff(self,on_off):
+
+        if (on_off == 1):
+            GPIO.output(self.WaterPumpPin,GPIO.HIGH)
+            SmartBar_Dispenser.PrintFilter.System('Water Pump Turned On',SmartBar_Dispenser.PrintFilter.Standard) 
+
+        else:
+            GPIO.output(self.WaterPumpPin,GPIO.LOW)
+            SmartBar_Dispenser.PrintFilter.System('Water Pump Turned Off',SmartBar_Dispenser.PrintFilter.Standard) 
+
+
+
+    def TurnCoolingSystemOnOff(self,on_off):
+
+        if (on_off == 1):
+            GPIO.output(self.CoolingSystemPin,GPIO.HIGH)
+            SmartBar_Dispenser.PrintFilter.System('Water Pump Turned On',SmartBar_Dispenser.PrintFilter.Standard) 
+
+        else:
+            GPIO.output(self.CoolingSystemPin,GPIO.LOW)
+            SmartBar_Dispenser.PrintFilter.System('Water Pump Turned Off',SmartBar_Dispenser.PrintFilter.Standard) 
 
 
 
