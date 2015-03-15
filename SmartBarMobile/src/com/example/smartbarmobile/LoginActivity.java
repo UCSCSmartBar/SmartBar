@@ -110,7 +110,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    ((MyApplication)LoginActivity.this.getApplication()).hideSoftKeyboard(LoginActivity.this);
+                    MyApplication.hideSoftKeyboard(LoginActivity.this);
                     return false;
                 }
             });
@@ -173,9 +173,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     Log.d("Login Successful!", json.toString());
                     ((MyApplication)LoginActivity.this.getApplication()).myUsername = username;
                     ((MyApplication)LoginActivity.this.getApplication()).setLoggedIn(true);
-//                    Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
-//                    finish();
-//                    startActivity(intent);
+                    Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
+                    finish();
+                    startActivity(intent);
                     return json.getString(TAG_MESSAGE);
                 }else{
                     Log.d("Login Failure!", json.getString(TAG_MESSAGE));

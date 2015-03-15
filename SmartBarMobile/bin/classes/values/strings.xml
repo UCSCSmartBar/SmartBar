@@ -63,5 +63,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="action_forgot_user">Forgot Username</string>
     <string name="action_forgot_pass">Forgot Password</string>
+    <string name="oauth_button">Sign in with Gmail</string>
+    <string name="oauth_login">Secure Authentication</string>
 
 </resources>

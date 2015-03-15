@@ -238,7 +238,7 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    ((MyApplication)LibraryBrowseActivity.this.getApplication()).hideSoftKeyboard(LibraryBrowseActivity.this);
+                    MyApplication.hideSoftKeyboard(LibraryBrowseActivity.this);
                     return false;
                 }
             });

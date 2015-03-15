@@ -3,6 +3,7 @@
 	<name>SmartBarMobile</name>
 	<comment></comment>
 	<projects>
+		<project>com.ecs.android.sample.oauth2</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

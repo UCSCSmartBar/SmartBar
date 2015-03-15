@@ -135,7 +135,9 @@ public class IntroScreen extends Activity {
 	 */
 	private void startMainScreen(Oauth2Params oauth2Params) {
 		Constants.OAUTH2PARAMS = oauth2Params;
-		startActivity(new Intent().setClass(this,MainScreen.class));
+//		startActivity(new Intent().setClass(this,MainScreen.class));
+		Intent intent = new Intent(this, WelcomeActivity.class);
+		startActivity(intent);
 	}
 	
 	/**

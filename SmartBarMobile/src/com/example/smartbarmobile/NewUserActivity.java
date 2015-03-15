@@ -123,7 +123,7 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    ((MyApplication)NewUserActivity.this.getApplication()).hideSoftKeyboard(NewUserActivity.this);
+                    MyApplication.hideSoftKeyboard(NewUserActivity.this);
                     return false;
                 }
             });

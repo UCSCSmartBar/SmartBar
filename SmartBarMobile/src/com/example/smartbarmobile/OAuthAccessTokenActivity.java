@@ -19,7 +19,6 @@ import android.webkit.WebViewClient;
 /**
  * Execute the OAuthRequestTokenTask to retrieve the request, and authorize the request.
  * After the request is authorized by the user, the callback URL will be intercepted here.
- * 
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class OAuthAccessTokenActivity extends Activity {
@@ -84,13 +83,13 @@ public class OAuthAccessTokenActivity extends Activity {
 	}
 
 	
-	private class ProcessToken extends AsyncTask<Uri, Void, Void> {
+	private class ProcessToken extends AsyncTask<Uri, OAuth2Helper, Void> {
 
 		String url;
 		boolean startActivity=false;
 		
 
-		public ProcessToken(String url,OAuth2Helper oAuth2Helper) {
+		public ProcessToken(String url, OAuth2Helper oAuth2Helper) {
 			this.url=url;
 		}
 		
@@ -128,7 +127,7 @@ public class OAuthAccessTokenActivity extends Activity {
 		private String extractCodeFromUrl(String url) throws Exception {
 			String encodedCode = url.substring(Constants.OAUTH2PARAMS.getRederictUri().length()+7,url.length());
 			return URLDecoder.decode(encodedCode,"UTF-8");
-		}  
+		}
 		
 		@Override
 		protected void onPreExecute() {
@@ -137,17 +136,16 @@ public class OAuthAccessTokenActivity extends Activity {
 
 		/**
 		 * When we're done and we've retrieved either a valid token or an error from the server,
-		 * we'll return to our original activity 
+		 * we'll return to our original activity
 		 */
 		@Override
 		protected void onPostExecute(Void result) {
 			if (startActivity) {
 				Log.i(Constants.TAG," ++++++++++++ Starting mainscreen again");
-				startActivity(new Intent(OAuthAccessTokenActivity.this,MainScreen.class));
+				Intent intent = new Intent(OAuthAccessTokenActivity.this, WelcomeActivity.class);
 				finish();
+				startActivity(intent);
 			}
-
 		}
-
 	}
 }

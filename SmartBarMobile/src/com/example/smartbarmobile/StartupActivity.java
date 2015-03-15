@@ -1,11 +1,19 @@
 package com.example.smartbarmobile;
 
+import java.util.Timer;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 
 public class StartupActivity extends Activity {
+	
+	private Timer timer = new Timer();
+	private SharedPreferences prefs;
+	protected int elapsedTime;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -14,6 +22,8 @@ public class StartupActivity extends Activity {
 
         // initializes app wide global boolean to false
         ((MyApplication)this.getApplication()).setLoggedIn(false);
+        
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	}
 
     @Override
@@ -33,4 +43,8 @@ public class StartupActivity extends Activity {
         startActivity(intent);
     }
     
+    public void oauthLogin(View view) {
+    	Intent intent = new Intent(this, IntroScreen.class);
+    	startActivity(intent);
+    }
 }
