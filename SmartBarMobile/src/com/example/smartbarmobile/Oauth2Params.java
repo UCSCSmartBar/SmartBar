@@ -3,6 +3,7 @@ package com.example.smartbarmobile;
 import com.ecs.android.sample.oauth2.foursquare.FoursquareQueryParameterAccessMethod;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential.AccessMethod;
+import com.google.api.services.plus.PlusScopes;
 
 /**
  * 
@@ -24,7 +25,7 @@ import com.google.api.client.auth.oauth2.Credential.AccessMethod;
  */
 public enum Oauth2Params {
 
-	GOOGLE_PLUS("testclient","testpass","http://ucscsmartbar.com/token.php","http://ucscsmartbar.com/authorize.php",BearerToken.authorizationHeaderAccessMethod(),"basic","http://ucscsmartbar.com","plus","https://www.googleapis.com/plus/v1/people/me/activities/public"),
+	GOOGLE_PLUS("797689970540-nmc1blntnurpeeh6gd4qrhfd1qapk124.apps.googleusercontent.com","d3w4ERxNKUVkBpBiWrlUX7mN","https://accounts.google.com/o/oauth2/token","https://accounts.google.com/o/oauth2/auth",BearerToken.authorizationHeaderAccessMethod(),PlusScopes.PLUS_ME,"http://localhost","plus","https://www.googleapis.com/plus/v1/people/me/activities/public"),
 	GOOGLE_TASKS_OAUTH2("797689970540-nmc1blntnurpeeh6gd4qrhfd1qapk124.apps.googleusercontent.com","d3w4ERxNKUVkBpBiWrlUX7mN","https://accounts.google.com/o/oauth2/token","https://accounts.google.com/o/oauth2/auth",BearerToken.authorizationHeaderAccessMethod(),"","https://www.googleapis.com/auth/tasks","tasks","https://www.googleapis.com/tasks/v1/users/@me/lists"),
 	FOURSQUARE_OAUTH2("797689970540-nmc1blntnurpeeh6gd4qrhfd1qapk124.apps.googleusercontent.com","d3w4ERxNKUVkBpBiWrlUX7mN","https://foursquare.com/oauth2/access_token", "https://foursquare.com/oauth2/authenticate",FoursquareQueryParameterAccessMethod.getInstance(),"","http://ucscsmartbar.com","foursquare","https://api.foursquare.com/v2/users/self/checkins"); 
 
