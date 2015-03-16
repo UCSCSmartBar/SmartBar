@@ -1,5 +1,11 @@
 package com.example.smartbarmobile;
 
+/*
+ * Modified from com.ecs.android.sample.oauth2
+ * 
+ * @author davydewaele
+ */
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;

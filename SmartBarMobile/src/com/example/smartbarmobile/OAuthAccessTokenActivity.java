@@ -1,5 +1,11 @@
 package com.example.smartbarmobile;
 
+/*
+ * Modified from com.ecs.android.sample.oauth2
+ * 
+ * @author davydewaele
+ */
+
 import java.net.URLDecoder;
 
 import android.annotation.SuppressLint;
@@ -141,7 +147,7 @@ public class OAuthAccessTokenActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			if (startActivity) {
-				Log.i(Constants.TAG," ++++++++++++ Starting mainscreen again");
+				Log.i(Constants.TAG," ++++++++++++ Starting Welcome screen.");
 				Intent intent = new Intent(OAuthAccessTokenActivity.this, WelcomeActivity.class);
 				finish();
 				startActivity(intent);
