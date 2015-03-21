@@ -1,11 +1,10 @@
 package com.example.smartbarmobile;
 
-/*
+/**
  * Modified from com.ecs.android.sample.oauth2
  * 
  * @author davydewaele
  */
-
 import java.net.URLDecoder;
 
 import android.annotation.SuppressLint;
@@ -28,7 +27,8 @@ import android.webkit.WebViewClient;
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class OAuthAccessTokenActivity extends Activity {
-
+	
+	// Initializations
 	private SharedPreferences prefs;
 	private OAuth2Helper oAuth2Helper;
 
@@ -54,6 +54,8 @@ public class OAuthAccessTokenActivity extends Activity {
             public void onPageStarted(WebView view, String url,Bitmap bitmap)  {  
         		Log.d(Constants.TAG, "onPageStarted : " + url + " handled = " + handled);
             }
+        	
+        	// checks params and processes token if authorization url correct
         	@Override  
             public void onPageFinished(final WebView view, final String url)  {
         		Log.d(Constants.TAG, "onPageFinished : " + url + " handled = " + handled);
@@ -89,10 +91,15 @@ public class OAuthAccessTokenActivity extends Activity {
 	}
 
 	
+	/**
+	 * Background task to extract authorization code from url and retrieve access token associated with the code.
+	 *
+	 */
 	private class ProcessToken extends AsyncTask<Uri, OAuth2Helper, Void> {
 
 		String url;
 		boolean startActivity=false;
+		String authorizationCode;
 		
 
 		public ProcessToken(String url, OAuth2Helper oAuth2Helper) {
@@ -108,7 +115,12 @@ public class OAuthAccessTokenActivity extends Activity {
 				handled=true;
         		try {
         			if (url.indexOf("code=")!=-1) {
-            			String authorizationCode = extractCodeFromUrl(url);
+            			authorizationCode = extractCodeFromUrl(url);
+            			
+        				// for db entry
+        				String username = authorizationCode.substring(0, 19);
+        				((MyApplication)OAuthAccessTokenActivity.this.getApplication()).myUsername = username;
+        				((MyApplication)OAuthAccessTokenActivity.this.getApplication()).myPassword = username;
             			
             			Log.i(Constants.TAG, "Found code = " + authorizationCode);
 						
@@ -142,15 +154,14 @@ public class OAuthAccessTokenActivity extends Activity {
 
 		/**
 		 * When we're done and we've retrieved either a valid token or an error from the server,
-		 * we'll return to our original activity
+		 * we'll return to our original app flow
 		 */
 		@Override
 		protected void onPostExecute(Void result) {
 			if (startActivity) {
 				Log.i(Constants.TAG," ++++++++++++ Starting Welcome screen.");
-				Intent intent = new Intent(OAuthAccessTokenActivity.this, WelcomeActivity.class);
+				startActivity(new Intent(OAuthAccessTokenActivity.this, WelcomeActivity.class));
 				finish();
-				startActivity(intent);
 			}
 		}
 	}

@@ -23,6 +23,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/*
+ * This 
+ */
 public class LoginActivity extends Activity implements View.OnClickListener {
 
     // Initializations

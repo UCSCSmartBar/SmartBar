@@ -85,7 +85,7 @@ public class CustomizeDrinkActivity extends Activity {
             builder.setTitle("My Number");
             builder.setMessage(String.valueOf(pin));
             builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
+            builder.show();
             return true;
         }
 

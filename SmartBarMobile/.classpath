@@ -12,7 +12,7 @@
 			<accessrule kind="nonaccessible" pattern="com/android/internal/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.ecs.android.sample.oauth2"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.ecs.android.sample.oauth2"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>

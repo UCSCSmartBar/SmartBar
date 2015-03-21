@@ -124,7 +124,7 @@ public class ConfirmationActivity extends Activity {
             builder.setTitle("My Number");
             builder.setMessage(String.valueOf(pin));
             builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
+            builder.show();
             return true;
         }
 
@@ -143,6 +143,7 @@ public class ConfirmationActivity extends Activity {
         startActivity(intent);
     }
 
+    // for back navigation
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, LibraryBrowseActivity.class);
@@ -177,6 +178,8 @@ public class ConfirmationActivity extends Activity {
         ArrayList<String> liquorList;
         liquorList = buildLiquorList(finalRecipe);
 
+        
+        // start customize drink screen and pass activity proper drink order data
         Intent intent = new Intent(this, CustomizeDrinkActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
         intent.putExtra("drinkRecipe", sendRecipe);
@@ -195,19 +198,19 @@ public class ConfirmationActivity extends Activity {
                 case "B":
                     liquors.add("Bitters");
                     break;
-                case "G":
+                case "GN":
                     liquors.add("Gin");
                     break;
-                case "R":
+                case "RM":
                     liquors.add("Rum");
                     break;
-                case "T":
+                case "TQ":
                     liquors.add("Tequila");
                     break;
-                case "V":
+                case "VO":
                     liquors.add("Vodka");
                     break;
-                case "W":
+                case "WH":
                     liquors.add("Whiskey");
                     break;
                 default:
@@ -226,12 +229,12 @@ public class ConfirmationActivity extends Activity {
 
         boolean failure = false;
 
-        // queries database and adds new user information
         @Override
         protected String doInBackground(String... args) {
             // Check for success tag
             int success;
             String username = ((MyApplication)ConfirmationActivity.this.getApplication()).myUsername;
+            Log.i("Username", username);
             String drink = drinkOrder;
             try {
                 // Building Parameters

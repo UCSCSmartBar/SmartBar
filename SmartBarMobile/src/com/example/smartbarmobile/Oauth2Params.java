@@ -31,14 +31,14 @@ import com.google.api.services.plus.PlusScopes;
 public enum Oauth2Params {
 
 	GOOGLE_PLUS("797689970540-nmc1blntnurpeeh6gd4qrhfd1qapk124.apps.googleusercontent.com",
-				"d3w4ERxNKUVkBpBiWrlUX7mN",
+				"JkBtWy7S-4hM6JKMWlP0lEu5",
 				"https://accounts.google.com/o/oauth2/token",
 				"https://accounts.google.com/o/oauth2/auth",
 				BearerToken.authorizationHeaderAccessMethod(),
-				PlusScopes.PLUS_ME,
-				"http://localhost",
+				PlusScopes.PLUS_LOGIN,
+				"http://ucscsmartbar.com",
 				"plus",
-				"https://www.googleapis.com/plus/v1/people/userId");
+				"https://www.googleapis.com/auth/plus.login");
 
     private String clientId;
 	private String clientSecret;

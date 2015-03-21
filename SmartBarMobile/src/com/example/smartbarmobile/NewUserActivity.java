@@ -25,6 +25,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+/*
+ * This class defines all the behavior on the create account screen.
+ * Checks for correct age, username already in database, sends new user info to database.
+ */
 public class NewUserActivity extends Activity implements View.OnClickListener {
 
     // Initializations

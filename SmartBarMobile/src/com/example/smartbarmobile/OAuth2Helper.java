@@ -1,6 +1,6 @@
 package com.example.smartbarmobile;
 
-/*
+/**
  * Modified from com.ecs.android.sample.oauth2
  * 
  * @author davydewaele
@@ -26,6 +26,11 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
+/**
+ * This class is a modified version of OAuth Demo class to assist in OAuth flow.
+ * Generates authorization URL from Oauth2Params info, extracts access token using authorization code.
+ *
+ */
 public class OAuth2Helper {
 
 	/** Global instance of the HTTP transport. */
@@ -44,18 +49,6 @@ public class OAuth2Helper {
 		this.credentialStore = new SharedPreferencesCredentialStore(sharedPreferences);
 		this.oauth2Params = oauth2Params;
 		this.flow = new AuthorizationCodeFlow.Builder(oauth2Params.getAccessMethod() , HTTP_TRANSPORT, JSON_FACTORY, new GenericUrl(oauth2Params.getTokenServerUrl()), new ClientParametersAuthentication(oauth2Params.getClientId(),oauth2Params.getClientSecret()), oauth2Params.getClientId(), oauth2Params.getAuthorizationServerEncodedUrl()).setCredentialStore(this.credentialStore).build();
-		
-		
-//		try {
-//		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY,
-//		        new InputStreamReader(OAuth2Helper.class.getResourceAsStream("/client_secrets.json")));
-//		
-//		 this.flow = new GoogleAuthorizationCodeFlow.Builder(
-//			        HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
-//			        Collections.singleton(PlusScopes.PLUS_ME)).setCredentialStore(credentialStore).build();
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
 	}
 
 	public OAuth2Helper(SharedPreferences sharedPreferences) {
@@ -83,14 +76,6 @@ public class OAuth2Helper {
 		Log.i(Constants.TAG,"Executing API call at url " + this.oauth2Params.getApiUrl());
 		return HTTP_TRANSPORT.createRequestFactory(loadCredential()).buildGetRequest(new GenericUrl(this.oauth2Params.getApiUrl())).execute().parseAsString();
 	}
-//
-//	public String executeApiPostCall() throws IOException {
-//		Location loc = new Location();
-//		loc.setLatitude(10);
-//		loc.setLongitude(10);
-//		HttpContent httpContent = new JsonHttpContent(JSON_FACTORY, loc).setWrapperKey("data"); 
-//		return HTTP_TRANSPORT.createRequestFactory(loadCredential()).buildPostRequest(new GenericUrl(this.oauth2Params.getApiUrl()),httpContent).execute().parseAsString();
-//	}
 
 	
 	public Credential loadCredential() throws IOException {

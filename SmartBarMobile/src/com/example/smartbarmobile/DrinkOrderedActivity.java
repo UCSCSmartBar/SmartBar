@@ -22,6 +22,7 @@ public class DrinkOrderedActivity extends Activity {
 
     ProgressDialog pDialog;
     JSONParser jsonParser;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +53,7 @@ public class DrinkOrderedActivity extends Activity {
             builder.setTitle("My Number");
             builder.setMessage(pinDisplay.getText().toString());
             builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
+            builder.show();
             return true;
         }
 
@@ -71,6 +72,7 @@ public class DrinkOrderedActivity extends Activity {
         startActivity(intent);
     }
 
+    // for back navigation
     @Override
     public void onBackPressed() {
     }

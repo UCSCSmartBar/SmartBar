@@ -105,16 +105,17 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // user selected get pin
         if (id == R.id.action_pin) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("My Number");
             builder.setMessage(String.valueOf(pin));
             builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
+            builder.show();
             return true;
         }
 
+        // logout
         if (id == R.id.action_logout) {
             logout();
         }
@@ -212,6 +213,7 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
         startActivity(intent);
     }
 
+    // for back navigation
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, WelcomeActivity.class);
@@ -222,6 +224,7 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
     @Override
     public void onClick(View v) {
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -264,25 +267,12 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
 
         // count how many drinks
         int drinkCount = 0;
-
-        // parse names and recipes into separate string lists
-//        for (int i = 0; i < drinkNameString.length(); i++) {
-//            if (drinkNameString.length() > 0) {
-//                if (drinkNameString.charAt(i) == '%') {
-//                    drinkCount++;
-//                    tempName = drinkNameString.split("%");
-//                    drinks.add(tempName[0]);
-//                    drinkLibrary.add(tempName[0]);
-//                    filteredLibrary.add(tempName[0]);
-//                    drinkNameString = drinkNameString.replace(tempName[0] + "%", "");
-//                }
-//            }
-//        }
         for (int i = 0; i < drinkNameString.length(); i++) {
             if (drinkNameString.charAt(i) == '%') {
                 drinkCount++;
             }
         }
+        
         tempName = drinkNameString.split("%");
         tempRecipe = drinkRecipeString.split("%");
         for (int k = 0; k < drinkCount; k++) {
