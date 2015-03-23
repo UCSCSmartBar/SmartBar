@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 
 
@@ -33,7 +34,7 @@ public class ConfirmDrink extends Activity {
     Boolean searchFailure = false;
     JSONParser jsonParser = new JSONParser();
 
-
+    Boolean deleting = true;
 
 
     CommStream PiComm = new CommStream();
@@ -46,6 +47,7 @@ public class ConfirmDrink extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_drink);
         hideSystemUI();
+        new Timer().scheduleAtFixedRate(HideTask,100,100);
         DrinkListing = (TextView) findViewById(R.id.drink_listing);
 
         if (Do.getCurrentDrinkOrder() != null) {
@@ -76,7 +78,7 @@ public class ConfirmDrink extends Activity {
                         // continue with delete
                     }
                 })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // do nothing
 
@@ -91,8 +93,11 @@ public class ConfirmDrink extends Activity {
 
     public void PourDrink(View view){
         PiComm.writeString("$DO,"+Do.getCurrentDrinkOrder());
+        DrinkOrder.InDrinkString = "";
         new AttemptDeleteQ().execute();
 
+        long time = System.currentTimeMillis();
+        while(time > System.currentTimeMillis()+5000);
         startActivity(new Intent(this, IdleMenu.class));
     }
 
@@ -152,6 +157,8 @@ public class ConfirmDrink extends Activity {
                 Log.d("DelQ","Returned URL:"+ file_url);
                 DrinkOrder.InUserPinString = "";
                 DrinkOrder.InDrinkString="";
+
+
 
             } else {
                 Toast.makeText(ConfirmDrink.this, "Failure to Access Server. Check Internet Connection"

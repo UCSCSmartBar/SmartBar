@@ -52,9 +52,9 @@ public class SystemStatus extends Activity {
         setContentView(R.layout.activity_system_status);
 
         cList = (Spinner) findViewById(R.id.command_spinner);
-        mText = (TextView) findViewById(R.id.status_log);
+        //mText = (TextView) findViewById(R.id.status_log);
         PiComm = new CommStream();
-        SCP = new SystemCodeParser();
+        //SCP = new SystemCodeParser();
         if(PiComm.isInitialized()) {
             new Thread(mListenerTask).start();
         }
@@ -111,18 +111,22 @@ public class SystemStatus extends Activity {
     Runnable mListenerTask = new Runnable() {
         @Override
         public void run() {
-            InMessage = PiComm.readString();
-            if(InMessage != null){
-                mText.post(mUpdateUI);
-            }
-            //Waits for new input communication
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                InMessage = PiComm.readString();
+                if (InMessage != null) {
+                    //mText.post(mUpdateUI);
+                }
+                //Waits for new input communication
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //Restarts this thread.
+                new Thread(this).start();
+            }catch (NullPointerException npe) {
+                npe.printStackTrace();
             }
-            //Restarts this thread.
-            new Thread(this).start();
         }
     };
 

@@ -5,15 +5,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -59,6 +55,37 @@ public class NewUser extends Activity {
 
 
 
+    //Listens to Pi
+    boolean isActive = true;
+    class ListenTask extends TimerTask {
+        @Override
+        public void run(){
+            NewUser.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isActive) {
+                        /**
+                         * @subTimeTask
+                         */
+                        String t = CommStream.ReadBuffer();
+                        if(t!=null) {
+                            TextView tV = (TextView) findViewById(R.id.drinkView);
+                            tV.append(t);
+                            String rMessage = SystemCodeParser.DecodeAccessoryMessage(t);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        isActive =false;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +95,9 @@ public class NewUser extends Activity {
 
         hideSystemUI();
         new Timer().scheduleAtFixedRate(HideTask,100,100);
-
+        new Timer().scheduleAtFixedRate(new ListenTask(),100,100);
+        TextView tV = (TextView) findViewById(R.id.drinkView);
+        tV.setText("CurBuff:"+ CommStream.ReadBuffer()+ "CurQ:"+ DrinkOrder.CurDrinkQueue);
         //Using manual Keyboard
 //        EditText eText = (EditText) findViewById(R.id.txtPin);
 //
@@ -81,24 +110,6 @@ public class NewUser extends Activity {
     public void CheckPin(View view){
         Context context = getApplicationContext();
 
-        //Hides Message
-//        InputMethodManager inputManager = (InputMethodManager)
-//                getSystemService(Context.INPUT_METHOD_SERVICE);
-//        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-//                InputMethodManager.HIDE_NOT_ALWAYS);
-
-
-        //Grabs the entered pin number
-//        eText = (EditText) findViewById(R.id.txtPin);
-//        long Pin;
-//        pinString = eText.getText().toString();
-
-        //Checking for pin Length
-//        if(pinString.length() != 11){
-//            toast = Toast.makeText(context, "Pin is too short: " + pinString, Toast.LENGTH_SHORT);
-//            toast.show();
-//            return;
-//        }
 
         new AttemptGetDrink().execute();
 
@@ -115,21 +126,25 @@ public class NewUser extends Activity {
                     public void run() {
                         pBar.setVisibility(View.INVISIBLE);
                         searching = false;
-                        Intent intent = new Intent(NewUser.this,RegisterFingerPrint.class);
+                        Intent intent = new Intent(NewUser.this,NewUserFinger.class);
                         //If nothing came up from search
                         if(searchFailure){
                             return;
                         }
+                        //If Found on the Server
+                        if(!isInQueue(DrinkOrder.InUserPinString)){
+                            Toast.makeText(getApplicationContext(),"You do not have a drink on the Queue",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         intent.putExtra("tString","$FPQ,"+pinString + "$DO,"+IncomingString);
-                        PiComm.writeString("$FPQ,"+pinString);
+                        //PiComm.writeString("$FPQ,"+pinString);
 
                         DrinkOrder t = new DrinkOrder();
                         t.DecodeString(IncomingString);
 
                         t.storeDrinkOrder(IncomingString);
                         DrinkOrder.InUserPinString = pinString;
-                        IncomingString.replace("*","");
-                        PiComm.writeString("$DO,"+IncomingString);
+                        //PiComm.writeString("$DO,"+IncomingString);
                         startActivity(intent);
                     }
                 });
@@ -220,7 +235,7 @@ public class NewUser extends Activity {
             // dismiss the dialog once product deleted
             pDialog.dismiss();
             if (file_url != null){
-                Toast.makeText(NewUser.this, file_url, Toast.LENGTH_LONG).show();
+                //Toast.makeText(NewUser.this, file_url, Toast.LENGTH_LONG).show();
                 IncomingString = file_url;
             }else{
                 Toast.makeText(NewUser.this,"Failure to Access Server. Check Internet Connection"
@@ -233,27 +248,36 @@ public class NewUser extends Activity {
 
 
     public void GoToRegister(View view){
-        startActivity(new Intent(this,RegisterFingerPrint.class));
+        startActivity(new Intent(this,NewUserFinger.class));
     }
 
+    public Boolean isInQueue(String userPin){
 
+        if(DrinkOrder.CurDrinkQueue!=null){
+            Log.d("Q","Q is:"+DrinkOrder.CurDrinkQueue);
+        }else{return false;}
+
+        String[] tokens = DrinkOrder.CurDrinkQueue.split("[@,]");
+        Log.d("Q", "In:"+userPin);
+        Log.d("Q", "tokens:"+ tokens);
+        for(int i = 0; i < tokens.length; i++){
+            Log.d("Q","token "+tokens[i]);
+            if(tokens[i].equalsIgnoreCase(userPin)){
+                Log.d("Q"," found it equal");
+                return true;
+            }
+        }
+
+        Log.d("Q"," Did not find equal");
+        return false;
+    }
     /***********System Level Functions*******/
     public void SkipToPickFinger (View view){
         startActivity(new Intent(this,PickUpFinger.class));
 
     }
 
-////Fitlers anyother input than 11 phone numbers+
-//    InputFilter filter = new InputFilter() {
-//        public CharSequence filter(CharSequence source, int start, int end,
-//                                   Spanned dest, int dstart, int dend) {
-//            for (int i = start; i < end; i++) {
-//                if (!Character.isDigit(source.charAt(i))) {
-//                    return "";
-//                }
-//            }
-//            return null;
-//        }
+
 //    };
 
 
@@ -299,11 +323,12 @@ public class NewUser extends Activity {
                 break;
             case R.id.keyEnter:
                 if(pinString.length() < 11){
-                    Toast.makeText(getApplicationContext(),"Hey not long enough",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Please Enter Full 11-Digits",Toast.LENGTH_SHORT).show();
                 }else if(pinString.length()> 11){
-                    Toast.makeText(getApplicationContext(),"Hey too long ",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Phone Number Entered is Too Long",Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(getApplicationContext(),"Hey... Ok",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"Hey... Ok",Toast.LENGTH_SHORT).show();
+                    DrinkOrder.InUserPinString = pinString;
                     CheckPin(view);
                 }
                 break;
@@ -311,7 +336,6 @@ public class NewUser extends Activity {
         TextView tView = (TextView) findViewById(R.id.enterField);
         tView.setText(pinString);
     }
-
 
 
 

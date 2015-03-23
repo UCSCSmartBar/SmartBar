@@ -4,29 +4,39 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:textColor="@color/white"
-    android:background="@drawable/smart_bar_background"
-    tools:context="com.example.tylerrider.raspgui.MainMenu">
+
+    android:background="@color/DullRed"
+    tools:context="com.example.trider.smartbarui.MainMenu">
+
+    <TextView
+        android:text="@string/hello_world"
+        android:id="@+id/testView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <Button
+        style="@style/CityTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Debug Menu"
-        android:textColor="#000000"
-        android:id="@+id/button"
-        android:onClick="DebugMenu"
-        android:layout_alignParentTop="true"
+        android:text="Start Smart Bar UI  >"
+        android:padding="10dp"
+        android:background="@drawable/cust_butt"
+        android:onClick="StartUIClicked"
+        android:id="@+id/button3"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="178dp" />
+        android:layout_marginTop="200dp"/>
 
     <Button
+        style="@style/CityTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Idle"
-        android:textSize="20sp"
-        android:onClick="Start"
-        android:id="@+id/button2"
-        android:layout_marginTop="81dp"
-        android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true" />
+        android:text="System Status           >"
+        android:padding="10dp"
+        android:background="@drawable/cust_butt"
+        android:onClick="SystemStatusClicked"
+        android:id="@+id/button4"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="300dp"/>
+
+
 </RelativeLayout>

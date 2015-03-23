@@ -61,6 +61,7 @@
         <activity
             android:name=".IdleMenu"
             android:label="@string/title_activity_idle_menu"
+            android:noHistory="true"
             android:parentActivityName=".MainMenu" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -105,14 +106,16 @@
         <activity
             android:name=".NewUser"
             android:label="@string/title_activity_new_user"
+            android:noHistory="true"
             android:parentActivityName=".IdleMenu" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.IdleMenu" />
         </activity>
         <activity
-            android:name=".RegisterFingerPrint"
+            android:name=".NewUserFinger"
             android:label="@string/title_activity_register_finger_print"
+            android:noHistory="true"
             android:parentActivityName=".NewUser" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -161,6 +164,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".FingerPickUp"
+            android:label="@string/title_activity_finger_pick_up"
+            android:parentActivityName=".IdleMenu" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.IdleMenu" />
         </activity>
     </application>
 

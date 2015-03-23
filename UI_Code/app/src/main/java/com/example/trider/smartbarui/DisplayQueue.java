@@ -2,6 +2,7 @@ package com.example.trider.smartbarui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -38,6 +39,18 @@ public class DisplayQueue extends Activity {
 
 
     TextView qView;
+
+
+
+    @Override
+    public void onBackPressed()
+    {
+        // code here to show dialog
+        super.onBackPressed();  // optional depending on your needs
+
+        startActivity(new Intent(DisplayQueue.this,IdleMenu.class));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

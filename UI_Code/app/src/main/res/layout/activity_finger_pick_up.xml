@@ -16,10 +16,10 @@
         android:background="@drawable/usb_connection"
         android:backgroundTint="@color/white"
         android:rotation="90"
-        android:id="@+id/usbCon1" />
+        android:id="@+id/usbCon10" />
 
     <TextView android:text="@string/finger_print_instructions"
-        android:id="@+id/puf_tView"
+        android:id="@+id/fup_tView"
         android:textSize="40dp"
         android:textColor="@color/white"
         android:layout_width="wrap_content"
@@ -27,30 +27,30 @@
 
 
     <LinearLayout
-    android:layout_width="wrap_content"
-    android:orientation="horizontal"
-    android:layout_height="wrap_content">
-
-    <ImageView
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/fingerImg"
-        android:src="@drawable/science_fingerprint"/>
-
-    <Button
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="500dp"
-        android:layout_marginTop="200dp"
-        android:text="Skip"
-        android:onClick="SkipFingerPrint"
-        android:id="@+id/skipPrint" />
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/fingerImg"
+            android:src="@drawable/science_fingerprint"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="500dp"
+            android:layout_marginTop="200dp"
+            android:text="Skip"
+            android:onClick="SkipFingerPrint"
+            android:id="@+id/skipPrint2" />
 
         <TextView
             android:layout_width="50dp"
             android:layout_height="100dp"
             android:text=""
-            android:id="@+id/puf_text" />
+            android:id="@+id/fup_text" />
     </LinearLayout>
 
 </LinearLayout>

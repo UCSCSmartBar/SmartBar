@@ -1,7 +1,9 @@
 package com.example.trider.smartbarui;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,25 +14,43 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 
 
-public class PickUpFinger extends Activity {
+public class FingerPickUp extends Activity {
 
     CommStream PiComm;
     ImageView fingImg;
     TextView tView;
+    String IncomingString;
     String userPinNumber;
 
     boolean toggle = false;
     static int failureCount;
     long Timeout = 0;
 
+    /**
+     * JSON/ PHP Function Information
+     */
+    //Login tags
+    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/getDrink.php";
+    //JSON element ids from response of php script:
+    private static final String TAG_SUCCESS = "success";
+    private static final String TAG_MESSAGE = "message";
+    JSONParser jsonParser = new JSONParser();
     String OrderString;
+    boolean searchFailure = true;
 
     public enum FingerState {
         IDLE,
@@ -57,7 +77,7 @@ public class PickUpFinger extends Activity {
     class ListenTask extends TimerTask {
         @Override
         public void run(){
-            PickUpFinger.this.runOnUiThread(new Runnable() {
+            FingerPickUp.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (isActive) {
@@ -66,7 +86,7 @@ public class PickUpFinger extends Activity {
                          */
                         String t = CommStream.ReadBuffer();
                         if(t!=null) {
-                            TextView tV = (TextView) findViewById(R.id.puf_text);
+                            TextView tV = (TextView) findViewById(R.id.fup_text);
                             tV.append(t);
                             CompareFingerSM(t);
                             String rMessage = SystemCodeParser.DecodeAccessoryMessage(t);
@@ -95,16 +115,16 @@ public class PickUpFinger extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pick_up_finger);
+        setContentView(R.layout.activity_finger_pick_up);
 
         //Hiding menu
         hideSystemUI();
 
 
         //Loading view references
-        ImageView usbConn = (ImageView) findViewById(R.id.usbCon1);
+        ImageView usbConn = (ImageView) findViewById(R.id.usbCon10);
         fingImg= (ImageView) findViewById(R.id.fingerImg);
-        tView = (TextView) findViewById(R.id.puf_tView);
+        tView = (TextView) findViewById(R.id.fup_tView);
         tView.setText("Please Place Your Finger on the Scanner");
 
 
@@ -114,6 +134,8 @@ public class PickUpFinger extends Activity {
             usbConn.setVisibility(View.INVISIBLE);
         }
 
+        PiComm.writeString("$FPIDEN,START");
+
 
         //Scheduling hiding menu, and recevie communications
         new Timer().scheduleAtFixedRate(new ListenTask(), 100,100);
@@ -122,30 +144,22 @@ public class PickUpFinger extends Activity {
 
         //Deciphering string for drink order and double checking.
         Intent i = getIntent();
-        try {
-            OrderString = "$DO," + i.getExtras().getString("tString");
-            Toast toast = Toast.makeText(getApplicationContext(), OrderString, Toast.LENGTH_LONG);
-            toast.show();
-
-        }catch(NullPointerException e){
-            Toast.makeText(getApplicationContext(), "No Drink Added", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-         }
 
 
 
-        //User is Null only for testing
-        if(DrinkOrder.InUserPinString == null){
-            userPinNumber = "12345678901";
-            PiComm.writeString("$FPQ,"+ userPinNumber);
-            long time = System.currentTimeMillis();
-            while(System.currentTimeMillis() < time + 7000);
 
-        }else{
-            userPinNumber = DrinkOrder.InUserPinString;
-        }
+//        //User is Null only for testing
+//        if(DrinkOrder.InUserPinString == null){
+//            userPinNumber = "12345678901";
+//            PiComm.writeString("$FPQ,"+ userPinNumber);
+//            long time = System.currentTimeMillis();
+//            while(System.currentTimeMillis() < time + 7000);
+//
+//        }else{
+//            userPinNumber = DrinkOrder.InUserPinString;
+//        }
 
-        PiComm.writeString("$FPIDEN,START");
+
 
         /**
          * Starts Communication with the raspberry Pi for identifying the fingerprint
@@ -170,8 +184,6 @@ public class PickUpFinger extends Activity {
         switch (currentState) {
             case IDLE:
                 if (msg.equals("$FPIDEN,WORKING")) {
-
-
                     nextState = FingerState.COMPARING;
                 } else if (msg.equals("$FPIDEN,ERR,NOTFOUND")) {
                     nextState = FingerState.WARNING;
@@ -186,10 +198,19 @@ public class PickUpFinger extends Activity {
                 }
 
                 if (msg.equals("$FPIDEN,SUCC")) {
-
-
                     nextState = FingerState.PASSED;
-                    startActivity(new Intent(PickUpFinger.this,ConfirmDrink.class));
+                    tView = (TextView) findViewById(R.id.fup_tView);
+                    tView.setText("Please Place Your Finger on the Scanner");
+
+                    Toast.makeText(getApplicationContext(),msg, Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(getApplicationContext(),tokens[tokens.length-1],Toast.LENGTH_LONG).show();
+
+                    userPinNumber = tokens[tokens.length-1];
+                    new FingerPickUp.AttemptGetDrink().execute();
+
+
+
                 } else if (msg.equals("$FPIDEN,ERR")) {
                     tView.setText("ERROR");
                     failureCount++;
@@ -201,18 +222,14 @@ public class PickUpFinger extends Activity {
                         tView.setText("Please Come Back Another Time");
                         nextState = FingerState.WARNING;
 
-                        startActivity(new Intent(PickUpFinger.this,IdleMenu.class));
+                        //startActivity(new Intent(FingerPickUp.this,IdleMenu.class));
                     }
                 }
                 break;
             case PASSED:
-                if(msg.equalsIgnoreCase("Finish")){
-                    startActivity(new Intent(this,CheckBAC.class));
-                }
-                break;
-            case FAILED:
-                if(msg.equals("$FP.Start")){
-                    nextState = FingerState.COMPARING;
+
+                if(msg.equals("$GOTDRINK")){
+                    startActivity(new Intent(FingerPickUp.this,ConfirmDrink.class));
                 }
                 break;
             case WARNING:
@@ -221,11 +238,88 @@ public class PickUpFinger extends Activity {
                 Toast.makeText(getApplicationContext(), "Unknown state.", Toast.LENGTH_SHORT).show();
                 Log.d("SM", "Unknown State");
         }
+
+
         currentState = nextState;
 
     }
 
 
+
+    class AttemptGetDrink extends AsyncTask<String, String, String> {
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            Log.d("AGD","Pre-Exec");
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            // TODO Auto-generated method stub
+            // Check for success tag
+            int success;
+//            String userpin = eText.getText().toString();
+            String userpin = userPinNumber;
+            new DrinkOrder().InUserPinString = userpin;
+            try {
+                Log.d("GetDQ","Mid-Execute");
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("pin", userpin));
+
+                Log.d("GetDQ", "starting");
+                // getting product details by making HTTP request
+                JSONObject json = jsonParser.makeHttpRequest(
+                        LOGIN_URL, "POST", params);
+
+                // check your log for json response
+                Log.d("GetDQ","Drink retrieve attempt"+ json.toString());
+
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("GetDQ", "Drink found Successful!"+json.toString());
+                    searchFailure = false;
+                    //Intent i = new Intent(Login.this, ReadComments.class);
+                    return json.getString(TAG_MESSAGE);
+                }else{
+                    Log.d("GetDQ","Login Failure!"+ json.getString(TAG_MESSAGE));
+                    searchFailure = true;
+                    return json.getString(TAG_MESSAGE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch(NullPointerException npe){
+                npe.printStackTrace();
+            }
+
+            return null;
+
+        }
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog once product deleted
+            if (file_url != null){
+                Toast.makeText(FingerPickUp.this, file_url, Toast.LENGTH_LONG).show();
+                IncomingString = file_url;
+                DrinkOrder.InDrinkString = file_url;
+                Log.d("GetDQ","Success url is !"+ file_url);
+                CompareFingerSM("$GOTDRINK");
+
+            }else{
+                Toast.makeText(FingerPickUp.this,"Failure to Access Server. Check Internet Connection"
+                        , Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+    }
     /**System functions*****/
 
     private void hideSystemUI() {
@@ -245,7 +339,7 @@ public class PickUpFinger extends Activity {
     TimerTask HideTask = new TimerTask() {
         @Override
         public void run(){
-            PickUpFinger.this.runOnUiThread(new Runnable() {
+            FingerPickUp.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     hideSystemUI();

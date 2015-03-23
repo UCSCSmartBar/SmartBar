@@ -96,12 +96,15 @@ public class MainActivity extends Activity {
      * @description: The background thread that receives serial communication from the raspberry pi,
      *
      */
+
     Runnable mListenerTask = new Runnable() {
         @Override
         public void run() {
-
+        if(isActive) {
             InMessage = PiComm.readString();
-            if(InMessage != null){
+
+            if (InMessage != null) {
+                //Toast.makeText(getApplicationContext(),"got somethin",Toast.LENGTH_SHORT).show();
                 mText.post(mUpdateUI2);
             }
             //Waits for new input communication
@@ -111,9 +114,9 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
             //Restarts this thread.
-//            if(isActive) {
+        }
                 new Thread(this).start();
-//            }
+//          }
         }
     };
 
@@ -152,17 +155,17 @@ public class MainActivity extends Activity {
             }
         }
     };
-
-//    protected void onStop(){
-//        super.onStop();
-//        PiComm.writeString("STOP");
-//        isActive = false;
-//    }
-//    protected void onResume(){
-//        super.onResume();
-//        PiComm.writeString("Resume");
-//        isActive = true;
-//    }
+    @Override
+    public void onStop(){
+        super.onStop();
+        Log.d("LIFE","Main-- onStop");
+        //isActive = false;
+    }
+    protected void onResume(){
+        super.onResume();
+        //PiComm.writeString("Resume");
+        isActive = true;
+    }
 
     /**
      * OnCreate goes through a system walkthrough and sets appropriate flags for program use
@@ -230,9 +233,11 @@ public class MainActivity extends Activity {
                 mInputStream = new FileInputStream(fd);
                 mOutputStream = new FileOutputStream(fd);
                 DetectUSB.Connection = true;
+
+                //Console Log
                 mText.append("\tFileDescriptor....."+mFileDescriptor.toString()+"\n");
-                mText.append("\tInputString....."+mInputStream.toString()+"\n");
-                mText.append("\tOutputString....."+mOutputStream.toString()+"\n");
+                mText.append("\tInputString........"+mInputStream.toString()+   "\n");
+                mText.append("\tOutputString......."+mOutputStream.toString()+  "\n");
                 //Creates Singleton class for other activities to use
                 PiComm = new CommStream(mInputStream, mOutputStream, mAccessory, mUsbManager, mFileDescriptor);
                 mText.append("CommStream......... created\n");
@@ -249,7 +254,7 @@ public class MainActivity extends Activity {
                 //the Usb manager and USB accessory is declared and connected here
                 //TryToReconnect(null);
             }
-            Log.v(TAG, mFileDescriptor.toString());
+            //Log.v(TAG, mFileDescriptor.toString());
             eText.clearFocus();
 
             /**
@@ -262,7 +267,6 @@ public class MainActivity extends Activity {
                 Toast toast = Toast.makeText(context, "PiComm already initialized", Toast.LENGTH_LONG);
                 toast.show();
                 new Thread(mListenerTask).start();
-                return;
             }
 
         }
@@ -361,12 +365,15 @@ public class MainActivity extends Activity {
                 break;
             case R.id.toggleButton:
                 //Assigns string value based on toggle value, and then toggles the value.
-                OutMessage = (toggle_val[0]) ? "LED.OFF" : "LED.ON";
-                toggle_val[0] = !toggle_val[0];
+//                OutMessage = (toggle_val[0]) ? "LED.OFF" : "LED.ON";
+//                toggle_val[0] = !toggle_val[0];
+                OutMessage = "$FPIDEN,STRTHD";
+
                 break;
             case R.id.toggleButton2:
-                OutMessage = (toggle_val[1]) ? "IO.1.1" : "IO.1.0";
-                toggle_val[1] = !toggle_val[1];
+//                OutMessage = (toggle_val[1]) ? "IO.1.1" : "IO.1.0";
+//                toggle_val[1] = !toggle_val[1];
+                OutMessage = "$FPIDEN,ENDTHD";
                 break;
             case R.id.toggleButton3:
                 OutMessage = (toggle_val[2]) ? "IO|2,1" : "IO.2.0";
@@ -418,8 +425,8 @@ public class MainActivity extends Activity {
     *Moves onto next windows
     */
     public void TryNewWindow(View view){
-        Intent intent = new Intent(this,MainMenu.class);
-        startActivity(intent);
+        //isActive = false;
+        startActivity(new Intent(this,MainMenu.class));
     }
 
 
@@ -508,6 +515,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(String file_url) {
             // dismiss the dialog once product deleted
             searching = false;
+            Toast.makeText(getApplicationContext(),file_url,Toast.LENGTH_SHORT).show();
             if (file_url != null){
                 Log.d("IDLE",file_url);
                 ltokens = file_url.split("[,]");

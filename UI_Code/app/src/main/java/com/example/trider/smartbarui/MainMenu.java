@@ -21,12 +21,13 @@ public class MainMenu extends Activity {
     String InMessage;
 
 /*Background Communications*/
-    Runnable mListenerTask = new Runnable() {
+    Runnable nListenerTask = new Runnable() {
         @Override
         public void run() {
-            InMessage = PiComm.readString();
+            InMessage = PiComm.ReadBuffer();
             if(InMessage != null){
-                Toast.makeText(getApplicationContext(),InMessage,Toast.LENGTH_SHORT).show();
+
+                //Toast.makeText(getApplicationContext(),InMessage,Toast.LENGTH_SHORT).show();
             }
             //Waits for new input communication
             try {
@@ -46,23 +47,22 @@ public class MainMenu extends Activity {
 //        isActive = false;
 //
 //    }
-    public void onResume(){
-        super.onResume();
-        if(PiComm.isInitialized()){
-            PiComm.writeString("Resume");
-        }
-        hideSystemUI();
-        isActive = true;
-    }
+//    public void onResume(){
+//        super.onResume();
+//        if(PiComm.isInitialized()){
+//            PiComm.writeString("Resume");
+//        }
+//        hideSystemUI();
+//        isActive = true;
+//    }
 
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_main_menu);
 
         hideSystemUI();
-
 
         TextView textView = (TextView) findViewById(R.id.testView);
         PiComm = new CommStream();
@@ -73,7 +73,7 @@ public class MainMenu extends Activity {
             Toast toast = Toast.makeText(context,"PiComm is Initialized",Toast.LENGTH_LONG);
             toast.show();
             PiComm.writeString("$SYS,MainStart");
-            new Thread(mListenerTask).start();
+            //new Thread(nListenerTask).start();
         }else{
             context = getApplicationContext();
             Toast toast = Toast.makeText(context,"No PiComm is Initialized",Toast.LENGTH_LONG);
@@ -88,10 +88,11 @@ public class MainMenu extends Activity {
 
 //Starts other menus
     public void StartUIClicked(View view){
-        Intent intent = new Intent(this, IdleMenu.class);
-        startActivity(intent);
+        //isActive = false;
+        startActivity(new Intent(this, IdleMenu.class));
     }
     public void SystemStatusClicked(View view){
+        //isActive = false;
         startActivity(new Intent(this,SystemStatus.class));
     }
 

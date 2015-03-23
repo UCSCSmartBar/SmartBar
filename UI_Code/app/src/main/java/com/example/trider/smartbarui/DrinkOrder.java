@@ -14,7 +14,7 @@ public class DrinkOrder {
 
 
     public static String InDrinkString = null;
-    public String OutDrinkString;
+    public static String CurDrinkQueue = null;
     public static String InUserPinString = null;
 
     private static final String StartOfDString = "$DO";

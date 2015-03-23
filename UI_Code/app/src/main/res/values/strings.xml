@@ -89,8 +89,7 @@
     <string name="title_activity_idle_menu">IdleMenu</string>
     <string name="title_activity_pick_up_finger">PickUpFinger</string>
     <string name="title_activity_register_finger_print">RegisterFingerPrint</string>
-    <string name="register_finger_print_prompt">Hello Please, Place your finger on the scanner 3 Times
-                                                when the blue light is on.</string>
+    <string name="register_finger_print_prompt">Hello Please, Place your finger on the Scanner.</string>
     <string name="title_activity_test_activityr">testActivityr</string>
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
@@ -166,5 +165,6 @@
 
     <string name="title_activity_container__screen">Container_Screen</string>
     <string name="title_activity_test_key_board">TestKeyBoard</string>
+    <string name="title_activity_finger_pick_up">FingerPickUp</string>
 
 </resources>
