@@ -118,6 +118,8 @@ FingerState nextState = FingerState.IDLE;
         //For actual implementation of state machine start with Finger Print Invisible
         finger.setVisibility(View.INVISIBLE);
         //startWatch();
+
+        new Timer().scheduleAtFixedRate(HideTask,100,10);
     }
 
 
@@ -217,7 +219,37 @@ FingerState nextState = FingerState.IDLE;
             }
 
         }, 1000);
+
+
     }
+
+    private void hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the system bars hide and show.
+        View mDecorView;
+        mDecorView = getWindow().getDecorView();
+        mDecorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+    TimerTask HideTask = new TimerTask() {
+        @Override
+        public void run(){
+            RegisterFingerPrint.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hideSystemUI();
+                }
+            });
+        }
+    };
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

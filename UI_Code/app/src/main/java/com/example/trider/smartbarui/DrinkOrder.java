@@ -310,19 +310,22 @@ public class DrinkOrder {
         //Loop through Mixers and print out individual components
         for(;i < tokens.length;i++) {
            Log.d("Dparse", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
-
-           String[] mTokens = tokens[i].split("[,+]");
-               Log.d("Dparse","Mixer:" + mTokens[0]);
-               Log.d("Dparse","Brand:" + mTokens[1]);
-               Log.d("Dparse","Carb:" +  mTokens[2]);
-               Log.d("Dparse","Volume" + mTokens[3]);
-           outGoingTable+=mTokens[0] + ":" + mTokens[1]+":"+ mTokens[3]+"\n";
-
            try {
+               String[] mTokens = tokens[i].split("[,+]");
+                   Log.d("Dparse","Mixer:" + mTokens[0]);
+                   Log.d("Dparse","Brand:" + mTokens[1]);
+                   Log.d("Dparse","Carb:" +  mTokens[2]);
+                   Log.d("Dparse","Volume" + mTokens[3]);
+               outGoingTable+=mTokens[0] + ":" + mTokens[1]+":"+ mTokens[3]+"\n";
+
+
                vol += Float.parseFloat(mTokens[3]);
            }catch(NumberFormatException e){
                e.printStackTrace();
-           }
+           }catch(NullPointerException npe){
+                npe.printStackTrace();
+
+            }
         }
 
         Log.d("Dparse","Total Volume["+vol+"]");

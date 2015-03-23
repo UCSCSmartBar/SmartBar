@@ -165,5 +165,6 @@
     </string-array>
 
     <string name="title_activity_container__screen">Container_Screen</string>
+    <string name="title_activity_test_key_board">TestKeyBoard</string>
 
 </resources>

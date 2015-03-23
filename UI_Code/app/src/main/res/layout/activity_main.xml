@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/incoming_message"
-            android:text="Incoming Stream"
+            android:text="Console Log"
             android:textSize="30sp"
             android:typeface="serif"
             android:textColor="@color/Bronze"
@@ -85,8 +85,9 @@
 
         <TextView
             android:id="@+id/display_area"
-            android:background="@drawable/text_box"
-            android:layout_width="300dp"
+            android:background="#ff000000"
+            android:textColor="#ff21ff11"
+            android:layout_width="350dp"
             android:layout_height="250dp"
             android:layout_row="1"
             android:layout_rowSpan="6"
@@ -125,7 +126,7 @@
             android:layout_height="wrap_content"
             android:text="Stock Inventory  "
             android:id="@+id/button21"
-            android:onClick="tryParse"
+            android:onClick="stockInventory"
             android:layout_gravity="center_horizontal"
             android:layout_row="2"
             android:layout_column="4" />
@@ -181,7 +182,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Windows"
+        android:text="Start Smart Bar"
         android:id="@+id/button"
         android:onClick="TryNewWindow"
         android:layout_row="5"
@@ -196,63 +197,17 @@
          android:layout_row="6"
          android:id="@+id/toggleButton6" />
 
-    <TextView
-        android:id="@+id/IO1_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LED"
-        android:textSize="30dp"
-        android:layout_row="1"
-        android:layout_column="1"
-        />
 
-    <TextView
-        android:id="@+id/IO2_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GPIO:1"
-        android:textSize="30dp"
-        android:layout_row="2"
-        android:layout_column="1"
-        />
-    <TextView
-        android:id="@+id/IO3_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GPIO:2"
-        android:textSize="30dp"
-        android:layout_row="3"
-        android:layout_column="1"
-        />
-    <TextView
-        android:id="@+id/IO4_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LED.0"
-        android:textSize="30dp"
-        android:layout_row="4"
-        android:layout_column="1"
-        />
-    <TextView
-        android:id="@+id/IO5_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LED.1"
-        android:textSize="30dp"
-        android:layout_row="5"
-        android:layout_column="1"
-        />
-    <TextView
-        android:id="@+id/IO6_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="#$#"
-        android:textSize="30dp"
-        android:layout_row="6"
-        android:layout_column="1"
-        />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test Keyboard"
+            android:id="@+id/button24"
+            android:onClick="TestKeyboard"
+            android:layout_row="1"
+            android:layout_column="4" />
 
-    <SeekBar
+        <SeekBar
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:max="1024"

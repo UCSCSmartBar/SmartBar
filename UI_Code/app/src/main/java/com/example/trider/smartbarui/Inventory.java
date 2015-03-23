@@ -2,6 +2,8 @@ package com.example.trider.smartbarui;
 
 import android.util.Log;
 
+import java.util.logging.Level;
+
 
 /**
  * @Created by trider on 3/1/2015.
@@ -21,7 +23,7 @@ public class Inventory {
     private static final String LOW = "LOW";
     private static final String EMPTY = "EMPTY";
 
-    private static final String UNDEF = "Undefined Option";
+    private static final String UNDEF = "Empty Con";
     //Current Max number of containers
     private static final int NUM_CONTAINERS = 18;
 
@@ -71,6 +73,7 @@ public class Inventory {
             if(maxVolume > MAX_VOL_HANDLE){
                 MaxVolume = MAX_VOL_HANDLE;
             }else if(maxVolume < 0.0) {
+                LevelStatus = EMPTY;
                 return;
             }else{
                 MaxVolume = maxVolume;
@@ -86,6 +89,7 @@ public class Inventory {
             if(maxVolume > MAX_VOL_HANDLE){
                 MaxVolume = MAX_VOL_HANDLE;
             }else if(maxVolume < 0.0) {
+                LevelStatus = EMPTY;
                 return;
             }else{
                 MaxVolume = maxVolume;
@@ -166,8 +170,7 @@ public class Inventory {
         public String SerialContainer(){
 
             String SerCont;
-            SerCont =String.format("%s,%s,%.3f,%.3f",Spirit,DrinkStrings.BrandToCode(Brand),getCurVolume(),getMaxVolume());
-
+            SerCont =String.format("%s,%s,%.3f,%.3f",DrinkStrings.SpiritToCode(Spirit),DrinkStrings.BrandToCode(Brand),getCurVolume(),getMaxVolume());
             Log.d("LCO","Serializing Container:"+SerCont);
             return SerCont;
         }
