@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/DullRed"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+
+    tools:context="com.example.trider.smartbarui.CheckBAC">
+
+    <TextView android:text="@string/bac_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="35sp"
+        android:textColor="@color/white"
+        />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SkipBAC"
+        android:onClick="SkipBAC"
+        android:id="@+id/button6"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="300dp"/>
+
+    <!--
+        <ImageView
+            android:layout_width="232dp"
+            android:layout_height="222dp"
+            android:layout_marginLeft="45dp"
+            android:src="@drawable/breathalyzer"/>
+    -->
+</LinearLayout>

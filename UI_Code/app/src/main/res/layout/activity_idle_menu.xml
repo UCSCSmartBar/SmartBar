@@ -1,0 +1,82 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/cityscape"
+    tools:context="com.example.trider.smartbarui.IdleMenu">
+
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#aa818583"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    android:orientation="vertical"
+    >
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="40dp"
+        android:background="@drawable/usb_connection"
+        android:backgroundTint="@color/white"
+        android:rotation="90"
+        android:id="@+id/usbCon" />
+
+    <TextClock
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="150sp"
+        android:textStyle="bold"
+        android:textColor="#ffffffff"
+        android:id="@+id/textClock"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+
+        android:background="@drawable/cust_butt"
+        style="@style/CityTheme"
+
+        android:text="Pickup Drink                       >"
+        android:onClick="onPickUpClick"
+        android:id="@+id/button8"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="25dp"
+        android:padding="10dp"
+
+        android:background="@drawable/cust_butt"
+        style="@style/CityTheme"
+
+        android:text="Register Finger Print   >"
+        android:onClick="GoToNewUser"
+        android:id="@+id/button7" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="25dp"
+        android:padding="10dp"
+
+        android:background="@drawable/cust_butt"
+        style="@style/CityTheme"
+
+        android:text="Current Drink Queue    >"
+        android:onClick="GetQueue"
+        android:id="@+id/button19" />
+
+</LinearLayout>
+
+</LinearLayout>
