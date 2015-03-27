@@ -37,16 +37,18 @@ WaterOutputValveNumber = 4
 CO2WaterOutputValveNumber = 5
 SBDispenser_CommandResults = ["Fail","Success"]
 SBDispenser_MixType = ["Alcohol","Mixer"]
-SBDispenser_CurrentInventoryFilePath = "UCSC_SmartBar_InventoryStatus.txt"
 
-SBDispenser_SystemDataLogFilePath = "Logs/UCSC_SmartBar_DataSystemLog.txt"
-SBDispenser_SystemTextLogFilePath = "Logs/UCSC_SmartBar_TextSystemLog.txt"
-SBDispenser_ErrorDataLogFilePath = "Logs/UCSC_SmartBar_DataErrorLog.txt"
-SBDispenser_ErrorTextLogFilePath = "Logs/UCSC_SmartBar_TextErrorLog.txt"
-SBDispenser_FullDataLogFilePath = "Logs/UCSC_SmartBar_DataFullLog.txt"
-SBDispenser_FullTextLogFilePath = "Logs/UCSC_SmartBar_TextFullLog.txt"
-SBDispenser_DrinkDataLogFilePath = "Logs/UCSC_SmartBar_DataDrinkLog.txt"
-SBDispenser_DrinkTextLogFilePath = "Logs/UCSC_SmartBar_TextDrinkLog.txt"
+DispenserPath = "/root/Desktop/GitHub/SmartBar/Dispenser/"
+SBDispenser_CurrentInventoryFilePath = "../Dispenser/UCSC_SmartBar_InventoryStatus.txt"
+
+SBDispenser_SystemDataLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_DataSystemLog.txt"
+SBDispenser_SystemTextLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_TextSystemLog.txt"
+SBDispenser_ErrorDataLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_DataErrorLog.txt"
+SBDispenser_ErrorTextLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_TextErrorLog.txt"
+SBDispenser_FullDataLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_DataFullLog.txt"
+SBDispenser_FullTextLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_TextFullLog.txt"
+SBDispenser_DrinkDataLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_DataDrinkLog.txt"
+SBDispenser_DrinkTextLogFilePath = DispenserPath+"/Logs/UCSC_SmartBar_TextDrinkLog.txt"
 
 SBDispenser_LineSplittingCharacter = ","
 
@@ -56,7 +58,7 @@ SBDispenser_MinimumContainerContents = .5
 
 SBDispenser_ATXPin = 19
 
-SBDispenser_CoolCarbPowerPin = 21 # pin number of relay control to the cooling and carbonation system
+SBDispenser_CoolCarbPowerPin = 12 # pin number of relay control to the cooling and carbonation system
     
 SBDispenser_WaterPumpPowerPin = 26 # pin number of relay control to the water pump
 ######################################################################################        
@@ -1021,8 +1023,8 @@ class SmartBar_ValveController():
 
     def TestAllValves(self):
 
-        TestPause = .3
-        
+        TestPause = .7
+        self.ShiftRegisterClear()
         self.ClearQueuedValves()
         (self.TotalValves) = 6
         for i in range (self.TotalValves):
@@ -1080,10 +1082,10 @@ class PowerSystemManager():
         self.WaterPumpPin = water_pump_pin
 
         GPIO.setup(self.ATXPin,GPIO.OUT) # set cooling/carbonation system control pin as an output
-        GPIO.output(self.ATXPin,GPIO.LOW) # set cooling/carbonation control pin low - cooling/carbonation system off - MUST REMAIN OFF UNTIL WATER PUMP HAS STARTED
+        GPIO.output(self.ATXPin,GPIO.HIGH) # set cooling/carbonation control pin low - cooling/carbonation system off - MUST REMAIN OFF UNTIL WATER PUMP HAS STARTED
             
         GPIO.setup(self.CoolingSystemPin,GPIO.OUT) # set cooling/carbonation system control pin as an output
-        GPIO.output(self.CoolingSystemPin,GPIO.LOW) # set cooling/carbonation control pin low - cooling/carbonation system off - MUST REMAIN OFF UNTIL WATER PUMP HAS STARTED
+        GPIO.output(self.CoolingSystemPin,GPIO.HIGH) # set cooling/carbonation control pin low - cooling/carbonation system off - MUST REMAIN OFF UNTIL WATER PUMP HAS STARTED
         
         GPIO.setup(self.WaterPumpPin,GPIO.OUT) # set water pump control pin as an output
         GPIO.output(self.WaterPumpPin,GPIO.LOW) # set water pump control pin low - water pump off                                    
@@ -1104,11 +1106,11 @@ class PowerSystemManager():
     def TurnWaterPumpOnOff(self,on_off):
 
         if (on_off == 1):
-            GPIO.output(self.WaterPumpPin,GPIO.HIGH)
+            GPIO.output(self.WaterPumpPin,GPIO.LOW)
             SmartBar_Dispenser.PrintFilter.System('Water Pump Turned On',SmartBar_Dispenser.PrintFilter.Standard) 
 
         else:
-            GPIO.output(self.WaterPumpPin,GPIO.LOW)
+            GPIO.output(self.WaterPumpPin,GPIO.HIGH)
             SmartBar_Dispenser.PrintFilter.System('Water Pump Turned Off',SmartBar_Dispenser.PrintFilter.Standard) 
 
 
