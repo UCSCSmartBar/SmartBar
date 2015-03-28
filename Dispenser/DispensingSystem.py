@@ -22,11 +22,11 @@ ValveHasOpened = 1
 
 AlcoholValveDelayEnabled = 1
 
-ValveController_SR_Data = 5 # pin number of serial output to shift register
+ValveController_SR_Data = 3 # pin number of serial output to shift register
     
-ValveController_SR_Clock = 13 # pin number of clock output to shift register
+ValveController_SR_Clock = 2 # pin number of clock output to shift register
 
-ValveController_SR_Store = 6 # pin number of store data output to shift register
+ValveController_SR_Store = 4 # pin number of store data output to shift register
     
 ValveController_SR_ClockPause = .0000001# time between high and low clock signal to shift register
 
@@ -103,9 +103,9 @@ class SmartBar_Dispenser():
 
     OzScalingFactor = 1 # scale up ounces to transfer data more compactly - ie: 1.5oz = 15
 
-    AlcoholDispenseTimePerOz = 4 # time in seconds to dispense one fluid ounce of alcohol
+    AlcoholDispenseTimePerOz = 3 # time in seconds to dispense one fluid ounce of alcohol
 
-    MixerDispenseTimePerOz = 5/6 # time in seconds to dispense one fluid ounce of mixer - Calculated by time for 1oz of mixer / 1oz mixer + 5 oz water
+    MixerDispenseTimePerOz = 1.5 # time in seconds to dispense one fluid ounce of mixer - Calculated by time for 1oz of mixer / 1oz mixer + 5 oz water
 
     WaterValveNumber = 18
 
@@ -1026,7 +1026,7 @@ class SmartBar_ValveController():
         TestPause = .7
         self.ShiftRegisterClear()
         self.ClearQueuedValves()
-        (self.TotalValves) = 6
+        (self.TotalValves) = 12
         for i in range (self.TotalValves):
 
             self.CurrentValveState[i] = 1

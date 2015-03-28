@@ -1,3 +1,10 @@
+'''
+EDITED 3:56PM ON 7 MAR
+Created on 21/03/2014
+
+@author: Jean Machuca <correojean@gmail.com> @jeanmachuca
+'''
+
 import os
 import serial
 from serial.tools import list_ports
@@ -126,7 +133,8 @@ class Command_Packet(Packet):
         kwargs.setdefault('UseSerialDebug', True)
         self.UseSerialDebug= kwargs['UseSerialDebug']
         if self.UseSerialDebug:
-            print 'Command: %s' % commandName
+            pass
+            #print 'Command: %s' % commandName
         self.cmd = self.commands[commandName]
         
     UseSerialDebug = True
@@ -203,6 +211,8 @@ class Response_Packet(Packet):
     def __init__(self,_buffer=None,UseSerialDebug=False):
         '''
         creates and parses a response packet from the finger print scanner
+        def serializeToSend(self,bytearr):
+        return ' '.join(binascii.hexlify(ch) for ch in bytes(bytearr))
         '''
         self.UseSerialDebug= UseSerialDebug
         
@@ -210,7 +220,14 @@ class Response_Packet(Packet):
             self.RawBytes = _buffer
             self._lastBuffer = bytes(_buffer)
             if self.UseSerialDebug:
-                print 'read: %s'% self.serializeToSend(_buffer)
+                s=self.serializeToSend(_buffer)
+                #c=self.unserializeFromRead(s,_buffer)
+##                print 'response packet:'
+##                print binascii.hexlify(_buffer[:12])
+##                print 'data packet: '
+##                print binascii.hexlify(_buffer[12:])
+##                print 'read: %s'% s
+##                #print 'read %d'%c
             if _buffer.__len__()>=12:
                 if _buffer[8] == 0x30:
                     self.ACK = True
@@ -224,7 +241,6 @@ class Response_Packet(Packet):
                 self.ResponseBytes[0]  = _buffer[8]
                 self.ResponseBytes[1]  = _buffer[9]
                 self.Error = self.ParseFromBytes(self.GetHighByte(_buffer[5]),self.GetLowByte(_buffer[4]))
-        
     _lastBuffer = bytes()
     RawBytes = bytearray(12)
     ParameterBytes=bytearray(4)
@@ -263,7 +279,12 @@ class SerialCommander:
         return bytes(bytearray([v for v in kwargs.values()]))
     
     def serializeToSend(self,bytearr):
-        return ' '.join(binascii.hexlify(ch) for ch in bytes(bytearr))
+        retval=' '.join(binascii.hexlify(ch) for ch in bytes(bytearr))
+##        f=open("test.txt","a")
+##        f.write(retval)
+##        f.close()
+        #print 'up in dat cereal%s'%retval
+        return retval
     
     def unserializeFromRead(self,char_readed,bytearr):
         bytearr.append(char_readed)
@@ -736,14 +757,19 @@ class FPS_GT511C3(SerialCommander):
         cp.ParameterFromInt(ID)
         packetbytes = cp.GetPacketBytes()
         self.SendCommand(packetbytes, 12)
+        time.sleep(1)
+        #f=open("test.txt","a")
+        #print 'here'
         rp = self.GetResponse()
+        #f.write(rp)
+        #f.close()
         retval = 0
         if not rp.ACK:
             if rp.Error == rp.errors['NACK_INVALID_POS']:
                 retval = 1
             elif rp.Error == rp.errors['NACK_IS_NOT_USED']:
                 retval = 2
-        return retval
+        return rp
     
     '''
          Uploads a template to the fps 
@@ -757,11 +783,31 @@ class FPS_GT511C3(SerialCommander):
             202 - Communications error
             203 - Device error
         int SetTemplate(byte* tmplt, int id, bool duplicateCheck);
+    '''
     def SetTemplate(self,tmplt,ID,duplicateCheck):
         cp = Command_Packet('SetTemplate',UseSerialDebug=self.UseSerialDebug)
         cp.ParameterFromInt(ID)
+        packetbytes = cp.GetPacketBytes()
+        self.SendCommand(packetbytes, 12)
+        time.sleep(1)
+        rp = self.GetResponse()
+        retval = 0
+        if not rp.ACK:
+            if rp.Error == rp.errors['NACK_INVALID_POS']:
+                retval = 1
+            return
+        #print 'sending tmplt'
+        self._serial.write(tmplt)
+        time.sleep(1)
+        rp = self.GetResponse()
+        if not rp.ACK:
+            if rp.Error == rp.errors['NACK_COMM_ERR']:
+                retval = 1
+            elif rp.Error == rp.errors['NACK_DEV_ERR']:
+                retval = 2
+        return rp
         
-
+    '''
          Commands that are not implemented (and why)
          VerifyTemplate1_1 - Couldn't find a good reason to implement this on an arduino
          IdentifyTemplate1_N - Couldn't find a good reason to implement this on an arduino
@@ -790,9 +836,11 @@ class FPS_GT511C3(SerialCommander):
         if not self._serial is None:
             self._serial.write(bytes(cmd))
             if self.UseSerialDebug:
-                print self.serializeToSend(cmd)
-                print bytes(cmd)
-                print repr(bytes(cmd))[1:-1]
+                pass
+                #print self.serializeToSend(cmd)
+                #print  ' '
+                #print bytes(cmd)
+                #print repr(bytes(cmd))[1:-1]
         else:
             if self.UseSerialDebug:
                 print '[SendCommand] No es posible escribir en %s' % self._device_name
@@ -805,10 +853,12 @@ class FPS_GT511C3(SerialCommander):
         delay(interval)
         if self._serial is None:
             rp = Response_Packet()
-            print '[GetResponse] No es posible leer desde: %s' % self._device_name
+            #print '[GetResponse] No es posible leer desde: %s' % self._device_name
         else:
             r = bytearray(self._serial.read(self._serial.inWaiting()))
+            #print 'begin %s'%self._serial.read(self._serial.inWaiting())
             rp = Response_Packet(r,self.UseSerialDebug)
+            #print 'end'
         
         if rp.ACK:
             delay(interval)

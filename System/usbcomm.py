@@ -12,10 +12,22 @@ import random
 import sys
 import RPi.GPIO as GPIO
 import Control_IO as CIO
+import FingerprintGet as FPQ
 import atexit
 
+
+RedLEDPin = 16
+BlueLEDPin = 20
+GreenLEDPin = 21
+
+
+
+
+def at_exit():
+    GPIO.cleanup()
+    FPQ.clear_files()
 #on exit, gpio is freed for other applications
-atexit.register(CIO.CIO_Free)
+atexit.register(at_exit)
 
 ACCESSORY_VID = 0x18D1
 #ACCESSORY_PID = (0x2D00, 0x2D01, 0x2D04, 0x2D05)
@@ -141,7 +153,7 @@ def start_accessory_mode():
 # return: dev, device descriptor for usb
 # brief: continually run through the steps to set accessory mode.
 def wait_for_accessory():
-    GPIO.output(19, 1)
+    GPIO.output(RedLEDPin, 1)
     dev = get_accessory()
     while not dev:
         print('android accessory not found')
@@ -154,7 +166,7 @@ def wait_for_accessory():
             set_accessory_mode(dev)
             dev = get_accessory()
             print('accessory mode succesful')
-            GPIO.output(19, 0)
+            GPIO.output(RedLEDPin, 0)
             return dev
             break
         else:
@@ -162,7 +174,7 @@ def wait_for_accessory():
             time.sleep(2)
     else:
         print('already in accessory mode')
-    GPIO.output(19, 0)
+    GPIO.output(RedLEDPin, 0)
     return dev
                       
 # param: ldev, device descriptor for usb
@@ -172,15 +184,15 @@ def wait_for_accessory():
 def readbuf(ldev):
     try:
         #ret = ldev.read(0x81, 15, 128, 0)
-        ret = ldev.read(0x81, 128)
+        ret = ldev.read(0x81, 256)
         if ret:     #turn light blue
-            GPIO.output(16, 0)
-            GPIO.output(21, 1)
+            GPIO.output(GreenLEDPin, 0)
+            GPIO.output(BlueLEDPin, 1)
         sret = ''.join([chr(x) for x in ret])
-        var = CIO.Parse_Message(sret)
+        var = CIO.Parse_Message(sret,ldev)
         writebuf(ldev, var)
-        print var
-        print('>>> ' + sret)
+        #print var
+        #print('>>> ' + sret)
     except usb.core.USBError as e:
         pass
         #print 'readbuf error' + str(e)
@@ -188,8 +200,8 @@ def readbuf(ldev):
         pass
     time.sleep(.02)
     #turn ligh back green
-    GPIO.output(16, 1)
-    GPIO.output(21, 0)
+    GPIO.output(GreenLEDPin, 1)
+    GPIO.output(BlueLEDPin , 0)
 
 # param: ldev, device descriptor for usb; msg, message to send
 # return: 
@@ -204,6 +216,7 @@ def writebuf(ldev, msg):
             print('ret != msg')
     except:
         print('writebuf error')
+    return
 
 # param: ldev, device descriptor for usb
 # return: 
@@ -214,11 +227,10 @@ def readbufThread(ldev):
         readbuf(ldev)
     print('thread ended')
 
-
 def main():
     CIO.CIO_Initialize()
     dev = wait_for_accessory()
-    GPIO.output(16, 1)
+    GPIO.output(RedLEDPin, 1)
     if dev:
         time.sleep(.02)
         writebuf(dev, '$ready')
@@ -229,8 +241,8 @@ def main():
         while True:
             try:
                 if not get_accessory():     #disconnected
-                    GPIO.output(16, 0)
-                    GPIO.output(19, 1)
+                    GPIO.output(GreenLEDPin, 0)
+                    GPIO.output(RedLEDPin, 1)
                     dev = wait_for_accessory()
                     if dev:             #start read thread again
                         thread.start_new_thread(readbufThread, (dev,))
@@ -244,7 +256,7 @@ def main():
                 writebuf(dev, msg)
             except:
                 pass
-        GPIO.output(16, 0)
+        GPIO.output(RedLEDPin, 0)
         
 if __name__ == '__main__':
     main()
