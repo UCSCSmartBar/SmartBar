@@ -9,6 +9,8 @@
     <string name="smart_bar_actionbar">Smart Bar</string>
     <string name="login_button">Login</string>
     <string name="new_user_button">New User</string>
+    <string name="sign_out_button_name">Sign Out</string>
+    <string name="revoke_access_button_name">Revoke</string>
 
     <!-- Login Activity -->
     <string name="login_actionbar">Log In</string>

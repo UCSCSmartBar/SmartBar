@@ -5,6 +5,8 @@ package com.example.smartbarmobile;
  * 
  * @author davydewaele
  */
+
+
 import java.net.URLDecoder;
 
 import android.annotation.SuppressLint;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+
 /**
  * Execute the OAuthRequestTokenTask to retrieve the request, and authorize the request.
  * After the request is authorized by the user, the callback URL will be intercepted here.
@@ -31,6 +34,11 @@ public class OAuthAccessTokenActivity extends Activity {
 	// Initializations
 	private SharedPreferences prefs;
 	private OAuth2Helper oAuth2Helper;
+	
+	private WebView  webview;
+	
+	boolean handled=false;
+	private boolean hasLoggedIn;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +59,7 @@ public class OAuthAccessTokenActivity extends Activity {
         webview.setWebViewClient(new WebViewClient() {  
 
         	@Override  
-            public void onPageStarted(WebView view, String url,Bitmap bitmap)  {  
+            public void onPageStarted(WebView view, String url,Bitmap bitmap)  {
         		Log.d(Constants.TAG, "onPageStarted : " + url + " handled = " + handled);
             }
         	
@@ -70,16 +78,10 @@ public class OAuthAccessTokenActivity extends Activity {
         			webview.setVisibility(View.VISIBLE);
         		}
             }
-
-        });  
+        });
         
-        webview.loadUrl(authorizationUrl);		
+        webview.loadUrl(authorizationUrl);	
 	}
-	
-	private WebView  webview;
-	
-	boolean handled=false;
-	private boolean hasLoggedIn;
 	
 	@Override
 	protected void onResume() {
@@ -89,7 +91,6 @@ public class OAuthAccessTokenActivity extends Activity {
 			finish();
 		}
 	}
-
 	
 	/**
 	 * Background task to extract authorization code from url and retrieve access token associated with the code.

@@ -7,7 +7,7 @@ import android.telephony.TelephonyManager;
 import android.view.inputmethod.InputMethodManager;
 
 /*
- * This class holds the global app-wide variables (number, username, logged in)
+ * This class holds the global app-wide variables (number, user name, logged in)
  */
 public class MyApplication extends Application {
 

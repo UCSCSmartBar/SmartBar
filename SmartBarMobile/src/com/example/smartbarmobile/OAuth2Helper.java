@@ -68,10 +68,7 @@ public class OAuth2Helper {
 		Log.i(Constants.TAG, "Refresh Token : " + tokenResponse.getRefreshToken());
 		flow.createAndStoreCredential(tokenResponse, oauth2Params.getUserId());
 	}
-	
-	
-	
-	
+		
 	public String executeApiCall() throws IOException {
 		Log.i(Constants.TAG,"Executing API call at url " + this.oauth2Params.getApiUrl());
 		return HTTP_TRANSPORT.createRequestFactory(loadCredential()).buildGetRequest(new GenericUrl(this.oauth2Params.getApiUrl())).execute().parseAsString();
