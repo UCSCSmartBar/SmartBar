@@ -52,7 +52,7 @@
     <!-- Order Confirmed Activity -->
     <string name="done">Done!</string>
     <string name="drink_sent">Your order has been sent to the Smart Bar!
-        When you\'re ready, enter your phone number into the touch screen interface.</string>
+        Proceed to the SmartBar touch screen interface to pick up your order.</string>
     <string name="thank_you">Thank you!</string>
     <string name="back_to_library_button">Back to Drink Library</string>
 
@@ -62,5 +62,31 @@
     <string name="dismiss">Dismiss</string>
     <string name="action_forgot_user">Forgot Username</string>
     <string name="action_forgot_pass">Forgot Password</string>
+    <string name="title_activity_bactrack">BACtrackActivity</string>
+    <string name="hello_world">Hello world!</string>
+
+    <!-- BAC Activity -->
+
+    <string name="TEXT_DISCONNECTED">Disconnected</string>
+    <string name="TEXT_CONNECTING">Connecting...</string>
+    <string name="TEXT_DISCOVERING_SERVICES">Discovering services...</string>
+    <string name="TEXT_CONNECTED">Connected!</string>
+
+    <string name="TEXT_FIRMWARE_VERSION">"Firmware version: </string>
+    <string name="TEXT_USE_COUNT">Use count: </string>
+    <string name="TEXT_BATTERY_VOLTAGE">Batter voltage: </string>
+    <string name="TEXT_TRANSMIT_POWER">Transmit power: </string>
+
+    <string name="TEXT_COUNTDOWN">Countdown: </string>
+    <string name="TEXT_BLOW_NOW">Blow now!</string>
+    <string name="TEXT_KEEP_BLOWING">Keep blowing...</string>
+    <string name="TEXT_ANALYZING">Analyzing...</string>
+    <string name="TEXT_FINISHED">Done! Result: </string>
+
+    <string name="TEXT_ERR_NO_BREATHALYZERS_FOUND">Error: No breathalyzers found.</string>
+    <string name="TEXT_ERR_BT_NOT_ENABLED">Error: Bluetooth is not enabled.</string>
+    <string name="TEXT_ERR_BLE_NOT_SUPPORTED">Error: BLE is not supported on this device.</string>
+    <string name="TEXT_ERR_BLOW_ERROR">Error: Blow process failed.</string>
+
 
 </resources>
