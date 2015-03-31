@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="red">#ff0000</color>
-    <color name="green">#00ff00</color>
-    <color name="blue">#0000ff</color>
-    <color name="yellow">#ffff00</color>
-    <color name="magenta">#ff00ff</color>
-    <color name="cyan">#00ffff</color>
-    <color name="violet">#800080</color>
-
+    <color name="BACGreen">#4DD865</color>
+    <color name="BACRed">#FF3838</color>
+    <color name="BACOrange">#FEB400</color>
+    <color name="BACNavy">#022D44</color>
+    <color name="BACSky">#14ADE4</color>
+    <color name="BACGray">#EFEFEF</color>
+    <color name="BACWhite">#FFFFFF</color>
 </resources>

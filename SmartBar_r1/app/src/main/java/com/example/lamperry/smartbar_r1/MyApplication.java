@@ -12,13 +12,13 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class MyApplication extends Application {
     boolean loggedIn = false;
-    String myUsername = "lpeezy";
-    String myPin = "16505559898";
+    String myUsername = "lp";
+    String myPin = "12345678901";
 
     public void setLoggedIn(boolean setLogIn) {
         loggedIn = setLogIn;
         myPin = getMy10DigitPhoneNumber();
-        for (int i = myPin.length(); i < 11; i++) {
+        while (myPin.length() < 11) {
             myPin = "1" + myPin;
         }
     }
@@ -35,7 +35,6 @@ public class MyApplication extends Application {
     }
 
     private String getMy10DigitPhoneNumber() {
-        String s = getMyPhoneNumber();
-        return s.substring(2);
+        return getMyPhoneNumber();
     }
 }

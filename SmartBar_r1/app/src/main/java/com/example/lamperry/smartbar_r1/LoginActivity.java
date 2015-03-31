@@ -1,8 +1,14 @@
 package com.example.lamperry.smartbar_r1;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -33,7 +40,6 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
     EditText user, pass;                        //To store username from login/pass field
     private ProgressDialog pDialog;             // Progress Dialog
     JSONParser jsonParser = new JSONParser();   // JSON parser class
-    String pin;                                 // pin for user
 
     //PHPlogin script location:
     //UCSC Smartbar Server:
@@ -60,7 +66,12 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
 
         //register listeners
         mSubmit.setOnClickListener(this);
-        pin = ((MyApplication)this.getApplication()).myPin;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, StartupActivity.class);
+        startActivity(intent);
     }
 
     // generated button method
@@ -175,6 +186,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                 if (success == 1) {
                     Log.d("Login Successful!", json.toString());
                     ((MyApplication)LoginActivity.this.getApplication()).myUsername = username;
+                    ((MyApplication)LoginActivity.this.getApplication()).setLoggedIn(true);
                     Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
                     finish();
                     startActivity(intent);
