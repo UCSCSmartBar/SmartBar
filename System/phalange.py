@@ -19,9 +19,17 @@ class phalangeList:
                 if appflag == 1:
                         templist.append(phalange(plist[i],None))
                         appflag = 0
+        temp = set(self.phalangelist) - set(templist)
+        temp1 = list(temp)
+        temp2 = []
         del self.phalangelist[:]
         self.phalangelist = templist
-            
+        for i in range(len(temp1)):
+            temp2.append(temp1[i].scannerID)
+        return temp2
+
+
+    
     def appendPL(self,fileID,scannerID):
         if self.returnfileID(scannerID) != -1 and self.returnscannerID(fileID) != -1:
             print 'entry already exists'
@@ -97,14 +105,14 @@ class PhalangeError(Exception):
     def __init__(self,msg):
         self.msg = msg
 
-"""
+'''
 poo = phalangeList()
-poo.appendPL(101,1)
-poo.appendPL(123,2)
-poo.appendPL(145,3)
-poo.appendPL(420,4)
-poo.appendPL(909,5)
-poo.appendPL(595,6)
-poo.appendPL(890,7)
-poo.appendPL(666,8)
-"""
+poo.appendPL(111,1)
+poo.appendPL(222,2)
+poo.appendPL(333,3)
+poo.appendPL(444,4)
+poo.appendPL(555,5)
+poo.appendPL(666,6)
+poo.appendPL(777,7)
+poo.appendPL(888,8)
+'''

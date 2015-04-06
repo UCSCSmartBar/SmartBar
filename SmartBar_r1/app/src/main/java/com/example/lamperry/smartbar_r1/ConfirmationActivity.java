@@ -143,6 +143,12 @@ public class ConfirmationActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, LibraryBrowseActivity.class);
+        startActivity(intent);
+    }
+
     // directs user to Library Browse Activity
     public void confirmationToLibraryBrowse(View view) {
         Intent intent = new Intent(this, LibraryBrowseActivity.class);
@@ -164,7 +170,7 @@ public class ConfirmationActivity extends ActionBarActivity {
         if (finalRecipe == null) {
             Log.e("Customize Error", "Recipe null.");
             return;
-        } else if (drinkOrder.equals("Carbonated Orange Gatorade")) {
+        } else if (drinkOrder.equals("Carbonated Orange Gatorade") || drinkOrder.equals("Orange Gatorade")) {
             Toast.makeText(this, "Sorry, there is no liquor in this drink to customize!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -262,6 +268,15 @@ public class ConfirmationActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        /**
+         * After completing background task display any notifications from system.
+         * **/
+        protected void onPostExecute(String file_url) {
+            if (file_url != null){
+                Toast.makeText(ConfirmationActivity.this, file_url, Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

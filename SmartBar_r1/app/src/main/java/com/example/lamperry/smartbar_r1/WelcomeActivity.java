@@ -59,6 +59,10 @@ public class WelcomeActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     // logout method, returns user to Startup Activity
     private void logout() {
         ((MyApplication)this.getApplication()).setLoggedIn(false);

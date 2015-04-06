@@ -103,6 +103,20 @@ public class CustomizeDrinkActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ConfirmationActivity.class);
+        intent.putExtra("drinkOrder", drinkOrder);
+        if (liquorReturnList.size() == 0) {
+            intent.putStringArrayListExtra("liquorReturnList", null);
+            intent.putExtra("drinkRecipe", recipe);
+            Toast.makeText(this, "You didn't specify liquors!", Toast.LENGTH_SHORT).show();
+        } else {
+            intent.putStringArrayListExtra("liquorReturnList", liquorReturnList);
+        }
+        startActivity(intent);
+    }
+
     /*
      * Associates java spinners with (xml spinners) resource id in layout and builds each specific
      * one for each type of liquor
