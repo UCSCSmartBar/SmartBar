@@ -330,8 +330,9 @@ def enroll_ID(fileID,ldev):
         fps.SetLED(False)
         return '$FPENROLL,ERR,1'
 
-
+'''
 fps = fps_init()
 fpput_init()
 fpget_init()
 update_queue('$fp,16505559898,10000002108')
+'''
