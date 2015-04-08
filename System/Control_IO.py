@@ -9,9 +9,9 @@ import RPi.GPIO as GPIO
 #import analogspi as spi
 import DispensingSystem as DS
 import analogspi as SPI
-import DispensingSystem as DS
-import FingerprintGet as FPQ
+import FingerprintGet_DB as FPQ
 import usbcomm as USB
+import BACDetector as BAC
 import time
 from threading import Thread
 #import thread
@@ -20,7 +20,7 @@ from threading import Thread
 RedLEDPin = 16
 BlueLEDPin = 20
 GreenLEDPin = 21
-#cuppin = 23
+cuppin = 23
 
 # param: 
 # return: 
@@ -33,7 +33,7 @@ def CIO_Initialize():
     GPIO.setup(RedLEDPin,GPIO.OUT) #red
     GPIO.setup(BlueLEDPin,GPIO.OUT) #blue
     GPIO.setup(GreenLEDPin,GPIO.OUT) #green
-    #GPIO.setup(cuppin,GPIO.IN)
+    GPIO.setup(cuppin,GPIO.IN)
     #spi.InitSPI()
     print('GPIO initialized')
     SPI.InitSPI()
@@ -58,20 +58,20 @@ def Test_SPI():
     CIO_Initialize()
     ADstr = '$AD.' + str(spi.ReadChannel(0)) 
     print ADstr
-'''
+
 def cupdetect():
     if not hasattr(cupdetect,'lastval'):
         cupdetect.lastval = 0
     if (GPIO.input(cuppin)):
-        if cupdetect.lastval == 0
+        if cupdetect.lastval == 0:
             print 'cupdetect: cup placed'
             cupdetect.lastval = 1
     else:
-        if cupdetect.lastval == 1
+        if cupdetect.lastval == 1:
             print 'cupdetect: cupremoved'
             cupdetect.lastval = 0
     return cupdetect.lastval
-'''
+
 # param: string: string to be parsed
 # return: string to be sent back to UI
 # brief: Parses the string and calls appropriate function.
@@ -85,12 +85,30 @@ def Parse_Message(string,ldev):
         print '->>' + string
         sList = string.split(",")
         #print sList
-        if (sList[0] == '$DO') :
-            '''
-            print 'please place cup'
-            while not cupdetect():
-                pass
-            '''
+        if(sList[0] == '$CUP'):
+                ctime = time.time()
+                print 'please place cup'
+                while not cupdetect():
+                    newtime = time.time()-ctime
+                    time.sleep(.5)
+                    if (newtime) > 10.0:
+                        print '10 seconds'
+                        return '$CUP,TIMEOUT'
+                return '$CUP,READY'
+        #Tyler's added code from 4/4/15
+        elif(sList[0] == '$BAC'):
+            if not hasattr(Parse_Message,'Breathalizer'):
+                Parse_Message.Breathalizer = BAC.SmartBar_BACDetector()
+            if(sList[1] == 'START'):
+                print 'BAC START'
+                Parse_Message.Breathalizer.CollectBACSample()
+                 #Implement the BAC recording functions in here.
+                 #Preferreably return acknowledges to guide user e.g.
+                 # '$BAC,WOKRING', '$BAC,PASSED'
+
+                 
+                return 'ACK'
+        elif (sList[0] == '$DO') :
             if not hasattr(Parse_Message,'Dispenser'):
                 Parse_Message.Dispenser = DS.SmartBar_Dispenser()
                 TempPause = time.time() + 2
@@ -111,7 +129,7 @@ def Parse_Message(string,ldev):
         
         elif (sList[0] == '$FPQ'):
             if FPQ.update_queue(string):
-                return '$ACK,FPQ'
+                return '$ACK,FPQ' 
             else:
                 return '$NAK,NOTINQ'
         elif (sList[0] == '$FPENROLL'):
