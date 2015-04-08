@@ -12,7 +12,6 @@ import analogspi as SPI
 import FingerprintGet_DB as FPQ
 import usbcomm as USB
 import BACDetector as BAC
-import CupDetect as CUP
 import time
 from threading import Thread
 #import thread
@@ -21,7 +20,8 @@ from threading import Thread
 RedLEDPin = 16
 BlueLEDPin = 20
 GreenLEDPin = 21
-cupChannel = 3
+cuppin = 23
+
 # param: 
 # return: 
 # brief: initializes GPIO, setting appropriate pins.
@@ -33,6 +33,7 @@ def CIO_Initialize():
     GPIO.setup(RedLEDPin,GPIO.OUT) #red
     GPIO.setup(BlueLEDPin,GPIO.OUT) #blue
     GPIO.setup(GreenLEDPin,GPIO.OUT) #green
+    GPIO.setup(cuppin,GPIO.IN)
     #spi.InitSPI()
     print('GPIO initialized')
     SPI.InitSPI()
@@ -58,6 +59,19 @@ def Test_SPI():
     ADstr = '$AD.' + str(spi.ReadChannel(0)) 
     print ADstr
 
+def cupdetect():
+    if not hasattr(cupdetect,'lastval'):
+        cupdetect.lastval = 0
+    if (GPIO.input(cuppin)):
+        if cupdetect.lastval == 0:
+            print 'cupdetect: cup placed'
+            cupdetect.lastval = 1
+    else:
+        if cupdetect.lastval == 1:
+            print 'cupdetect: cupremoved'
+            cupdetect.lastval = 0
+    return cupdetect.lastval
+
 # param: string: string to be parsed
 # return: string to be sent back to UI
 # brief: Parses the string and calls appropriate function.
@@ -74,7 +88,7 @@ def Parse_Message(string,ldev):
         if(sList[0] == '$CUP'):
                 ctime = time.time()
                 print 'please place cup'
-                while not CUP.CupDetect():
+                while not cupdetect():
                     newtime = time.time()-ctime
                     time.sleep(.5)
                     if (newtime) > 10.0:
@@ -115,7 +129,7 @@ def Parse_Message(string,ldev):
         
         elif (sList[0] == '$FPQ'):
             if FPQ.update_queue(string):
-                return '$ACK,FPQ'
+                return '$ACK,FPQ' 
             else:
                 return '$NAK,NOTINQ'
         elif (sList[0] == '$FPENROLL'):
