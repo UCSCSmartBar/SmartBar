@@ -15,6 +15,10 @@ public class MyApplication extends Application {
     String myUsername = "lp";
     String myPin = "12345678901";
     String myPassword = "lp";
+    String myAge = "";
+    String myWeight = "";
+    String myGender = "";
+    String myEmail = "";
 
     public void setLoggedIn(boolean setLogIn) {
         loggedIn = setLogIn;

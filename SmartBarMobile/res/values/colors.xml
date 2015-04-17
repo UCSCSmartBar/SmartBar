@@ -7,5 +7,6 @@
     <color name="magenta">#ff00ff</color>
     <color name="cyan">#00ffff</color>
     <color name="violet">#800080</color>
+    <color name="purp">#440099</color>
 
 </resources>

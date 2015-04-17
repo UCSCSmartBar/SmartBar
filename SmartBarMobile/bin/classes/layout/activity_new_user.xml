@@ -40,28 +40,28 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/enter_email"
+            android:id="@+id/enter_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_login"
+            android:labelFor="@+id/type_username"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <EditText
-            android:id="@+id/type_email"
-            android:inputType="textEmailAddress"
+            android:id="@+id/type_username"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:singleLine="true"
-            android:hint="@string/email_hint"
-            />
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/enter_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_password"
+            android:labelFor="@+id/type_password"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -71,17 +71,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:singleLine="true"
-            android:hint="@string/enter_password"
-            />
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/reenter_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reenter_password"
+            android:labelFor="@+id/retype_password"
+            android:layout_marginTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/retype_password"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/enter_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_email"
+            android:labelFor="@+id/type_email"
+            android:layout_marginTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/type_email"
+            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/enter_age"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_age"
+            android:labelFor="@+id/type_age"
             android:layout_marginTop="10dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <EditText
             android:id="@+id/type_age"
@@ -89,15 +122,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:singleLine="true"
-            android:hint="@string/enter_age"
-            />
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/enter_weight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_weight"
+            android:labelFor="@+id/type_weight"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -107,9 +139,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:singleLine="true"
-            android:hint="@string/enter_weight"
-            />
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/enter_sex"
@@ -123,9 +153,7 @@
             android:id="@+id/type_sex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:hint="@string/enter_sex"
-            />
+            android:layout_marginTop="10dp" />
 
 
         <Button

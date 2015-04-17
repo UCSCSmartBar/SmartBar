@@ -1,6 +1,6 @@
 package com.example.smartbarmobile;
 
-/*
+/**
  * Modified from com.ecs.android.sample.oauth2
  * 
  * @author davydewaele

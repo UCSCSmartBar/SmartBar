@@ -25,12 +25,13 @@ import android.view.View;
 public class WelcomeActivity extends Activity {
 
     // Initializations
-    JSONParser jsonParser = new JSONParser();       // JSON parser class
-    String pin;                                     // pin for user
+    String pin;                                 // pin for user
+    JSONParser jsonParser = new JSONParser();   // JSON parser class
+    String myBAC;
 
-    //PHP login script:
+    //PHPlogin script location:
     //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/register.php";
+    private static final String BAC_URL = "http://www.ucscsmartbar.com/getBAC.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -43,7 +44,6 @@ public class WelcomeActivity extends Activity {
         setContentView(R.layout.activity_welcome);
 
         pin = ((MyApplication)this.getApplication()).myPin;
-        new CreateUser().execute();
     }
 
     // generated activity code
@@ -97,57 +97,70 @@ public class WelcomeActivity extends Activity {
         startActivity(intent);
     }
 
+    // query database for latest BAC reading
+    public void checkBAC(View view) {
+        new GetBAC().execute();
+    }
 
-    // class to query database and add new user information, extends AsyncTask so that query can be
-    // background thread
-    class CreateUser extends AsyncTask<String, String, String> {
 
+    /*
+     * Class to attempt login, call PHP script to query database
+     */
+    class GetBAC extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
         boolean failure = false;
+        int success;
 
         @Override
         protected String doInBackground(String... args) {
             // Check for success tag
-            int success;
-            String username = ((MyApplication)WelcomeActivity.this.getApplication()).myUsername;
-            String password = ((MyApplication)WelcomeActivity.this.getApplication()).myPassword;
-            String age = "21";
-            String weight = "100";
-            String sex = "Male";
-            
             try {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("username", username));
-                params.add(new BasicNameValuePair("password", password));
-                params.add(new BasicNameValuePair("age", age));
-                params.add(new BasicNameValuePair("weight", weight));
-                params.add(new BasicNameValuePair("sex", sex));
+                params.add(new BasicNameValuePair("pin", pin));
 
                 Log.d("request!", "starting");
-
-                //Posting user data to script
+                // getting product details by making HTTP request
                 JSONObject json = jsonParser.makeHttpRequest(
-                        LOGIN_URL, "POST", params);
+                        BAC_URL, "POST", params);
+                
+                if (json == null)
+                	return null;
+                Log.e("Error: ", json.toString());
 
-                // full json response
-                Log.d("Login attempt", json.toString());
+                // check your log for json response
+                Log.d("Attempting getBAC...", json.toString());
 
-                // json success element
+                // json success tag
                 success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
-                    Log.d("User Created!", json.toString());
-                    ((MyApplication)WelcomeActivity.this.getApplication()).setLoggedIn(true);
-                    //finish();
+                    Log.d("BAC Query Successful!", json.toString());
                     return json.getString(TAG_MESSAGE);
                 }else{
-                    failure = true;
-                    Log.d("Login Failure!", json.getString(TAG_MESSAGE));
+                    Log.d("BAC Query Failure!", json.getString(TAG_MESSAGE));
                     return json.getString(TAG_MESSAGE);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            if (file_url != null){
+                myBAC = file_url;
+                AlertDialog.Builder builder = new AlertDialog.Builder(WelcomeActivity.this);
+                builder.setTitle("Last BAC Reading");
+                builder.setMessage(myBAC);
+                builder.setPositiveButton("OK", null);
+                builder.show();
+            }
         }
     }
 }

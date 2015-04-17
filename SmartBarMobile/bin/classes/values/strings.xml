@@ -11,12 +11,16 @@
     <string name="new_user_button">New User</string>
     <string name="sign_out_button_name">Sign Out</string>
     <string name="revoke_access_button_name">Revoke</string>
+    <string name="personal_limitations">Personal Limitations</string>
+    <string name="enter_missing_params">Please enter your missing parameters to continue.</string>
+    <string name="missing_param">Missing Parameter</string>
 
     <!-- Login Activity -->
     <string name="login_actionbar">Log In</string>
     <string name="welcome_back">Welcome Back!</string>
-    <string name="enter_login">User Login</string>
-    <string name="enter_password">Password</string>
+    <string name="enter_login">Username</string>
+    <string name="enter_password">Password (Must be 6 or more characters)</string>
+    <string name="enter_pw">Password</string>
     <string name="email_hint">Username</string>
     <string name="reenter_pw">Confirm Password</string>
 
@@ -28,11 +32,14 @@
     <string name="enter_age">Age</string>
     <string name="enter_weight">Weight</string>
     <string name="enter_sex">Sex</string>
+    <string name="enter_email">Email Address</string>
+    <string name="reenter_password">Re-Enter Password</string>
 
     <!-- Welcome Activity -->
     <string name="welcome">Hello!</string>
     <string name="welcome_prompt">Click ORDER to see what\'s currently in the Smart Bar inventory!</string>
     <string name="order_button">Order</string>
+    <string name="bac_button">Check Last BAC Reading</string>
 
     <!-- Library Browse Activity -->
     <string name="library_browse_actionbar">Choose Drink</string>
@@ -54,10 +61,12 @@
 
     <!-- Order Confirmed Activity -->
     <string name="done">Done!</string>
-    <string name="drink_sent">Your order has been sent to the Smart Bar!
-        Proceed to the SmartBar touch screen interface to pick up your order.</string>
+    <string name="drink_sent">Your drink order has been sent!
+        Proceed to the SmartBar touch screen interface to proceed with order retreival.</string>
     <string name="thank_you">Thank you!</string>
     <string name="back_to_library_button">Back to Drink Library</string>
+    <string name="uber_button">Request an Uber</string>
+    <string name="lyft_button">Request a Lyft</string>
 
     <!-- ActionBar Menu -->
     <string name="action_logout">Logout</string>
@@ -67,5 +76,7 @@
     <string name="action_forgot_pass">Forgot Password</string>
     <string name="oauth_button">Sign in with Gmail</string>
     <string name="oauth_login">Secure Authentication</string>
+    <string name="title_activity_missing_params">MissingParamsActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

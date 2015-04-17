@@ -34,6 +34,7 @@ public class ConfirmationActivity extends Activity {
     ArrayList<String> liquorReturnList;
     String finalRecipe = "";
     String sendRecipe = "";
+    String myBAC;
 
     JSONParser jsonParser = new JSONParser();       // JSON parser class
 

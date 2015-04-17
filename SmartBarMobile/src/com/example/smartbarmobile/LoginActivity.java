@@ -35,7 +35,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     //PHPlogin script location:
     //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/login.php";
+    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/isLogged.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -70,7 +70,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         String username = user.getText().toString();
         String password = pass.getText().toString();
         if ((username.equals("")) || (password.equals(""))) {
-            Toast.makeText(this, "Username and Password required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Username and password required", Toast.LENGTH_SHORT).show();
             return;
         }
         if (v.getId() == R.id.login_button)
@@ -137,6 +137,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
          * Before starting background thread Show Progress Dialog
          * */
         boolean failure = false;
+        int success;
 
         // set progress dialog
         @Override
@@ -153,19 +154,22 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         @Override
         protected String doInBackground(String... args) {
             // Check for success tag
-            int success;
             String username = user.getText().toString();
             String password = pass.getText().toString();
             try {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("username", username));
-                params.add(new BasicNameValuePair("password", password));
+                params.add(new BasicNameValuePair("user_name", username));
+                params.add(new BasicNameValuePair("user_password", password));
 
                 Log.d("request!", "starting");
                 // getting product details by making HTTP request
                 JSONObject json = jsonParser.makeHttpRequest(
                         LOGIN_URL, "POST", params);
+                
+                if (json == null)
+                	return null;
+                Log.e("Error: ", json.toString());
 
                 // check your log for json response
                 Log.d("Login attempt", json.toString());
@@ -176,9 +180,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     Log.d("Login Successful!", json.toString());
                     ((MyApplication)LoginActivity.this.getApplication()).myUsername = username;
                     ((MyApplication)LoginActivity.this.getApplication()).setLoggedIn(true);
-                    Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
-                    finish();
-                    startActivity(intent);
                     return json.getString(TAG_MESSAGE);
                 }else{
                     Log.d("Login Failure!", json.getString(TAG_MESSAGE));
@@ -198,6 +199,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             pDialog.dismiss();
             if (file_url != null){
                 Toast.makeText(LoginActivity.this, file_url, Toast.LENGTH_LONG).show();
+                if (success == 1) {
+                    Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
+                    finish();
+                    startActivity(intent);
+                }
             }
         }
     }
