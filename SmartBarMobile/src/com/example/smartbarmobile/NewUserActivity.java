@@ -32,7 +32,7 @@ import android.widget.Toast;
 public class NewUserActivity extends Activity implements View.OnClickListener {
 
     // Initializations
-    EditText user, pass, repass, email, agesb, weightsb;           // User Inputs
+    EditText user, pass, repass, email, agesb;           // User Inputs
     Spinner sexsb;
     private Button mRegister;                       // Register Button
     private ProgressDialog pDialog;                 // Progress Dialog
@@ -41,7 +41,7 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
 
     //PHP login script:
     //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/register.php";
+    private static final String LOGIN_URL = "http://www.smartbarproject.com/register.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -59,7 +59,6 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
         repass = (EditText)findViewById(R.id.retype_password);
         email = (EditText)findViewById(R.id.type_email);
         agesb = (EditText)findViewById(R.id.type_age);
-        weightsb = (EditText)findViewById(R.id.type_weight);
 
         // set up drop down gender menu
         sexsb = (Spinner)findViewById(R.id.type_sex);
@@ -83,7 +82,7 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
     	/** Instantiate and execute CreateUser class to query database and create account provide all inputs valid */
         String age = agesb.getText().toString();
         if ((user.getText().toString().equals("")) || (pass.getText().toString().equals("")) || 
-        		(agesb.getText().toString().equals("")) || (weightsb.getText().toString().equals("")) || (email.getText().toString().equals(""))) {
+        		(agesb.getText().toString().equals("")) || (email.getText().toString().equals(""))) {
             Toast.makeText(this, "All fields required", Toast.LENGTH_LONG).show();
         } else if (Integer.valueOf(age) < 21) {
             Toast.makeText(this, "Sorry, you must be 21 to use the Smart Bar.", Toast.LENGTH_LONG).show();
@@ -178,9 +177,8 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
             String username = user.getText().toString();
             String password = pass.getText().toString();
             String emailAddr = email.getText().toString();
-            String phone = ((MyApplication)NewUserActivity.this.getApplication()).myPin;
+            String phone = ((MyApplication)NewUserActivity.this.getApplication()).getNumber();
             String age = agesb.getText().toString();
-            String weight = weightsb.getText().toString();
             String sex = sexsb.toString();
             try {
                 // Building Parameters
@@ -190,7 +188,6 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
                 params.add(new BasicNameValuePair("email", emailAddr));
                 params.add(new BasicNameValuePair("phone", phone));
                 params.add(new BasicNameValuePair("age", age));
-                params.add(new BasicNameValuePair("weight", weight));
                 params.add(new BasicNameValuePair("sex", sex));
 
                 Log.d("request!", "starting");
@@ -198,6 +195,11 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
                 // Posting user data to script
                 JSONObject json = jsonParser.makeHttpRequest(
                         LOGIN_URL, "POST", params);
+                
+                if (json == null) {
+                	Toast.makeText(NewUserActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();
+                	return null;
+                }
 
                 // Full JSON response
                 Log.d("Login attempt", json.toString());
@@ -210,7 +212,6 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
                     ((MyApplication)NewUserActivity.this.getApplication()).myPassword = password;
                     ((MyApplication)NewUserActivity.this.getApplication()).myEmail= emailAddr;
                     ((MyApplication)NewUserActivity.this.getApplication()).myAge = age;
-                    ((MyApplication)NewUserActivity.this.getApplication()).myWeight= weight;
                     ((MyApplication)NewUserActivity.this.getApplication()).myGender = sex;
                     ((MyApplication)NewUserActivity.this.getApplication()).setLoggedIn(true);
                     return json.getString(TAG_MESSAGE);

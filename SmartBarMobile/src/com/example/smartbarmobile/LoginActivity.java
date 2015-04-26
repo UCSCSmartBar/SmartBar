@@ -35,7 +35,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     //PHPlogin script location:
     //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/isLogged.php";
+    private static final String LOGIN_URL = "http://www.smartbarproject.com/isLogged.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -167,9 +167,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 JSONObject json = jsonParser.makeHttpRequest(
                         LOGIN_URL, "POST", params);
                 
-                if (json == null)
+                if (json == null) {
+                	Toast.makeText(LoginActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();
                 	return null;
-                Log.e("Error: ", json.toString());
+                }
 
                 // check your log for json response
                 Log.d("Login attempt", json.toString());
@@ -198,7 +199,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             // dismiss the dialog once product deleted
             pDialog.dismiss();
             if (file_url != null){
-                Toast.makeText(LoginActivity.this, file_url, Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, file_url, Toast.LENGTH_SHORT).show();
                 if (success == 1) {
                     Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
                     finish();

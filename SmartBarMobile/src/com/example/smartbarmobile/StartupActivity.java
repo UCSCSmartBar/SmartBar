@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.Toast;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -52,7 +51,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 
     //PHPlogin script location:
     //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/isLogged.php";
+    private static final String LOGIN_URL = "http://www.smartbarproject.com/isLogged.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -95,8 +94,6 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
     private PendingIntent mSignInIntent;
 
     private SignInButton mSignInButton;
-    private Button mSignOutButton;
-    private Button mRevokeButton;
     
     private Person currentUser;
     private String mEmail;
@@ -112,12 +109,8 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
         ((MyApplication)this.getApplication()).setLoggedIn(false);	
 
         mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        mSignOutButton = (Button) findViewById(R.id.sign_out_button);
-        mRevokeButton = (Button) findViewById(R.id.revoke_access_button);
 
         mSignInButton.setOnClickListener(this);
-        mSignOutButton.setOnClickListener(this);
-        mRevokeButton.setOnClickListener(this);
         
         if (savedInstanceState != null) {
         	mSignInProgress = savedInstanceState.getInt(SAVED_PROGRESS, STATE_DEFAULT);
@@ -187,29 +180,6 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 					Toast.makeText(this, "Signing in...", Toast.LENGTH_SHORT).show();
 				    resolveSignInError();
 				    break;
-				case R.id.sign_out_button:
-					Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show();
-					// Clear the default account on sign out so that Google Play services will not return an onConnected
-					// callback without user interaction.
-					Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-					mGoogleApiClient.disconnect();
-					mGoogleApiClient.connect();
-					break;
-				case R.id.revoke_access_button:
-					// After we revoke permissions for the user with a GoogleApiClient instance, we must discard it and
-					// create a new one.
-					Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-					// Want to normally register a callback on revokeAccessAndDisconnect to delete user data so that
-					// we comply with Google developer policies.
-					Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
-			        mGoogleApiClient = new GoogleApiClient.Builder(this)
-			        		.addConnectionCallbacks(this)
-			        		.addOnConnectionFailedListener(this)
-			        		.addApi(Plus.API, Plus.PlusOptions.builder().build())
-			        		.addScope(Plus.SCOPE_PLUS_LOGIN)
-			        		.build();
-			        mGoogleApiClient.connect();
-			        break;
 		        default:
 		        	break;
 			}
@@ -240,8 +210,6 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 
 	    // Update the user interface to reflect that the user is signed in.
 	    mSignInButton.setEnabled(false);
-	    mSignOutButton.setEnabled(true);
-	    mRevokeButton.setEnabled(true);
 		
 		// Retrieve some profile information to personalize our app for the user
 		currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
@@ -387,8 +355,6 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	private void onSignedOut() {
 		// Update the UI to reflect that the user signed out
 	    mSignInButton.setEnabled(true);
-	    mSignOutButton.setEnabled(false);
-	    mRevokeButton.setEnabled(false);
 	}
 	
 	public void onConnectionSuspended(int cause) {
@@ -437,9 +403,10 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
                 JSONObject json = jsonParser.makeHttpRequest(
                         LOGIN_URL, "POST", params);
                 
-                if (json == null)
+                if (json == null) {
+                	Toast.makeText(StartupActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();
                 	return null;
-                Log.e("Error: ", json.toString());
+                }
 
                 // check your log for json response
                 Log.d("Login attempt", json.toString());
@@ -467,7 +434,8 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
             if (file_url != null){
             	pDialog.dismiss();
                 if (success == 1) {
-                    Toast.makeText(StartupActivity.this, file_url, Toast.LENGTH_LONG).show();
+                    Toast.makeText(StartupActivity.this, file_url, Toast.LENGTH_SHORT).show();
+                    ((MyApplication)StartupActivity.this.getApplication()).gSignIn = true;
                     Intent welcome = new Intent(StartupActivity.this, WelcomeActivity.class);
                     finish();
                     startActivity(welcome);

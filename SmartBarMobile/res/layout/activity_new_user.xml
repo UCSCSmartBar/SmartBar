@@ -125,23 +125,6 @@
             android:singleLine="true" />
 
         <TextView
-            android:id="@+id/enter_weight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/enter_weight"
-            android:labelFor="@+id/type_weight"
-            android:layout_marginTop="10dp"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <EditText
-            android:id="@+id/type_weight"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:singleLine="true" />
-
-        <TextView
             android:id="@+id/enter_sex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
