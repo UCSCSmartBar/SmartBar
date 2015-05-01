@@ -39,10 +39,6 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
     JSONParser jsonParser = new JSONParser();       // JSON parser class
     String pin;                                     // pin for user
 
-    //PHP login script:
-    //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.smartbarproject.com/register.php";
-
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_MESSAGE = "message";
@@ -133,7 +129,14 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    MyApplication.hideSoftKeyboard(NewUserActivity.this);
+                	switch (event.getAction()) {
+	                	case MotionEvent.ACTION_DOWN: break;
+	                	case MotionEvent.ACTION_UP:
+	                		v.performClick();
+	                    	MyApplication.hideSoftKeyboard(NewUserActivity.this);
+	                    	break;
+	                    default: break;
+                	}
                     return false;
                 }
             });
@@ -194,7 +197,7 @@ public class NewUserActivity extends Activity implements View.OnClickListener {
 
                 // Posting user data to script
                 JSONObject json = jsonParser.makeHttpRequest(
-                        LOGIN_URL, "POST", params);
+                        ServerAccess.REGISTER_URL, "POST", params);
                 
                 if (json == null) {
                 	Toast.makeText(NewUserActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();

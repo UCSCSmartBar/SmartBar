@@ -28,7 +28,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -47,10 +49,6 @@ public class MissingParamsActivity extends Activity implements ConnectionCallbac
 	Button done;
 
     JSONParser jsonParser = new JSONParser();
-
-    //PHP login script:
-    //UCSC Smartbar Server:
-    private static final String REGISTER_URL = "http://www.smartbarproject.com/register.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -100,6 +98,8 @@ public class MissingParamsActivity extends Activity implements ConnectionCallbac
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_missing_params);
+
+        setupUI(findViewById(R.id.activity_missing_params));
 		
 		Button done = (Button)findViewById(R.id.done_button);
 		done.setOnClickListener(this);
@@ -169,6 +169,34 @@ public class MissingParamsActivity extends Activity implements ConnectionCallbac
         }
 		return super.onOptionsItemSelected(item);
 	}
+
+    // http://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-editText
+    public void setupUI(View view) {
+        // set up touch listener for non-text box views to hide keyboard
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                	switch (event.getAction()) {
+	                	case MotionEvent.ACTION_DOWN: break;
+	                	case MotionEvent.ACTION_UP:
+	                		v.performClick();
+	                    	MyApplication.hideSoftKeyboard(MissingParamsActivity.this);
+	                    	break;
+	                    default: break;
+                	}
+                    return false;
+                }
+            });
+        }
+        // if a layout container, iterate over children and seed recursion
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup)view).getChildCount(); i++) {
+                View innerView = ((ViewGroup)view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
+    }
 
 	private void configureParams() {
 		if (noGender) {
@@ -354,7 +382,7 @@ public class MissingParamsActivity extends Activity implements ConnectionCallbac
 
                 //Posting user data to script
                 JSONObject json = jsonParser.makeHttpRequest(
-                        REGISTER_URL, "POST", params);
+                        ServerAccess.REGISTER_URL, "POST", params);
                 
                 if (json == null) {
                 	Toast.makeText(MissingParamsActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();

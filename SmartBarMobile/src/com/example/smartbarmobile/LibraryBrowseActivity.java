@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.AsyncTask;
@@ -40,6 +41,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 /*
@@ -68,10 +70,6 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
     String receivedString = "";
     private ProgressDialog pDialog;             // Progress Dialog
     JSONParser jsonParser = new JSONParser();   // JSON parser class
-
-    //PHPlogin script location:
-    //UCSC Smartbar Server:
-    private static final String GET_LIB_URL = "http://www.smartbarproject.com/getLib.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -175,6 +173,22 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
             return true;
         }
 
+        // Reset Fingerprint
+        if (id == R.id.action_resetFP) {
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        		.setTitle("Reset Fingerprint?")
+        		.setMessage("Are you sure you want to reset your fingerprint information?")
+        		.setPositiveButton("Reset FP", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// User wants to reset fingerprint
+						new ResetFP().execute();
+					}
+				})
+				.setNegativeButton("Cancel", null);
+        	builder.show();
+        }
+
         // logout
         if (id == R.id.action_logout) {
 			Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show();
@@ -216,7 +230,7 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
             if (lastChange.length() < s.toString().length()) {
                 // user has added characters to constraint
                 for (int i = 0; i < filteredLibrary.size(); i++) {
-                    if (!filteredLibrary.get(i).toUpperCase().startsWith(s.toString().toUpperCase())) {
+                    if (!filteredLibrary.get(i).toUpperCase(Locale.US).startsWith(s.toString().toUpperCase())) {
                         filteredAdapter.remove(filteredLibrary.get(i));
                     }
                 }
@@ -260,7 +274,7 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
         // whitespace ok
         boolean isInLibrary = false;
         for (int i = 0; i < drinkLibrary.size(); i++) {
-            if (drinkOrder.toUpperCase().trim().equals(drinkLibrary.get(i).toUpperCase())) {
+            if (drinkOrder.toUpperCase(Locale.getDefault()).trim().equals(drinkLibrary.get(i).toUpperCase())) {
                 isInLibrary = true;
                 drinkOrder = drinkLibrary.get(i);
                 break;
@@ -312,7 +326,14 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    MyApplication.hideSoftKeyboard(LibraryBrowseActivity.this);
+                	switch (event.getAction()) {
+	                	case MotionEvent.ACTION_DOWN: break;
+	                	case MotionEvent.ACTION_UP:
+	                		v.performClick();
+	                    	MyApplication.hideSoftKeyboard(LibraryBrowseActivity.this);
+	                    	break;
+	                    default: break;
+                	}
                     return false;
                 }
             });
@@ -510,7 +531,7 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
                 Log.d("request!", "starting");
                 // getting product details by making HTTP request
                 JSONObject json = jsonParser.makeHttpRequest(
-                        GET_LIB_URL, "POST", params);
+                        ServerAccess.GET_LIB_URL, "POST", params);
                 
                 if (json == null) {
                 	Toast.makeText(LibraryBrowseActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();
@@ -546,6 +567,70 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
                 receivedString = file_url;
             }
             parseStrings();
+        }
+    }
+    
+    
+    /**
+     * Class to reset fingerprint in database.
+     * @author lamperry
+     *
+     */
+    class ResetFP extends AsyncTask<String, String, String> {
+        int success;
+
+        @Override
+        protected String doInBackground(String... args) {
+        	
+            try {
+                Log.d("RFP", "Mid-Execute");
+                String pinNum = ((MyApplication)LibraryBrowseActivity.this.getApplication()).getNumber();
+                
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("pin", pinNum));
+                JSONObject json = jsonParser.makeHttpRequest(
+                		ServerAccess.RESET_FP_URL, "POST", params);
+                
+                if (json == null){
+                	Toast.makeText(LibraryBrowseActivity.this, "Failure to Access Server. Check Internet Connection"
+                            , Toast.LENGTH_SHORT).show();
+                	return null;
+                }
+
+                // check your log for json response
+                Log.d("RFP", json.toString());
+                
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("RFP", "Success String:" + json.toString());
+                    return json.getString(TAG_MESSAGE);
+                } else {
+                    Log.d("RFP", "Failure with :" + json.getString(TAG_MESSAGE));
+                    return json.getString(TAG_MESSAGE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
+            return null;
+        }
+        
+        /**
+         * Let user know if failure or success.
+         */
+        protected void onPostExecute(String file_url) {
+            if (file_url != null) {
+                Log.d("RFP", "Returned URL:" + file_url);
+                if (success == 1) {
+                	Toast.makeText(LibraryBrowseActivity.this, "Fingerprint has been reset for " + 
+                			((MyApplication)LibraryBrowseActivity.this.getApplication()).myUsername, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(LibraryBrowseActivity.this, "Failure to Access Server. Check Internet Connection"
+                        , Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

@@ -22,6 +22,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.AsyncTask;
@@ -50,10 +51,6 @@ public class ConfirmationActivity extends Activity implements ConnectionCallback
     String myBAC;
 
     JSONParser jsonParser = new JSONParser();       // JSON parser class
-
-    //PHP login script:
-    //UCSC Smartbar Server:
-    private static final String ADD_DRINK_URL = "http://www.smartbarproject.com/addDrink.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -187,6 +184,22 @@ public class ConfirmationActivity extends Activity implements ConnectionCallback
             builder.setPositiveButton("OK", null);
             builder.show();
             return true;
+        }
+
+        // Reset Fingerprint
+        if (id == R.id.action_resetFP) {
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        		.setTitle("Reset Fingerprint?")
+        		.setMessage("Are you sure you want to reset your fingerprint information?")
+        		.setPositiveButton("Reset FP", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// User wants to reset fingerprint
+						new ResetFP().execute();
+					}
+				})
+				.setNegativeButton("Cancel", null);
+        	builder.show();
         }
 
         // Logout chosen from action bar
@@ -434,7 +447,7 @@ public class ConfirmationActivity extends Activity implements ConnectionCallback
 
                 //Posting user data to script
                 JSONObject json = jsonParser.makeHttpRequest(
-                        ADD_DRINK_URL, "POST", params);
+                        ServerAccess.ADD_DRINK_URL, "POST", params);
                 
                 if (json == null) {
                 	Toast.makeText(ConfirmationActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();
@@ -470,6 +483,70 @@ public class ConfirmationActivity extends Activity implements ConnectionCallback
         protected void onPostExecute(String file_url) {
             if (file_url != null){
                 Toast.makeText(ConfirmationActivity.this, file_url, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    
+    /**
+     * Class to reset fingerprint in database.
+     * @author lamperry
+     *
+     */
+    class ResetFP extends AsyncTask<String, String, String> {
+        int success;
+
+        @Override
+        protected String doInBackground(String... args) {
+        	
+            try {
+                Log.d("RFP", "Mid-Execute");
+                String pinNum = ((MyApplication)ConfirmationActivity.this.getApplication()).getNumber();
+                
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("pin", pinNum));
+                JSONObject json = jsonParser.makeHttpRequest(
+                		ServerAccess.RESET_FP_URL, "POST", params);
+                
+                if (json == null){
+                	Toast.makeText(ConfirmationActivity.this, "Failure to Access Server. Check Internet Connection"
+                            , Toast.LENGTH_SHORT).show();
+                	return null;
+                }
+
+                // check your log for json response
+                Log.d("RFP", json.toString());
+                
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("RFP", "Success String:" + json.toString());
+                    return json.getString(TAG_MESSAGE);
+                } else {
+                    Log.d("RFP", "Failure with :" + json.getString(TAG_MESSAGE));
+                    return json.getString(TAG_MESSAGE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
+            return null;
+        }
+        
+        /**
+         * Let user know if failure or success.
+         */
+        protected void onPostExecute(String file_url) {
+            if (file_url != null) {
+                Log.d("RFP", "Returned URL:" + file_url);
+                if (success == 1) {
+                	Toast.makeText(ConfirmationActivity.this, "Fingerprint has been reset for " + 
+                			((MyApplication)ConfirmationActivity.this.getApplication()).myUsername, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(ConfirmationActivity.this, "Failure to Access Server. Check Internet Connection"
+                        , Toast.LENGTH_SHORT).show();
             }
         }
     }

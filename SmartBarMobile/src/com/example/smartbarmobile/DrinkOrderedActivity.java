@@ -22,6 +22,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.PackageManager;
@@ -49,10 +50,6 @@ public class DrinkOrderedActivity extends Activity implements ConnectionCallback
     String pin;
 
     JSONParser jsonParser = new JSONParser();       // JSON parser class
-
-    //PHP login script:
-    //UCSC Smartbar Server:
-    private static final String BAC_URL = "http://www.smartbarproject.com/getBAC.php";
 
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
@@ -141,25 +138,50 @@ public class DrinkOrderedActivity extends Activity implements ConnectionCallback
             return true;
         }
 
+        // Reset Fingerprint
+        if (id == R.id.action_resetFP) {
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        		.setTitle("Reset Fingerprint?")
+        		.setMessage("Are you sure you want to reset your fingerprint information?")
+        		.setPositiveButton("Reset FP", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// User wants to reset fingerprint
+						new ResetFP().execute();
+					}
+				})
+				.setNegativeButton("Cancel", null);
+        	builder.show();
+        }
+
         // adds logout button to action bar
         if (id == R.id.action_logout) {
 			Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show();
-			// Clear the default account on sign out so that Google Play services will not return an onConnected
-			// callback without user interaction.
-			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-			mGoogleApiClient.disconnect();
-			mGoogleApiClient.connect();
-        	
-			Intent intent = new Intent(DrinkOrderedActivity.this, StartupActivity.class);
-			startActivity(intent);
+			if (((MyApplication)this.getApplication()).gSignIn) {
+				// Clear the default account on sign out so that Google Play services will not return an onConnected
+				// callback without user interaction.
+				Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+				mGoogleApiClient.disconnect();
+				mGoogleApiClient.connect();
+	        	
+				Intent intent = new Intent(DrinkOrderedActivity.this, StartupActivity.class);
+				startActivity(intent);
+			} else {
+				logout();
+			}
         }
 
         return super.onOptionsItemSelected(item);
     }
+    
+    public void logout() {
+    	((MyApplication)this.getApplication()).loggedIn = false;
+    	Intent intent = new Intent(this, StartupActivity.class);
+    	startActivity(intent);
+    }
 
     // for back navigation
     @Override
-    
     public void onBackPressed() {
     }
 
@@ -349,11 +371,12 @@ public class DrinkOrderedActivity extends Activity implements ConnectionCallback
                 Log.d("request!", "starting");
                 // getting product details by making HTTP request
                 JSONObject json = jsonParser.makeHttpRequest(
-                        BAC_URL, "POST", params);
+                        ServerAccess.BAC_URL, "POST", params);
                 
-                if (json == null)
-                	return null;
-                Log.e("Error: ", json.toString());
+                if (json == null) {
+                    Log.e("Error: ", json.toString());
+                    return null;
+                }
 
                 // check your log for json response
                 Log.d("Attempting getBAC...", json.toString());
@@ -384,6 +407,70 @@ public class DrinkOrderedActivity extends Activity implements ConnectionCallback
                 builder.setMessage(myBAC);
                 builder.setPositiveButton("OK", null);
                 builder.show();
+            }
+        }
+    }
+    
+    
+    /**
+     * Class to reset fingerprint in database.
+     * @author lamperry
+     *
+     */
+    class ResetFP extends AsyncTask<String, String, String> {
+        int success;
+
+        @Override
+        protected String doInBackground(String... args) {
+        	
+            try {
+                Log.d("RFP", "Mid-Execute");
+                String pinNum = ((MyApplication)DrinkOrderedActivity.this.getApplication()).getNumber();
+                
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("pin", pinNum));
+                JSONObject json = jsonParser.makeHttpRequest(
+                		ServerAccess.RESET_FP_URL, "POST", params);
+                
+                if (json == null){
+                	Toast.makeText(DrinkOrderedActivity.this, "Failure to Access Server. Check Internet Connection"
+                            , Toast.LENGTH_SHORT).show();
+                	return null;
+                }
+
+                // check your log for json response
+                Log.d("RFP", json.toString());
+                
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("RFP", "Success String:" + json.toString());
+                    return json.getString(TAG_MESSAGE);
+                } else {
+                    Log.d("RFP", "Failure with :" + json.getString(TAG_MESSAGE));
+                    return json.getString(TAG_MESSAGE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
+            return null;
+        }
+        
+        /**
+         * Let user know if failure or success.
+         */
+        protected void onPostExecute(String file_url) {
+            if (file_url != null) {
+                Log.d("RFP", "Returned URL:" + file_url);
+                if (success == 1) {
+                	Toast.makeText(DrinkOrderedActivity.this, "Fingerprint has been reset for " + 
+                			((MyApplication)DrinkOrderedActivity.this.getApplication()).myUsername, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(DrinkOrderedActivity.this, "Failure to Access Server. Check Internet Connection"
+                        , Toast.LENGTH_SHORT).show();
             }
         }
     }

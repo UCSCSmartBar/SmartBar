@@ -33,10 +33,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private ProgressDialog pDialog;             // Progress Dialog
     JSONParser jsonParser = new JSONParser();   // JSON parser class
 
-    //PHPlogin script location:
-    //UCSC Smartbar Server:
-    private static final String LOGIN_URL = "http://www.smartbarproject.com/isLogged.php";
-
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_MESSAGE = "message";
@@ -113,7 +109,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    MyApplication.hideSoftKeyboard(LoginActivity.this);
+                	switch (event.getAction()) {
+	                	case MotionEvent.ACTION_DOWN: break;
+	                	case MotionEvent.ACTION_UP:
+	                		v.performClick();
+	                    	MyApplication.hideSoftKeyboard(LoginActivity.this);
+	                    	break;
+	                    default: break;
+                	}
                     return false;
                 }
             });
@@ -165,7 +168,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 Log.d("request!", "starting");
                 // getting product details by making HTTP request
                 JSONObject json = jsonParser.makeHttpRequest(
-                        LOGIN_URL, "POST", params);
+                        ServerAccess.LOGIN_URL, "POST", params);
                 
                 if (json == null) {
                 	Toast.makeText(LoginActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();

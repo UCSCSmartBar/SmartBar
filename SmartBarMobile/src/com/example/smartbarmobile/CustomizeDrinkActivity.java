@@ -3,8 +3,10 @@ package com.example.smartbarmobile;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,6 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -54,7 +62,13 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
     String[] whiskey = { "Choose Whiskey", "Default: Jack Daniels", "Jameson", "Johnny Walker" };
     String[] bitters = { "Choose Bitters", "Default: Angostura", "Peychaud's Bitters", "The Bitter Truth" };
     String[] bourbon = { "Choose Bourbon", "Default: Jim Beam", "Baker's", "Evan Williams" };
-	
+
+    JSONParser jsonParser = new JSONParser();       // JSON parser class
+
+    //JSON element ids from response of php script:
+    private static final String TAG_SUCCESS = "success";
+    private static final String TAG_MESSAGE = "message";
+    
 	private static final String TAG = "smartbar GoogleAPiClient";
 	
 	private static final int STATE_DEFAULT = 0;
@@ -148,6 +162,22 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
             builder.setPositiveButton("OK", null);
             builder.show();
             return true;
+        }
+
+        // Reset Fingerprint
+        if (id == R.id.action_resetFP) {
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        		.setTitle("Reset Fingerprint?")
+        		.setMessage("Are you sure you want to reset your fingerprint information?")
+        		.setPositiveButton("Reset FP", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// User wants to reset fingerprint
+						new ResetFP().execute();
+					}
+				})
+				.setNegativeButton("Cancel", null);
+        	builder.show();
         }
 
         // Logout chosen from action bar
@@ -461,4 +491,68 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
 			Log.e(TAG, "Error requesting visible circiles: " + peopleData.getStatus());
 		}
 	}
+    
+    
+    /**
+     * Class to reset fingerprint in database.
+     * @author lamperry
+     *
+     */
+    class ResetFP extends AsyncTask<String, String, String> {
+        int success;
+
+        @Override
+        protected String doInBackground(String... args) {
+        	
+            try {
+                Log.d("RFP", "Mid-Execute");
+                String pinNum = ((MyApplication)CustomizeDrinkActivity.this.getApplication()).getNumber();
+                
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("pin", pinNum));
+                JSONObject json = jsonParser.makeHttpRequest(
+                		ServerAccess.RESET_FP_URL, "POST", params);
+                
+                if (json == null){
+                	Toast.makeText(CustomizeDrinkActivity.this, "Failure to Access Server. Check Internet Connection"
+                            , Toast.LENGTH_SHORT).show();
+                	return null;
+                }
+
+                // check your log for json response
+                Log.d("RFP", json.toString());
+                
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("RFP", "Success String:" + json.toString());
+                    return json.getString(TAG_MESSAGE);
+                } else {
+                    Log.d("RFP", "Failure with :" + json.getString(TAG_MESSAGE));
+                    return json.getString(TAG_MESSAGE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
+            return null;
+        }
+        
+        /**
+         * Let user know if failure or success.
+         */
+        protected void onPostExecute(String file_url) {
+            if (file_url != null) {
+                Log.d("RFP", "Returned URL:" + file_url);
+                if (success == 1) {
+                	Toast.makeText(CustomizeDrinkActivity.this, "Fingerprint has been reset for " + 
+                			((MyApplication)CustomizeDrinkActivity.this.getApplication()).myUsername, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(CustomizeDrinkActivity.this, "Failure to Access Server. Check Internet Connection"
+                        , Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

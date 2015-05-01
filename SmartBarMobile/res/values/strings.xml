@@ -78,5 +78,6 @@
     <string name="oauth_login">Secure Authentication</string>
     <string name="title_activity_missing_params">MissingParamsActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="action_resetFP">Reset Fingerprint</string>
 
 </resources>
