@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/library_browse_activity"
+    android:background="@drawable/appbackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    tools:context=".LibraryBrowseActivity">
+
+        <TextView
+            android:id="@+id/enter_drink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/enter_drink"
+            android:textColor="@color/bt_white"
+            android:textSize="20sp"
+            android:typeface="serif" />
+
+        <ListView
+            android:id="@+id/drinkList"
+            android:textColor="@color/bt_white"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1" >
+        </ListView>
+
+        <View
+            android:id="@+id/bar_separator"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:background="#C0C0C0"/>
+
+        <EditText
+            android:id="@+id/typeDrink"
+            android:textColor="@color/bt_white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:singleLine="true"
+            android:hint="@string/drink_hint" />
+
+        <Button
+            android:id="@+id/order_button"
+            style="@style/PinKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/order_button"
+            android:onClick="libraryBrowseToConfirmation" />
+
+</LinearLayout>

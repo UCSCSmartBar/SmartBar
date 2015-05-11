@@ -1,0 +1,69 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_drink_ordered"
+    android:background="@drawable/appbackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    tools:context=".DrinkOrderedActivity" >
+
+       <TextView
+           android:id="@+id/drink_sent"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="10dp"
+           android:layout_gravity="center"
+           android:text="@string/drink_sent"
+           android:textColor="@color/bt_white"
+           android:textSize="20sp" />
+
+       <TextView
+           android:id="@+id/displayPin"
+           android:textColor="@color/bt_white"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="10dp"
+           android:layout_gravity="center"
+           android:textSize="40sp" />
+
+       <Button
+           android:id="@+id/backToLibrary"
+           style="@style/PinKey"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:text="@string/back_to_library_button"
+           android:onClick="drinkOrderedToLibraryBrowse" />
+
+       <Button
+           android:id="@+id/bac_button"
+           style="@style/PinKey"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:text="@string/bac_button"
+           android:onClick="checkBAC" />
+
+       <Button
+           android:id="@+id/uber_button"
+           style="@style/PinKey"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:text="@string/uber_button"
+           android:onClick="openUber" />
+
+       <Button
+           android:id="@+id/lyft_button"
+           style="@style/PinKey"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:text="@string/lyft_button"
+           android:onClick="openLyft" />
+
+   </LinearLayout>
+
+<!-- From: file:/C:/Users/lamperry/AndroidStudioProjects/SmartBarMobile/app/src/main/res/layout/activity_drink_ordered.xml -->

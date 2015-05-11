@@ -1,0 +1,10 @@
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\classes\debug
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\support-annotations-22.1.1-71acce3375c04232301ec3bd8e14e3932045b2cf.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\classes-201a6d21ea5943ba05a895d2285c59a7b6c46302.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\classes-5dc8324796250a0dd844b3eab42cb4a189d87432.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\data-1.4.0-503f94f0e7ca3098472b8674b6bc3072ae041569.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\gson-2.3.1-dc25052d163f46f66f10d08574e75131651bd205.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\internal_impl-22.1.1-98840347df96839cad07a945958e15d7e9d150da.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\classes-e3a7c74853a7104701832734fc5431a4cabaa598.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\braintree-api-1.4.0-17311f7cc01d7d0b35a4b43334055d2d317cb7d3.jar
+C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\google-play-services-5fb2c8fd4faf7c7ca0963aa2c76857e189218abf.jar

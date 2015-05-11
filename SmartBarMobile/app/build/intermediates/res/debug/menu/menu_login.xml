@@ -1,0 +1,14 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_forgot_user"
+        android:title="@string/action_forgot_user"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_forgot_pass"
+        android:title="@string/action_forgot_pass"
+        android:showAsAction="never" />
+</menu>
+<!-- From: file:/C:/Users/lamperry/AndroidStudioProjects/SmartBarMobile/app/src/main/res/menu/menu_login.xml -->

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\lamperry\.gradle\caches\modules-2\files-2.1\com.braintreepayments.api\data\1.4.0\bd7d308a31bbf5c8b813e674fd4cb0bf0a2712ad\data-1.4.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="bd7d308a31bbf5c8b813e674fd4cb0bf0a2712ad">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\data-1.4.0-503f94f0e7ca3098472b8674b6bc3072ae041569.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\exploded-aar\com.braintreepayments\card-form\1.4.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="8ea605f91070e7ba369904ecc2bed432892f9589">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\classes-201a6d21ea5943ba05a895d2285c59a7b6c46302.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\libs\google-play-services.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="38c2f8e192dc24ddbf6cae2784f3d4267af66a3e">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\google-play-services-5fb2c8fd4faf7c7ca0963aa2c76857e189218abf.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\exploded-aar\com.braintreepayments.api\braintree\1.4.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="0ab5360bc5898d672517e5adddbb7d776ebf2153">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\classes-5dc8324796250a0dd844b3eab42cb4a189d87432.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\.gradle\caches\modules-2\files-2.1\com.braintreepayments.api\braintree-api\1.4.0\c78ac60d14c0cb2e018e3346a28217591bf1fe52\braintree-api-1.4.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c78ac60d14c0cb2e018e3346a28217591bf1fe52">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\braintree-api-1.4.0-17311f7cc01d7d0b35a4b43334055d2d317cb7d3.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.1.1\libs\internal_impl-22.1.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="9e070ad32b2700b0343e8e0cccc437733d91ba3a">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\internal_impl-22.1.1-98840347df96839cad07a945958e15d7e9d150da.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.3.1\ecb6e1f8e4b0e84c4b886c2f14a1500caf309757\gson-2.3.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\gson-2.3.1-dc25052d163f46f66f10d08574e75131651bd205.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.1.1\support-annotations-22.1.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="01d051a6bfb1218b1db2d3a5af0480ac2c25c42a">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\support-annotations-22.1.1-71acce3375c04232301ec3bd8e14e3932045b2cf.jar" />
+    </item>
+    <item
+        jar="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.1.1\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c95ba8152923e4872e86a82cfcba9a51c0214328">
+        <dex dex="C:\Users\lamperry\AndroidStudioProjects\SmartBarMobile\app\build\intermediates\pre-dexed\debug\classes-e3a7c74853a7104701832734fc5431a4cabaa598.jar" />
+    </item>
+
+</items>

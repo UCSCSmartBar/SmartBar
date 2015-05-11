@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_confirmation"
+    android:background="@drawable/appbackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    tools:context=".ConfirmationActivity">
+
+    <TextView
+        android:id="@+id/order_confirmation1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:text="@string/order_confirmation1"
+        android:textColor="@color/bt_white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/drinkOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:text="@string/order_confirmation"
+        android:textColor="@color/bt_white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/customRecipe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:text="@string/order_confirmation"
+        android:textColor="@color/bt_white"
+        android:textSize="20sp"
+        android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/order_confirmation2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:text="@string/order_confirmation2"
+            android:textColor="@color/bt_white"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/orderDrinkButton"
+            style="@style/PinKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/order_drink_button"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:onClick="confirmationToDrinkOrdered" />
+
+        <Button
+            android:id="@+id/change_order_button"
+            style="@style/PinKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/change_order_button"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:onClick="confirmationToLibraryBrowse" />
+
+</LinearLayout>
+<!-- From: file:/C:/Users/lamperry/AndroidStudioProjects/SmartBarMobile/app/src/main/res/layout/activity_confirmation.xml -->
