@@ -33,13 +33,14 @@ public class MyApplication extends Application {
         return myPin;
     }
 
-    // method to hide keyboard when user clicks outside of edit text area
+    /* This hides the keyboard when the user clicks outside of the EditText area */
     public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager)activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager)activity.getSystemService(
+                Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    // grab phone number from users phone
+    /* Grab phone number from current device */
     private String getMyPhoneNumber() {
         TelephonyManager mTelephonyMgr;
         mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);

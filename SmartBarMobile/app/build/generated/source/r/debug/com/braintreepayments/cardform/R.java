@@ -46,23 +46,23 @@ public final class R {
 		public static final int bt_visa = 0x7f02001e;
 	}
 	public static final class id {
-		public static final int bt_card_form_card_number = 0x7f0a0036;
-		public static final int bt_card_form_cvv = 0x7f0a0038;
-		public static final int bt_card_form_expiration = 0x7f0a0037;
-		public static final int bt_card_form_postal_code = 0x7f0a0039;
+		public static final int bt_card_form_card_number = 0x7f0a003f;
+		public static final int bt_card_form_cvv = 0x7f0a0041;
+		public static final int bt_card_form_expiration = 0x7f0a0040;
+		public static final int bt_card_form_postal_code = 0x7f0a0042;
 	}
 	public static final class integer {
 		public static final int bt_match_parent = 0x7f060000;
 	}
 	public static final class layout {
-		public static final int bt_card_form_fields = 0x7f030009;
+		public static final int bt_card_form_fields = 0x7f03000b;
 	}
 	public static final class string {
-		public static final int bt_default_action_label = 0x7f07000f;
-		public static final int bt_form_hint_card_number = 0x7f07001a;
-		public static final int bt_form_hint_cvv = 0x7f07001b;
-		public static final int bt_form_hint_expiration = 0x7f07001c;
-		public static final int bt_form_hint_postal_code = 0x7f07001d;
+		public static final int bt_default_action_label = 0x7f070010;
+		public static final int bt_form_hint_card_number = 0x7f07001b;
+		public static final int bt_form_hint_cvv = 0x7f07001c;
+		public static final int bt_form_hint_expiration = 0x7f07001d;
+		public static final int bt_form_hint_postal_code = 0x7f07001e;
 	}
 	public static final class style {
 		public static final int bt_base_textview = 0x7f080002;

@@ -6,8 +6,11 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +39,7 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
         GoogleApiClient.OnConnectionFailedListener, ResultCallback<People.LoadPeopleResult> {
 
     JSONParser jsonParser = new JSONParser();
-    String pin;
+    String pin, pinDisp, tempCountry, tempArea, tempNum3, tempNum4;
     String username;
 
     private static final String TAG = "GoogleAPiClient";
@@ -81,7 +84,7 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ready_to_order);
 
-        pin = ((MyApplication)this.getApplication()).myPin;
+        pin = MyApplication.myPin;
 
         /**
          * When we build the GoogleApiClient we specify where connected and connection failed callbacks
@@ -114,12 +117,57 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
 
         /** ActionBar display pin sequence **/
         if (id == R.id.action_pin) {
+            pin = MyApplication.myPin + '1';
+            tempCountry = pin.substring(0,1);
+            tempArea = pin.substring(1,4);
+            tempNum3 = pin.substring(4,7);
+            tempNum4 = pin.substring(7,11);
+            pinDisp = tempCountry + ' ' + '(' + tempArea + ')' + ' ' + tempNum3 + '-' + tempNum4;
+
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("My Number");
-            builder.setMessage(String.valueOf(pin));
+            builder.setMessage(pinDisp);
             builder.setPositiveButton("OK", null);
             builder.show();
             return true;
+        }
+
+        /* Action bar request uber sequence */
+        if (id == R.id.action_uber) {
+            PackageManager pm = this.getPackageManager();
+            try {
+        	/* Try for installed app */
+                Intent uber = pm.getLaunchIntentForPackage("com.ubercab");
+                if (uber == null) {
+                    throw new PackageManager.NameNotFoundException();
+                }
+                uber.addCategory(Intent.CATEGORY_LAUNCHER);
+                this.startActivity(uber);
+            } catch (PackageManager.NameNotFoundException e) {
+            /* No Uber app! Open Google Play Store. */
+                Intent playStore = new Intent(android.content.Intent.ACTION_VIEW);
+                playStore.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.ubercab"));
+                startActivity(playStore);
+            }
+        }
+
+        /* Action bar request lyft sequence */
+        if (id == R.id.action_lyft) {
+            PackageManager pm = this.getPackageManager();
+            try {
+            /* Try for installed app. */
+                Intent uber = pm.getLaunchIntentForPackage("me.lyft.android");
+                if (uber == null) {
+                    throw new PackageManager.NameNotFoundException();
+                }
+                uber.addCategory(Intent.CATEGORY_LAUNCHER);
+                this.startActivity(uber);
+            } catch (PackageManager.NameNotFoundException e) {
+        	/* No Uber app! Open Google Play Store. */
+                Intent playStore = new Intent(android.content.Intent.ACTION_VIEW);
+                playStore.setData(Uri.parse("https://play.google.com/store/apps/details?id=me.lyft.android"));
+                startActivity(playStore);
+            }
         }
 
         /** ActionBar reset fingerprint sequence **/
@@ -142,8 +190,10 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
         if (id == R.id.action_logout) {
             Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show();
             if (((MyApplication)this.getApplication()).gSignIn) {
-                /** Clear the default account on sign out so that Google Play Services will not return
-                 * an onConnected callback without user interaction. **/
+                /**
+                 * Clear the default account on sign out so that Google Play Services will not return
+                 * an onConnected callback without user interaction.
+                 */
                 Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
                 mGoogleApiClient.disconnect();
                 mGoogleApiClient.connect();
@@ -191,7 +241,7 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVED_PROGRESS, mSignInProgress);
     }
@@ -235,9 +285,12 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
         Log.i(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
 
         if (result.getErrorCode() == ConnectionResult.API_UNAVAILABLE) {
-            /** The device's current configuration might not be supported with the requested API or
-             * a required component may not be installed **/
-
+            /**
+             * The device's current configuration might not be supported with the requested API or
+             * a required component may not be installed.
+             */
+            Toast.makeText(this, "The device's current configuration might not be supported.",
+                    Toast.LENGTH_SHORT).show();
         } else if (mSignInProgress != STATE_IN_PROGRESS) {
             /** We do not have an intent in progress so we should store the latest error resolution
              * intent for use when the sign in button is clicked. **/
@@ -320,6 +373,8 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
 
                 List<NameValuePair> params = new ArrayList<>();
                 params.add(new BasicNameValuePair("pin", pinNum));
+
+                /* Getting product details by making an HTTP request */
                 JSONObject json = jsonParser.makeHttpRequest(
                         ServerAccess.RESET_FP_URL, "POST", params);
 
@@ -329,11 +384,12 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
                     return null;
                 }
 
-                // check your log for json response
+                /* Check the logcat for full JSON response */
                 Log.d("RFP", json.toString());
 
-                // json success tag
+                /* JSON success tag */
                 success = json.getInt(ServerAccess.TAG_SUCCESS);
+
                 if (success == 1) {
                     Log.d("RFP", "Success String:" + json.toString());
                     return json.getString(ServerAccess.TAG_MESSAGE);
@@ -347,15 +403,12 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
             return null;
         }
 
-        /**
-         * Let user know if failure or success.
-         */
+        /* Let user know if failure or success. */
         protected void onPostExecute(String file_url) {
             if (file_url != null) {
                 Log.d("RFP", "Returned URL:" + file_url);
                 if (success == 1) {
-                    Toast.makeText(ReadyToOrderActivity.this, "Fingerprint has been reset for " +
-                            MyApplication.myUsername, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ReadyToOrderActivity.this, file_url, Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(ReadyToOrderActivity.this,
@@ -365,8 +418,9 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
     }
 
 
-    /*
-     * Check if user has Braintree customer account already, if not, make one.
+    /**
+     * This class gets called before sending user information to the server to ensure data is updated.
+     * Queries the database with the user phone number and receives the user's username.
      */
     class FindUser extends AsyncTask<String, String, String> {
 
@@ -377,14 +431,15 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
 
             Log.d("FindUser", "starting...");
             String phone = MyApplication.myPin;
+
             try {
-                /** Build parameters **/
+                /* Build parameters */
                 List<NameValuePair> params = new ArrayList<>();
                 params.add(new BasicNameValuePair("phone", phone));
 
                 Log.d("request!", "starting");
 
-                /** Getting product details by making HTTP request **/
+                /* Getting product details by making HTTP request */
                 JSONObject json = jsonParser.makeHttpRequest(
                         ServerAccess.FIND_USER_URL, "POST", params);
 
@@ -394,10 +449,10 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
                     return null;
                 }
 
-                /** JSON response returned **/
+                /* JSON response returned */
                 Log.d("FindUser", "returned");
 
-                /** JSON success tag **/
+                /* JSON success tag */
                 success = json.getInt(ServerAccess.TAG_SUCCESS);
 
                 if (success == 1) {
@@ -414,9 +469,7 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
             return null;
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+        /* Save the username. */
         protected void onPostExecute(String file_url) {
             if (file_url != null){
                 if (success == 1) {

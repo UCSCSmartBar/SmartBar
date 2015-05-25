@@ -13,18 +13,27 @@
             android:id="@+id/enter_drink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:text="@string/enter_drink"
             android:textColor="@color/bt_white"
             android:textSize="20sp"
-            android:typeface="serif" />
+            android:typeface="serif"
+            android:textStyle="bold"/>
+
+        <View
+            android:id="@+id/bar_separator1"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="10dp"
+            android:background="#C0C0C0"/>
 
         <ListView
             android:id="@+id/drinkList"
             android:textColor="@color/bt_white"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1" >
         </ListView>
 
@@ -32,15 +41,16 @@
             android:id="@+id/bar_separator"
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
             android:background="#C0C0C0"/>
 
         <EditText
             android:id="@+id/typeDrink"
             android:textColor="@color/bt_white"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:singleLine="true"
             android:hint="@string/drink_hint" />
 
@@ -51,6 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/order_button"
+            android:typeface="serif"
             android:onClick="libraryBrowseToConfirmation" />
 
 </LinearLayout>

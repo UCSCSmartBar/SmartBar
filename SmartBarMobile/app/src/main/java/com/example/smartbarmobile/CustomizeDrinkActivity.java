@@ -37,19 +37,19 @@ import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 
 
-/*
- * this class defines the behavior of the custom drink activity in which a user can select a
- * particular brand of liquor for a chosen drink
+/**
+ * This class defines the behavior of the CustomDrinkActivity. Here a user can select a particular
+ * brand of liquor for a chosen drink. NOTE: DEPRECATED.
  */
-public class CustomizeDrinkActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<LoadPeopleResult> {
+public class CustomizeDrinkActivity extends Activity implements ConnectionCallbacks,
+        OnConnectionFailedListener, ResultCallback<LoadPeopleResult> {
 
-    // Initializations
     int numLiquors;
     String drinkOrder;
     String[] liquorString;
     ArrayList<String> liquorList = new ArrayList<>();
     ArrayList<String> liquorReturnList = new ArrayList<>();
-    String pin;
+    String pin, pinDisp, tempCountry, tempArea, tempNum3, tempNum4;
     String recipe = "";
 
     ArrayList<Spinner> spinnerArrayList = new ArrayList<>();
@@ -63,13 +63,9 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
     String[] bitters = { "Choose Bitters", "Default: Angostura", "Peychaud's Bitters", "The Bitter Truth" };
     String[] bourbon = { "Choose Bourbon", "Default: Jim Beam", "Baker's", "Evan Williams" };
 
-    JSONParser jsonParser = new JSONParser();       // JSON parser class
-
-    //JSON element ids from response of php script:
-    private static final String TAG_SUCCESS = "success";
-    private static final String TAG_MESSAGE = "message";
+    JSONParser jsonParser = new JSONParser();
     
-	private static final String TAG = "smartbar GoogleAPiClient";
+	private static final String TAG = "GoogleAPiClient";
 	
 	private static final int STATE_DEFAULT = 0;
 	private static final int STATE_SIGN_IN = 1;
@@ -98,12 +94,11 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
     //                      intents until the current intent completes.
     private int mSignInProgress;
 
-    /* 
-     * Used to store the PendingIntent most recently returned by Google Play Services until the user clicks sign in.
+    /**
+     * Used to store the PendingIntent most recently returned by Google Play Services until the user
+     * clicks sign in.
      */
     private PendingIntent mSignInIntent;
-    
-    private Person currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,13 +107,13 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
 
         pin = String.valueOf(((MyApplication)this.getApplication()).getNumber());
 
-        // grab variables from previous intent
+        /* Grab variables from previous intent */
         Intent intent = getIntent();
         drinkOrder = intent.getStringExtra("drinkOrder");
         recipe = intent.getStringExtra("drinkRecipe");
         liquorList = intent.getStringArrayListExtra("liquorList");
 
-        // display which chosen drink user is customizing
+        /* Display the drink to customize */
         TextView drinkOrderView = (TextView)findViewById(R.id.customize_drink);
         drinkOrderView.setText(drinkOrder);
         numLiquors = liquorList.size();
@@ -127,8 +122,9 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
         buildSpinners();
         
         /**
-         * When we build the GoogleApiClient we specify where connected and connection failed callbacks should be returned,
-         * which Google APIs our app uses and which OAuth 2.0 scopes our app requests.
+         * When we build the GoogleApiClient we specify where connected and connection failed
+         * callbacks should be returned, which Google APIs our app uses and which OAuth 2.0 scopes
+         * our app requests.
          */
         mGoogleApiClient = new GoogleApiClient.Builder(this)
         		.addConnectionCallbacks(this)
@@ -143,33 +139,39 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
         super.onDestroy();
     }
 
-    // inflates the action bar items (settings bar)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        /* Inflate the menu; this adds items to the action bar if it is present. */
         getMenuInflater().inflate(R.menu.menu_customize_drink, menu);
         return true;
     }
 
-    // handles behavior of  each item in action bar when clicked
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        /**
+         * Handle action bar item clicks here. The action bar will automatically handle clicks on
+         * the Home/Up button, so long as you specify a parent activity in AndroidManifest.xml
+         */
         int id = item.getItemId();
 
-        // Get pin clicked
+        /* Action bar display pin sequence */
         if (id == R.id.action_pin) {
+            pin = MyApplication.myPin + '1';
+            tempCountry = pin.substring(0,1);
+            tempArea = pin.substring(1,4);
+            tempNum3 = pin.substring(4,7);
+            tempNum4 = pin.substring(7,11);
+            pinDisp = tempCountry + ' ' + '(' + tempArea + ')' + ' ' + tempNum3 + '-' + tempNum4;
+
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("My Number");
-            builder.setMessage(String.valueOf(pin));
+            builder.setMessage(pinDisp);
             builder.setPositiveButton("OK", null);
             builder.show();
             return true;
         }
 
-        // Reset Fingerprint
+        /* Action bar reset fingerprint sequence */
         if (id == R.id.action_resetFP) {
         	AlertDialog.Builder builder = new AlertDialog.Builder(this)
         		.setTitle("Reset Fingerprint?")
@@ -177,7 +179,7 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
         		.setPositiveButton("Reset FP", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						// User wants to reset fingerprint
+						/* User wants to reset fingerprint */
 						new ResetFP().execute();
 					}
 				})
@@ -185,16 +187,17 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
         	builder.show();
         }
 
-        // Logout chosen from action bar
+        /* Action bar logout sequence */
         if (id == R.id.action_logout) {
 			Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show();
 			if (((MyApplication)this.getApplication()).gSignIn) {
-				// Clear the default account on sign out so that Google Play services will not return an onConnected
-				// callback without user interaction.
+                /**
+                 * Clear the default account on sign out so that Google Play Services will not return
+                 * an onConnected callback without user interaction.
+                 */
 				Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
 				mGoogleApiClient.disconnect();
 				mGoogleApiClient.connect();
-	        	
 				Intent intent = new Intent(CustomizeDrinkActivity.this, StartupActivity.class);
 				startActivity(intent);
 			} else {
@@ -230,28 +233,27 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
      * one for each type of liquor
      */
     private void buildSpinners() {
-        // assign spinner with resource id
         liquor1 = (Spinner)findViewById(R.id.liquor1);
         liquor2 = (Spinner)findViewById(R.id.liquor2);
         liquor3 = (Spinner)findViewById(R.id.liquor3);
         liquor4 = (Spinner)findViewById(R.id.liquor4);
         liquor5 = (Spinner)findViewById(R.id.liquor5);
 
-        // create array of spinners to facilitate associations
+        /* Create array of spinners to facilitate associations */
         spinnerArrayList.add(liquor1);
         spinnerArrayList.add(liquor2);
         spinnerArrayList.add(liquor3);
         spinnerArrayList.add(liquor4);
         spinnerArrayList.add(liquor5);
 
-        // build specific spinners for each type of liquor
+        /* Build specific spinners */
         for (int i = 0; i < numLiquors; i++) {
             liquorString[i] = liquorList.get(i);
             assignSpinner(i + 1, liquorString[i]);
         }
     }
 
-    // this method populates the spinner with the strings of the different options of each liquor
+    /* Populate the spinners with the strings of the different liquor options */
     private void assignSpinner(int i, String s) {
         switch (s) {
             case "Bitters":
@@ -313,8 +315,8 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
         }
     }
 
-    /*
-     * method gets called when user clicks the customize button on this screen
+    /**
+     * This method gets called when user clicks the customize button on this screen
      * grabs the chosen items from each spinner and adds the appropriate value to the liquor return
      * list which gets parsed through in Confirmation Activity
      */
@@ -323,8 +325,10 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
         boolean choose = false;
         while (i < numLiquors) {
             switch (i) {
-                // if starts with 'choose' then automatically grab item at position 1 which holds
-                // the default liquor brand in all liquor arrays
+                /**
+                 * If starts with "choose", then automatically grab item at position 1 which holds
+                 * the default liquor brand
+                 */
                 case 0:
                     if (liquor1.getSelectedItem().toString().startsWith("Choose")) {
                         choose = true;
@@ -375,8 +379,10 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
                     "liquors in your drink. The defaults will be applied.", Toast.LENGTH_SHORT).show();
         }
 
-        // send user back to confirmation activity with the appropriate drink order and liquor
-        // return list
+        /**
+         * Send user back to ConfirmationActivity with the appropriate drink order and liquor
+         * return list.
+         */
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra("drinkOrder", drinkOrder);
         intent.putExtra("drinkRecipe", recipe);
@@ -384,7 +390,6 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
         startActivity(intent);
     }
 
-	
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -394,87 +399,113 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
 	@Override
 	protected void onStop() {
 		super.onStop();
-		
 		if (mGoogleApiClient.isConnected()) {
 			mGoogleApiClient.disconnect();
 		}
 	}
 	
 	/**
-	 * onConnected is called when our Activity successfully connects to Google Play services. onConnected indicates that an account
-	 * was selected on the device, that the selected account has granted any requested permissions to our app and that we were able
-	 * to establish a service connection to Google Play Services.
+	 * onConnected is called when our Activity successfully connects to Google Play services.
+     * onConnected indicates that an account was selected on the device, that the selected account
+     * has granted any requested permissions to our app and that we were able to establish a service
+     * connection to Google Play Services.
 	 */
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		Log.v(TAG, "onConnected reached");
-		
-		// Retrieve some profile information to personalize our app for the user
-		currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+
+        /* Retrieve some profile information to personalize our app for the user. */
+        Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 		Plus.AccountApi.getAccountName(mGoogleApiClient);
 		
 		Log.v(TAG, "Signed in as " + currentUser.getDisplayName());
 		Plus.PeopleApi.loadVisible(mGoogleApiClient, null).setResultCallback(this);
-		
-		// Indicate that the sign in process is complete.
+
+        /* Indicate that the sign in process is complete. */
 		mSignInProgress = STATE_DEFAULT;
 	}
 	
 	public void onConnectionSuspended(int cause) {
-		// Connection to Google Play Services was lost. Call connect() to attempt to re-establish the connection or get a
-		// ConnectionResult that we can attempt to resolve.
+        /**
+         * Connection to Google Play Services was lost. Call connect() to attempt to re-establish
+         * the connection or get a ConnectionResult that we can attempt to resolve.
+         */
 		mGoogleApiClient.connect();
 	}
 
 	/**
-	 * onConnectionFailed is called when our Activity could not connect to Google Play Services. onConnectionFailed indicates that
-	 * the user needs to select an account, grant permissions or resolve an error in order for sign in.
+	 * onConnectionFailed is called when our Activity could not connect to Google Play Services.
+     * onConnectionFailed indicates that the user needs to select an account, grant permissions or
+     * resolve an error in order for sign in.
 	 */
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
-		// Refer to the JavaDoc for ConnectionResult to see what error codes might be returned in onConnectionFailed.
+        /**
+         * Refer to the JavaDoc for ConnectionResult to see what error codes might be returned in
+         * onConnectionFailed.
+         */
 		Log.i(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
 
 		if (result.getErrorCode() == ConnectionResult.API_UNAVAILABLE) {
-			// The device's current configuration might not be supported with the requested API or a requested API or a required
-			// component may not be installed.
-			
+            /**
+             * The device's current configuration might not be supported with the requested API or a
+             * required component may not be installed.
+             */
+            Toast.makeText(this, "The device's current configuration might not be supported.",
+                    Toast.LENGTH_SHORT).show();
 		} else if (mSignInProgress != STATE_IN_PROGRESS) {
-			// We do not have an intent in progress so we should store the latest error resolution intent for use when the sign
-			// in button is clicked.
+            /**
+             * We do not have an intent in progress so we should store the latest error resolution
+             * intent for use when the sign in button is clicked.
+             */
 			mSignInIntent = result.getResolution();
 			
 			if (mSignInProgress == STATE_SIGN_IN) {
-				// STATE_SIGN_IN indicates the user already clicked the sign in button so we should continue processing errors until
-				// the user is signed in or they click cancel.
+                /**
+                 * STATE_SIGN_IN indicates the user already clicked the sign in button so we should
+                 * continue processing errors until the user is signed in or they click cancel.
+                 */
 				resolveSignInError();
 			}
 		}
 	}
 	
 	/**
-	 * Starts an appropriate intent or dialog for user interaction to resolve the current error preventing the user from being
-	 * signed in. This could be a dialog allowing the user to select an account, an activity allowing the user to consent to the
-	 * permissions being requested by your app, a setting to enable device networking, etc.
+	 * Starts an appropriate intent or dialog for user interaction to resolve the current error
+     * preventing the user from being signed in. This could be a dialog allowing the user to select
+     * an account, an activity allowing the user to consent to the permissions being requested by
+     * your app, a setting to enable device networking, etc.
 	 */
 	private void resolveSignInError() {
 		if (mSignInIntent != null) {
-			// We have an intent which will allow our user to sign in or resolve an error. For example, if the user needs to
-			// select an account to sign in with, or if they need consent to the permissions your app is requesting.
+            /**
+             * We have an intent which will allow our user to sign in or resolve an error. For
+             * example, if the user needs to select an account to sign in with, or if they need
+             * consent to the permissions your app is requesting.
+             */
 			try {
-				// Send the pending intent that we stored on the most recent OnConnectionFailed callback. This will allow the
-				// user to resolve the error currently preventing our connection to Google Play Services.
+                /**
+                 * Send the pending intent that we stored on the most recent onConnectionFailed
+                 * callback. This will allow the user to resolve the error currently preventing our
+                 * connection to Google Play Services.
+                 */
 				mSignInProgress = STATE_IN_PROGRESS;
 				startIntentSenderForResult(mSignInIntent.getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
 			} catch (SendIntentException e) {
 				Log.i(TAG, "Sign in intent could not be sent: " + e.getLocalizedMessage());
-				// The intent was cancelled before it was sent. Return to the default state and attempt to connect to get an updated ConnectionResult.
+                /**
+                 * The intent was cancelled before it was sent. Return to the default state and
+                 * attempt to connect to get an updated ConnectionResult.
+                 */
 				mSignInProgress = STATE_SIGN_IN;
 				mGoogleApiClient.connect();
 			}
 		} else {
-			// Google Play Services wasn't able to provide an intent for some error types, so we show the default Google Play
-			// Services error dialog which may still start an intent on our behalf if the user can resolve the issue.
+            /**
+             * Google Play Services wasn't able to provide an intent for some error types, so we show
+             * the default Google Play Services error dialog which may still start an intent on our
+             * behalf if the user can resolve the issue.
+             */
 			Log.v(TAG, "Unable to provide intent");
 		}
 	}
@@ -499,9 +530,8 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
     
     
     /**
-     * Class to reset fingerprint in database.
-     * @author lamperry
-     *
+     * This class gets called when the user requests to reset their fingerprint template in the
+     * Smartbar database.
      */
     class ResetFP extends AsyncTask<String, String, String> {
         int success;
@@ -513,46 +543,46 @@ public class CustomizeDrinkActivity extends Activity implements ConnectionCallba
                 Log.d("RFP", "Mid-Execute");
                 String pinNum = ((MyApplication)CustomizeDrinkActivity.this.getApplication()).getNumber();
                 
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
                 params.add(new BasicNameValuePair("pin", pinNum));
+
+                /* Getting product details by making an HTTP request */
                 JSONObject json = jsonParser.makeHttpRequest(
                 		ServerAccess.RESET_FP_URL, "POST", params);
                 
                 if (json == null){
-                	Toast.makeText(CustomizeDrinkActivity.this, "Failure to Access Server. Check Internet Connection"
+                	Toast.makeText(CustomizeDrinkActivity.this,
+                            "Failure to Access Server. Check Internet Connection"
                             , Toast.LENGTH_SHORT).show();
                 	return null;
                 }
 
-                // check your log for json response
+                /* Check the logcat for full JSON response */
                 Log.d("RFP", json.toString());
-                
-                // json success tag
-                success = json.getInt(TAG_SUCCESS);
+
+                /* JSON success tag */
+                success = json.getInt(ServerAccess.TAG_SUCCESS);
+
                 if (success == 1) {
                     Log.d("RFP", "Success String:" + json.toString());
-                    return json.getString(TAG_MESSAGE);
+                    return json.getString(ServerAccess.TAG_MESSAGE);
                 } else {
-                    Log.d("RFP", "Failure with :" + json.getString(TAG_MESSAGE));
-                    return json.getString(TAG_MESSAGE);
+                    Log.d("RFP", "Failure with :" + json.getString(ServerAccess.TAG_MESSAGE));
+                    return json.getString(ServerAccess.TAG_MESSAGE);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (NullPointerException npe) {
-                npe.printStackTrace();
             }
             return null;
         }
         
-        /**
-         * Let user know if failure or success.
-         */
+        /* Let user know if failure or success. */
         protected void onPostExecute(String file_url) {
             if (file_url != null) {
                 Log.d("RFP", "Returned URL:" + file_url);
                 if (success == 1) {
                 	Toast.makeText(CustomizeDrinkActivity.this, "Fingerprint has been reset for " + 
-                			((MyApplication)CustomizeDrinkActivity.this.getApplication()).myUsername, Toast.LENGTH_SHORT).show();
+                			MyApplication.myUsername, Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(CustomizeDrinkActivity.this, "Failure to Access Server. Check Internet Connection"

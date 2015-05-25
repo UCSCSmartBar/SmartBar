@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.smartbarmobile"
+    android:label="@string/app_name"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -34,7 +35,7 @@
         android:theme="@style/AppBaseTheme" >
         <activity
             android:name="com.example.smartbarmobile.StartupActivity"
-            android:label="@string/app_name" >
+            android:label="@string/empty" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,8 +60,8 @@
             android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
-            android:name="com.example.smartbarmobile.WelcomeActivity"
-            android:label="@string/app_name" >
+            android:name="com.example.smartbarmobile.PaymentActivity"
+            android:label="@string/empty" >
         </activity>
         <activity
             android:name="com.example.smartbarmobile.LibraryBrowseActivity"
@@ -69,20 +70,22 @@
         </activity>
         <activity
             android:name="com.example.smartbarmobile.ConfirmationActivity"
-            android:label="@string/confirmation_actionbar" >
+            android:label="@string/confirmation_actionbar"
+            android:noHistory="true" >
         </activity>
         <activity
             android:name="com.example.smartbarmobile.DrinkOrderedActivity"
-            android:label="@string/done" >
+            android:label="@string/done"
+            android:noHistory="true" >
         </activity>
         <activity
             android:name="com.example.smartbarmobile.MissingParamsActivity"
-            android:label="@string/title_activity_missing_params" >
+            android:label="@string/new_user_actionbar" >
         </activity>
         <activity android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity" />
         <activity
             android:name="com.example.smartbarmobile.ReadyToOrderActivity"
-            android:label="@string/title_activity_ready_to_order" >
+            android:label="@string/empty" >
         </activity>
         <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity" />
         <activity android:name="com.paypal.android.sdk.payments.PayPalProfileSharingActivity" />

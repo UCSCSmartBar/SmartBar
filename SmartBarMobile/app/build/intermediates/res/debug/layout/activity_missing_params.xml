@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/personal_limitations"
+        android:typeface="serif"
         android:textColor="@color/bt_white"
         android:layout_marginTop="10dp"
         android:textStyle="bold"
@@ -30,6 +31,7 @@
     <TextView
         android:id="@+id/missing_param_message"
         android:text="@string/enter_missing_params"
+        android:typeface="serif"
         android:textColor="@color/bt_white"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="wrap_content"
@@ -40,6 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/enter_age"
+        android:typeface="serif"
         android:textColor="@color/bt_white"
         android:layout_marginTop="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -47,6 +50,7 @@
     <EditText
         android:id="@+id/enter_missing_age"
         android:textColor="@color/bt_white"
+        android:typeface="serif"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -58,6 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/enter_sex"
+        android:typeface="serif"
         android:textColor="@color/bt_white"
         android:layout_marginTop="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -65,6 +70,7 @@
 
     <Spinner
         android:id="@+id/enter_missing_gender"
+        android:typeface="serif"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/bt_white"
@@ -78,6 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/done" />
+        android:text="@string/done"
+        android:typeface="serif" />
 
 </LinearLayout><!-- From: file:/C:/Users/lamperry/AndroidStudioProjects/SmartBarMobile/app/src/main/res/layout/activity_missing_params.xml -->

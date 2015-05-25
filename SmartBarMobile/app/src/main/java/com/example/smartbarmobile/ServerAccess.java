@@ -19,15 +19,15 @@ public class ServerAccess {
 
     /** To register new user **/
     public static final String REGISTER_URL = SMART_BAR_ROOT_URL + "register.php";
-
-    /** To get user last BAC reading **/
-    public static final String BAC_URL = SMART_BAR_ROOT_URL + "getBAC.php";
     
     /** To reset user fingerprint on server **/
     public static final String RESET_FP_URL = SMART_BAR_ROOT_URL + "resetFP.php";
 
     /** To get library of drinks **/
     public static final String GET_LIB_URL = SMART_BAR_ROOT_URL + "getLib.php";
+
+    /** To see if user has drink on queue already **/
+    public static final String CHECK_QUEUE_URL = SMART_BAR_ROOT_URL + "getDrinkTitle.php";
 
     /** To put user drink on queue **/
     public static final String ADD_DRINK_URL = SMART_BAR_ROOT_URL + "addDrink.php";

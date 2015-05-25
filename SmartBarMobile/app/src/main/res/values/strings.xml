@@ -63,7 +63,7 @@
     <!-- Order Confirmed Activity -->
     <string name="done">Done!</string>
     <string name="drink_sent">Your drink order has been sent!
-        Proceed to the SmartBar touch screen interface to proceed with order retreival.</string>
+        Proceed to the SmartBar touch screen interface to pick up your order.</string>
     <string name="thank_you">Thank you!</string>
     <string name="back_to_library_button">Back to Drink Library</string>
     <string name="uber_button">Request an Uber</string>
@@ -86,6 +86,11 @@
     <!-- ReadyToOrder Activity -->
     <string name="please_click_order">Click order to see what\'s currently in the Smartbar inventory!</string>
     <string name="title_activity_payment">PaymentActivity</string>
+
+    <string name="aboutSB">About Smartbar</string>
+    <string name="sb_lower">smartbar</string>
+    <string name="payment_welcome">Welcome!</string>
+    <string name="empty"></string>
 
 
 </resources>

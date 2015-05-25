@@ -16,17 +16,19 @@
            android:layout_marginTop="10dp"
            android:layout_gravity="center"
            android:text="@string/drink_sent"
+           android:typeface="serif"
            android:textColor="@color/bt_white"
            android:textSize="20sp" />
 
        <TextView
            android:id="@+id/displayPin"
+           android:typeface="serif"
            android:textColor="@color/bt_white"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_marginTop="10dp"
            android:layout_gravity="center"
-           android:textSize="40sp" />
+           android:textSize="30sp" />
 
        <Button
            android:id="@+id/backToLibrary"
@@ -35,16 +37,8 @@
            android:layout_height="wrap_content"
            android:layout_gravity="center"
            android:text="@string/back_to_library_button"
+           android:typeface="serif"
            android:onClick="drinkOrderedToLibraryBrowse" />
-
-       <Button
-           android:id="@+id/bac_button"
-           style="@style/PinKey"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_gravity="center"
-           android:text="@string/bac_button"
-           android:onClick="checkBAC" />
 
        <Button
            android:id="@+id/uber_button"
@@ -53,6 +47,7 @@
            android:layout_height="wrap_content"
            android:layout_gravity="center"
            android:text="@string/uber_button"
+           android:typeface="serif"
            android:onClick="openUber" />
 
        <Button
@@ -62,6 +57,7 @@
            android:layout_height="wrap_content"
            android:layout_gravity="center"
            android:text="@string/lyft_button"
+           android:typeface="serif"
            android:onClick="openLyft" />
 
    </LinearLayout>

@@ -20,6 +20,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:text="@string/welcome_back"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -37,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_login"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:labelFor="@+id/type_email"
             android:layout_marginTop="20dp"
@@ -44,6 +46,7 @@
 
         <EditText
             android:id="@+id/type_email"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
@@ -56,6 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_pw"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:labelFor="@+id/type_password"
             android:layout_marginTop="20dp"
@@ -65,6 +69,7 @@
             android:id="@+id/type_password"
             android:textColor="@color/bt_white"
             android:inputType="textPassword"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
@@ -77,6 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/login_button"
+            android:typeface="serif"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin" />
 

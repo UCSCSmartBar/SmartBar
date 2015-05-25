@@ -7,6 +7,16 @@
         android:showAsAction="never" />
 
     <item
+        android:id="@+id/action_uber"
+        android:title="@string/uber_button"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_lyft"
+        android:title="@string/lyft_button"
+        android:showAsAction="never" />
+
+    <item
         android:id="@+id/action_resetFP"
         android:title="@string/action_resetFP"
         android:showAsAction="never" />

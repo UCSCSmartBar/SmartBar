@@ -20,6 +20,7 @@
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
             android:text="@string/welcome_new_user1"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -38,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/welcome_new_user2"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textSize="15sp" />
@@ -47,6 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_login"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:labelFor="@+id/type_username"
             android:layout_marginTop="10dp"
@@ -56,6 +59,7 @@
             android:id="@+id/type_username"
             android:textColor="@color/bt_white"
             android:inputType="text"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -66,6 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_password"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:labelFor="@+id/type_password"
             android:layout_marginTop="10dp"
@@ -75,6 +80,7 @@
             android:id="@+id/type_password"
             android:textColor="@color/bt_white"
             android:inputType="textPassword"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -85,6 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/reenter_password"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:labelFor="@+id/retype_password"
             android:layout_marginTop="10dp"
@@ -93,6 +100,8 @@
         <EditText
             android:id="@+id/retype_password"
             android:inputType="textPassword"
+            android:typeface="serif"
+            android:textColor="@color/bt_white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -104,6 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_email"
+            android:typeface="serif"
             android:labelFor="@+id/type_email"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -112,6 +122,7 @@
             android:id="@+id/type_email"
             android:textColor="@color/bt_white"
             android:inputType="textEmailAddress"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -122,6 +133,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_age"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:labelFor="@+id/type_age"
             android:layout_marginTop="10dp"
@@ -131,6 +143,7 @@
             android:id="@+id/type_age"
             android:textColor="@color/bt_white"
             android:inputType="number"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -141,6 +154,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_sex"
+            android:typeface="serif"
             android:textColor="@color/bt_white"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -148,6 +162,7 @@
         <Spinner
             android:id="@+id/type_sex"
             android:textColor="@color/bt_white"
+            android:typeface="serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp" />
@@ -160,9 +175,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/verify_button"
+            android:typeface="serif"
             android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            />
+            android:paddingRight="@dimen/activity_horizontal_margin" />
 
     </LinearLayout>
 

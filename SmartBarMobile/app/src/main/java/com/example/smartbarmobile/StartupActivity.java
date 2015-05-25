@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,8 +33,8 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 import com.google.android.gms.plus.model.people.Person;
 
 /**
- * This class defines the behavior for the startup screen of the mobile app.
- * Directs user to create account, login via SmartBar, login via Google.
+ * This class defines the behavior for the startup screen of the mobile app. Directs user to create
+ * account, login via SmartBar, login via Google.
  */
 public class StartupActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener,
 		OnClickListener, ResultCallback<LoadPeopleResult> {
@@ -93,7 +94,6 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
-        // initializes app wide global boolean to false
 		new MyApplication();
         ((MyApplication)this.getApplication()).setLoggedIn(false);	
 
@@ -130,14 +130,14 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
     public void onBackPressed() {
     }
 
-    /** Start Smartbar Login screen **/
+    /* Start Smartbar Login screen */
     public void startupToLogin(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
 		finish();
         startActivity(intent);
     }
 
-    /** Start Create Smartbar account screen **/
+    /* Start Create Smartbar account screen */
     public void startupToNewUser(View view) {
         Intent intent = new Intent(this, NewUserActivity.class);
 		finish();
@@ -161,7 +161,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt(SAVED_PROGRESS, mSignInProgress);
 	}
@@ -169,8 +169,10 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	@Override
 	public void onClick(View view) {
 		if (!mGoogleApiClient.isConnecting()) {
-			// We only process button clicks when GoogleApiClient is not transition-ing between
-			// connected and not connected.
+			/**
+			 * We only process button clicks when GoogleApiClient is not transitioning between
+			 * connected and not connected.
+			 */
 			switch(view.getId()) {
 				case R.id.sign_in_button:
 					Toast.makeText(this, "Signing in...", Toast.LENGTH_SHORT).show();
@@ -194,35 +196,29 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 		
 		if (prevIntent && tooYoung) {
 			if (mGoogleApiClient.isConnected()) {
+				Toast.makeText(this, "Sorry, you must be 21 to use the Smartbar.",
+						Toast.LENGTH_SHORT).show();
 				Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
 				mGoogleApiClient.disconnect();
 				mGoogleApiClient.connect();
-
-//				if (Plus.AccountApi.getAccountName(mGoogleApiClient) == ((MyApplication)this.getApplication()).myEmail) {
-//					Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-//					mGoogleApiClient.disconnect();
-//					mGoogleApiClient.connect();
-//				} else {
-//					tooYoung = false;
-//				}
 			}
 			return;
 		}
 
-	    // Update the user interface to reflect that the user is signed in.
+		/* Update the user interface to reflect that the user is signed in. */
 	    mSignInButton.setEnabled(false);
-		
-		// Retrieve some profile information to personalize our app for the user
+
+		/* Retrieve some profile information to personalize our app for the user */
 		currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 		mEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
 		
 		Log.v(TAG, "Signed in as " + currentUser.getDisplayName());
 		Plus.PeopleApi.loadVisible(mGoogleApiClient, null).setResultCallback(this);
-		
-		// Indicate that the sign in process is complete.
+
+		/* Indicate that the sign in process is complete. */
 		mSignInProgress = STATE_DEFAULT;
-		
-		// Proceed to register user with smart bar
+
+		/* Proceed to register user with Smartbar */
 		configureParams();
 		
 		new AttemptLogin().execute();
@@ -234,11 +230,12 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 		((MyApplication)this.getApplication()).myPassword = mEmail;
 		((MyApplication)this.getApplication()).myEmail = mEmail;
 
-		// if user hasAgeRange(), verify over 21
+		/* If user hasAgeRange(), verify over 21 */
 		if (currentUser.hasAgeRange()) {
 			int minAge = currentUser.getAgeRange().getMin();
 			if (minAge < 21) {
-				Toast.makeText(this, "Sorry, you must be 21 to use the SmartBar!", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Sorry, you must be 21 to use the SmartBar!",
+						Toast.LENGTH_LONG).show();
 				return;
 			}
 			((MyApplication)this.getApplication()).myAge = String.valueOf(minAge);
@@ -246,8 +243,8 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 		} else {
 			noAge = true;
 		}
-		
-		// If currentUser hasGender(), assign correct gender
+
+		/* If currentUser hasGender(), assign correct gender */
 		if (currentUser.hasGender()) {
 			switch (currentUser.getGender()) {
 				case 0: ((MyApplication)this.getApplication()).myGender = "Male"; break;
@@ -268,21 +265,32 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	 */
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
-		// Refer to the JavaDoc for ConnectionResult to see what error codes might be returned in onConnectionFailed.
+		/**
+		 * Refer to the JavaDoc for ConnectionResult to see what error codes might be returned in
+		 * onConnectionFailed.
+		 */
 		Log.i(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
 
 		if (result.getErrorCode() == ConnectionResult.API_UNAVAILABLE) {
-			// The device's current configuration might not be supported with the requested API or a
-			// requested API or a required component may not be installed.
-			
+			/**
+			 * The device's current configuration might not be supported with the requested API or a
+			 * required component may not be installed.
+			 */
+			Toast.makeText(this, "The device's current configuration might not be supported with the" +
+							"requested API or a required component may not be installed.",
+					Toast.LENGTH_SHORT).show();
 		} else if (mSignInProgress != STATE_IN_PROGRESS) {
-			// We do not have an intent in progress so we should store the latest error resolution
-			// intent for use when the sign in button is clicked.
+			/**
+			 * We do not have an intent in progress sos we should store the latest error resolution
+			 * intent for use when the sign in button is clicked.
+			 */
 			mSignInIntent = result.getResolution();
 			
 			if (mSignInProgress == STATE_SIGN_IN) {
-				// STATE_SIGN_IN indicates the user already clicked the sign in button so we should
-				// continue processing errors until the user is signed in or they click cancel.
+				/**
+				 * STATE_SIGN_IN indicated the user already clicked the sign in button so we should
+				 * continue processing errors until the user is signed in or they click cancel.
+				 */
 				resolveSignInError();
 			}
 		}
@@ -297,26 +305,34 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	 */
 	private void resolveSignInError() {
 		if (mSignInIntent != null) {
-			// We have an intent which will allow our user to sign in or resolve an error. For example,
-			// if the user needs to select an account to sign in with, or if they need consent to
-			// the permissions your app is requesting.
+			/**
+			 * We have an intent which will allow our user to sign in or resolve an error. For
+			 * example, if the user needs to select an account to sign in with, or if they need consent
+			 * to the permissions your app is requesting.
+			 */
 			try {
-				// Send the pending intent that we stored on the most recent OnConnectionFailed callback.
-				// This will allow the user to resolve the error currently preventing our connection
-				// to Google Play Services.
+				/**
+				 * Send the pending intent that we stored on the most recent onConnectionFailed callback.
+				 * This will allow the user to resolve the error currently preventing our connection
+				 * to Google Play Services.
+				 */
 				mSignInProgress = STATE_IN_PROGRESS;
 				startIntentSenderForResult(mSignInIntent.getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
 			} catch (SendIntentException e) {
 				Log.i(TAG, "Sign in intent could not be sent: " + e.getLocalizedMessage());
-				// The intent was cancelled before it was sent. Return to the default state and attempt
-				// to connect to get an updated ConnectionResult.
+				/**
+				 * The intent was cancelled before it was sent. Return to the default state and attempt
+				 * to connect to get an updated ConnectionResult.
+				 */
 				mSignInProgress = STATE_SIGN_IN;
 				mGoogleApiClient.connect();
 			}
 		} else {
-			// Google Play Services wasn't able to provide an intent for some error types, so we show
-			// the default Google Play Services error dialog which may still start an intent on our
-			// behalf if the user can resolve the issue.
+			/**
+			 * Google Play Services wasn't able to provide an intent for some error types, so we show
+			 * the default Google Play Services error dialog which may still start an intent on our
+			 * behalf if the user can resolve the issue.
+			 */
 			Log.v(TAG, "Unable to provide intent");
 		}
 	}
@@ -326,23 +342,27 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 		switch (requestCode) {
 			case RC_SIGN_IN:
 				if (resultCode == RESULT_OK) {
-					// If the error resolution was successful we should continue processing errors.
+					/* If the error resolution was successful, we should continue processing errors. */
 					mSignInProgress = STATE_SIGN_IN;
 				} else {
-					// If the error resolution was not successful or the user cancelled, we should
-					// stop processing errors.
+					/**
+					 * If the error resolution was not successful or the user cancelled, we should
+					 * stop processing errors.
+					 */
 					mSignInProgress = STATE_DEFAULT;
 				}
 				if (!mGoogleApiClient.isConnecting()) {
-					// If Google Play Services resolved the issue with a dialog then onStart is not
-					// called so we need to re-attempt
-					// connection here.
+					/**
+					 * If Google Play Services resolved the issue with a dialog then onStart is not
+					 * called so we need to re-attempt connection here.
+					 */
 					mGoogleApiClient.connect();
 				}
 				break;
 		}
 	}
-	
+
+	/* Do I need this method? I don't use the circles information. Keep for now... */
 	@Override
 	public void onResult(LoadPeopleResult peopleData) {
 		if (peopleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
@@ -360,15 +380,17 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 			Log.e(TAG, "Error requesting visible circiles: " + peopleData.getStatus());
 		}
 	}
-	
+
 	private void onSignedOut() {
-		// Update the UI to reflect that the user signed out
+		/* Update the UI to reflect that the user signed out */
 	    mSignInButton.setEnabled(true);
 	}
 	
 	public void onConnectionSuspended(int cause) {
-		// Connection to Google Play Services was lost. Call connect() to attempt to re-establish
-		// the connection or get a ConnectionResult that we can attempt to resolve.
+		/**
+		 * Connection to Google Play Services was lost. Call connect() to attempt to re-establish
+		 * the connection or get a ConnectionResult that we can attempt to resolve.
+		 */
 		mGoogleApiClient.connect();
 	}
 
@@ -399,27 +421,29 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 			String username = MyApplication.myUsername;
 			String password = ((MyApplication)StartupActivity.this.getApplication()).myPassword;
 			try {
-				/** Building Parameters **/
+				/* Building Parameters */
 				List<NameValuePair> params = new ArrayList<>();
 				params.add(new BasicNameValuePair("user_name", username));
 				params.add(new BasicNameValuePair("user_password", password));
 
 				Log.d("request!", "starting");
-				/** Getting product details by making HTTP request **/
+				/* Getting product details by making HTTP request */
 				JSONObject json = jsonParser.makeHttpRequest(
 						ServerAccess.LOGIN_URL, "POST", params);
 
 				if (json == null) {
-					Toast.makeText(StartupActivity.this, "Cannot connect to server. Please check internet connection.",
+					Toast.makeText(StartupActivity.this,
+							"Cannot connect to server. Please check internet connection.",
 							Toast.LENGTH_SHORT).show();
 					return null;
 				}
 
-				// check your log for json response
+				/* Check Logcat for full JSON response */
 				Log.d("Login attempt", json.toString());
 
-				// json success tag
+				/* JSON success tag */
 				success = json.getInt(ServerAccess.TAG_SUCCESS);
+
 				if (success == 1) {
 					Log.d("Login Successful!", json.toString());
 					((MyApplication)StartupActivity.this.getApplication()).setLoggedIn(true);
@@ -434,9 +458,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 			return null;
 		}
 
-		/**
-		 * After completing background task Dismiss the progress dialog
-		 * **/
+		/* After completing background task Dismiss the progress dialog */
 		protected void onPostExecute(String file_url) {
 			if (file_url != null){
 				pDialog.dismiss();
@@ -444,7 +466,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 					Toast.makeText(StartupActivity.this, file_url, Toast.LENGTH_SHORT).show();
 					((MyApplication)StartupActivity.this.getApplication()).gSignIn = true;
 
-					/** Check if user has Braintree customer account **/
+					/* Check if user has Braintree customer account */
 					new FindBraintreeCust().execute();
 
 				} else {
@@ -459,9 +481,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	}
 
 
-	/*
-     * Check if user has Braintree customer account already, if not, make one.
-     */
+	/* Check if user has Braintree customer account already, if not, make one. */
 	class FindBraintreeCust extends AsyncTask<String, String, String> {
 
 		int success;
@@ -472,26 +492,27 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 			Log.d("FindBraintreeCust", "starting...");
 			String phone = MyApplication.myPin;
 			try {
-				//** Build parameters **/
+				/* Build parameters */
 				List<NameValuePair> params = new ArrayList<>();
 				params.add(new BasicNameValuePair("phone", phone));
 
 				Log.d("request!", "starting");
 
-				/** Getting product details by making HTTP request **/
+				/* Getting product details by making HTTP request */
 				JSONObject json = jsonParser.makeHttpRequest(
 						ServerAccess.FIND_CUST_URL, "POST", params);
 
 				if (json == null) {
-					Toast.makeText(StartupActivity.this, "Cannot connect to server. Please check internet connection.",
+					Toast.makeText(StartupActivity.this,
+							"Cannot connect to server. Please check internet connection.",
 							Toast.LENGTH_SHORT).show();
 					return null;
 				}
 
-				/** JSON response returned **/
+				/* JSON response returned */
 				Log.d("FindBraintreeCust", "returned");
 
-				/** JSON success tag **/
+				/* JSON success tag */
 				success = json.getInt(ServerAccess.TAG_SUCCESS);
 
 				if (success == 1) {
@@ -508,9 +529,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 			return null;
 		}
 
-		/**
-		 * After completing background task Dismiss the progress dialog
-		 * **/
+		/* If successful, send user to normal app flow. If not, user must enter payment information. */
 		protected void onPostExecute(String file_url) {
 			if (file_url != null){
 				if (success == 1) {
@@ -518,7 +537,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 					finish();
 					startActivity(readyToOrder);
 				} else {
-					/** Braintree Customer ID not found; user must enter payment info **/
+					/* Braintree Customer ID not found; user must enter payment info */
 					Intent welcome = new Intent(StartupActivity.this, PaymentActivity.class);
 					finish();
 					startActivity(welcome);

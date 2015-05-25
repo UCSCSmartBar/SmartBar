@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.smartbarmobile"
+    android:label="@string/app_name"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -29,7 +30,7 @@
         android:theme="@style/AppBaseTheme" >
         <activity
             android:name=".StartupActivity"
-            android:label="@string/app_name" >
+            android:label="@string/empty" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -55,7 +56,7 @@
         </activity>
         <activity
             android:name=".PaymentActivity"
-            android:label="@string/app_name" >
+            android:label="@string/empty" >
         </activity>
         <activity
             android:name=".LibraryBrowseActivity"
@@ -64,20 +65,22 @@
         </activity>
         <activity
             android:name=".ConfirmationActivity"
+            android:noHistory="true"
             android:label="@string/confirmation_actionbar" >
         </activity>
         <activity
             android:name=".DrinkOrderedActivity"
+            android:noHistory="true"
             android:label="@string/done" >
         </activity>
         <activity
             android:name=".MissingParamsActivity"
-            android:label="@string/title_activity_missing_params" >
+            android:label="@string/new_user_actionbar" >
         </activity>
         <activity android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity" />
         <activity
             android:name=".ReadyToOrderActivity"
-            android:label="@string/title_activity_ready_to_order" >
+            android:label="@string/empty" >
         </activity>
     </application>
 

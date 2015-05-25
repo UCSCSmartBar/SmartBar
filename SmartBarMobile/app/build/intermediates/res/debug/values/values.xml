@@ -62,6 +62,7 @@
     <integer name="bt_match_parent">-1</integer>
     <!-- From: file:/C:/Users/lamperry/AndroidStudioProjects/SmartBarMobile/app/src/main/res/values/strings.xml -->
     <eat-comment/>
+    <string name="aboutSB">About Smartbar</string>
     <string name="action_forgot_pass">Forgot Password</string>
     <string name="action_forgot_user">Forgot Username</string>
     <string name="action_logout">Logout</string>
@@ -116,8 +117,9 @@
     <string name="done">Done!</string>
     <string name="drink_hint">ex: Whiskey Ginger</string>
     <string name="drink_sent">Your drink order has been sent!
-        Proceed to the SmartBar touch screen interface to proceed with order retreival.</string>
+        Proceed to the SmartBar touch screen interface to pick up your order.</string>
     <string name="email_hint">Username</string>
+    <string name="empty"/>
     <string name="enter_age">Age</string>
     <string name="enter_drink">What would you like to drink?</string>
     <string name="enter_email">Email Address</string>
@@ -142,12 +144,14 @@
     <string name="order_confirmation1">So, you\'d like to order a</string>
     <string name="order_confirmation2">is this correct?</string>
     <string name="order_drink_button">Yes, Order Drink</string>
+    <string name="payment_welcome">Welcome!</string>
     <string name="personal_limitations">Personal Limitations</string>
     <string name="please_click_order">Click order to see what\'s currently in the Smartbar inventory!</string>
     <string name="reenter_password">Re-Enter Password</string>
     <string name="reenter_pw">Confirm Password</string>
     <string name="revoke_access_button_name">Revoke</string>
     <string name="rum">Rum</string>
+    <string name="sb_lower">smartbar</string>
     <string name="setup_payment_button">Setup Payment</string>
     <string name="sign_out_button_name">Sign Out</string>
     <string name="smart_bar">SMART BAR</string>

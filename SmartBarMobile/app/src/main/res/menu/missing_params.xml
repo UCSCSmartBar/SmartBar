@@ -2,6 +2,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/action_aboutSB"
+        android:title="@string/aboutSB"
+        android:showAsAction="never" />
+
+    <item
         android:id="@+id/action_pin"
         android:title="@string/action_pin"
         android:showAsAction="never" />
