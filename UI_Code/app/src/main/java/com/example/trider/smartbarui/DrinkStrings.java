@@ -7,7 +7,7 @@ import android.util.Log;
  */
 public class DrinkStrings {
 
-    /**Spirits**/
+/*Spirits**/
     private final String AS = "Absinthe";
     private final String BO = "Bourbon";
     private final String BR = "Brandy";
@@ -48,29 +48,23 @@ public class DrinkStrings {
     private final String TS = "Triple Sec";     // (orange)
 
     //Mixers
-    private final String AB = "Angostura Bitters";
+    private final String AB = "Angosturas Bitters";
     private final String LE = "Lemonade";
     private final String CO = "Cola";
     private final String CR = "Cream";
     private final String EG = "Eggs";
     private final String GA = "Ginger Ale";
-    private final String GR = "Grenadine";
+    private final String GR= "Grenadine";
     private final String IC = "Ice Cream";
     private final String MK = "Milk";
     private final String OB = "Orange Bitters";
     private final String SM = "Sour Mix";
     private final String SP = "Sprite/7-Up";
-    private final String CF = "Tea/Coffee";
+    private final String CF= "Tea/Coffee";
     private final String WA = "Water";
     private final String SO = "Soda";
     private final String TO = "Tonic";
 
-    public class Liquid{
-        String Spirit;
-        String Name;
-    }
-
-    Liquid[] Library = new Liquid[100];
 
     /**
      * Converts a String Brand name such as Jameson Irish Whiskey to JI, by taking first letter of each
@@ -146,13 +140,5 @@ public class DrinkStrings {
         }
 
 
-    }
-
-
-    public static String CodeToString(String s){
-
-
-
-        return null;
     }
 }

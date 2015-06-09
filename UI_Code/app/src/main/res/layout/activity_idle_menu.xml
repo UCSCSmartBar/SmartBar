@@ -7,17 +7,8 @@
     tools:context="com.example.trider.smartbarui.IdleMenu">
 
 
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:text="New Text"
-        android:textSize = "20sp"
-        android:textColor = "@color/white"
-        android:background="#aa000000"
-        android:id="@+id/textView7"
-        android:layout_gravity="center_vertical" />
 
-    <LinearLayout
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#aa818583"
@@ -54,7 +45,7 @@
         android:background="@drawable/cust_butt"
         style="@style/CityTheme"
 
-        android:text="Pickup Drink                      >"
+        android:text="Pickup Drink                       >"
         android:onClick="onPickUpClick"
         android:id="@+id/button8"/>
 
@@ -86,22 +77,6 @@
         android:onClick="GetQueue"
         android:id="@+id/button19" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="25dp"
-            android:padding="10dp"
-
-            android:background="@drawable/cust_butt"
-            style="@style/CityTheme"
-
-            android:text="Pick Up With Finger        >"
-            android:onClick="FingerPickUp"
-            android:id="@+id/button9"
-            />
-
-
-    </LinearLayout>
+</LinearLayout>
 
 </LinearLayout>

@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -23,8 +22,6 @@ public class PickUpFinger extends Activity {
 
     CommStream PiComm;
     ImageView fingImg;
-    TextView tView;
-    String userPinNumber;
 
     boolean toggle = false;
     static int failureCount;
@@ -34,7 +31,6 @@ public class PickUpFinger extends Activity {
 
     public enum FingerState {
         IDLE,
-        WAITING,
         COMPARING,
         PASSED,
         FAILED,
@@ -46,38 +42,55 @@ public class PickUpFinger extends Activity {
     FingerState nextState = FingerState.IDLE;
 
 
+    TimerTask FlashFinger =  new TimerTask() {
+        public void run() {
+            PickUpFinger.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(toggle){
+                        fingImg.setVisibility(View.INVISIBLE);
+                    }else{
+                        fingImg.setVisibility(View.VISIBLE);
+                    }
+                    toggle = !toggle;
+                }
+            });
+        };
+    };
 
     /**
      * @title: mListenerTask
      * @description: The background thread that receives serial communication from the raspberry pi,
      *
      */
-    //Listens to Pi
-    boolean isActive = true;
-    class ListenTask extends TimerTask {
+    Runnable mListenerTask = new Runnable() {
         @Override
-        public void run(){
-            PickUpFinger.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (isActive) {
-                        /**
-                         * @subTimeTask
-                         */
-                        String t = CommStream.ReadBuffer();
-                        if(t!=null) {
-                            TextView tV = (TextView) findViewById(R.id.puf_text);
-                            tV.append(t);
-                            CompareFingerSM(t);
-                            String rMessage = SystemCodeParser.DecodeAccessoryMessage(t);
-                        }
+        public void run() {
+            byte[] buffer = new byte[128];
+            //ret is the size of the size of the incoming buffer
+            int ret;
+            //TODO switch to PiComm.read()
+            try {
+                if(PiComm.isInitialized()) {
+                    ret = PiComm.getIStream().read(buffer);
 
-
+                    if (ret < 128) {
+                        String msg = new String(buffer);
+                        CompareFingerSM(msg);
                     }
                 }
-            });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //Waits for new input communication
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            new Thread(this).start();
         }
-    }
+    };
 
 
 
@@ -87,121 +100,65 @@ public class PickUpFinger extends Activity {
     }
 
     @Override
-    public void onStop(){
-        super.onStop();
-        isActive = false;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_up_finger);
 
-        //Hiding menu
         hideSystemUI();
 
-
-        //Loading view references
         ImageView usbConn = (ImageView) findViewById(R.id.usbCon1);
         fingImg= (ImageView) findViewById(R.id.fingerImg);
-        tView = (TextView) findViewById(R.id.puf_tView);
-        tView.setText("Please Place Your Finger on the Scanner");
 
 
-        //Declaring new communiccation reference
         PiComm = new CommStream();
-        if(!PiComm.isInitialized()){
-            usbConn.setVisibility(View.INVISIBLE);
-        }
 
-
-        //Scheduling hiding menu, and recevie communications
-        new Timer().scheduleAtFixedRate(new ListenTask(), 100,100);
-        new Timer().scheduleAtFixedRate(HideTask,100,100);
-
-
-        //Deciphering string for drink order and double checking.
         Intent i = getIntent();
         try {
             OrderString = "$DO," + i.getExtras().getString("tString");
             Toast toast = Toast.makeText(getApplicationContext(), OrderString, Toast.LENGTH_LONG);
             toast.show();
-
+            //PiComm.writeString(s);
+            new Thread(mListenerTask).start();
         }catch(NullPointerException e){
             Toast.makeText(getApplicationContext(), "No Drink Added", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
          }
 
+        if(!PiComm.isInitialized()){
+                usbConn.setVisibility(View.INVISIBLE);
+            //Already Decoded in last activity
+//                DrinkOrder a = new DrinkOrder();
+//                a.DecodeString(OrderString);
 
-
-        //User is Null only for testing
-        if(DrinkOrder.InUserPinString == null){
-            userPinNumber = "12345678901";
-            PiComm.writeString("$FPQ,"+ userPinNumber);
-            long time = System.currentTimeMillis();
-            while(System.currentTimeMillis() < time + 7000);
-
-        }else{
-            userPinNumber = DrinkOrder.InUserPinString;
         }
 
-        PiComm.writeString("$FPIDEN,START");
-
-        /**
-         * Starts Communication with the raspberry Pi for identifying the fingerprint
-         */
-
-
-
-
+        new Timer().schedule(FlashFinger,1000,5000);
     }
 
     public void SkipFingerPrint(View view){
-        //Intent i = new Intent(this,CheckBAC.class).putExtra("DString",OrderString);
-
-        startActivity(new Intent(this,ConfirmDrink.class).putExtra("DString",OrderString));
+        Intent i = new Intent(this,CheckBAC.class).putExtra("DString",OrderString);
+        startActivity(i);
     }
 
     public void CompareFingerSM(String msg) {
 
-        Toast.makeText(getApplicationContext(), "MSG:"+msg, Toast.LENGTH_SHORT).show();
-
-        msg = msg.trim();
         switch (currentState) {
             case IDLE:
-                if (msg.equals("$FPIDEN,WORKING")) {
-
-
+                if (msg.equals("$FP.Start")) {
                     nextState = FingerState.COMPARING;
-                } else if (msg.equals("$FPIDEN,ERR,NOTFOUND")) {
+                } else if (msg.equals("$FP.Error")) {
                     nextState = FingerState.WARNING;
-                } else if(msg.equals("$FPIDEN,ENDED")){
-                    PiComm.writeString("$FPIDEN,START");
                 }
                 break;
             case COMPARING:
-                String[] tokens = msg.split("[,]");
-                if(tokens.length > 2){
-                    msg = tokens[0]+","+tokens[1];
-                }
-
-                if (msg.equals("$FPIDEN,SUCC")) {
-
-
+                if (msg.equals("$FP.SUCCESS")) {
                     nextState = FingerState.PASSED;
-                    startActivity(new Intent(PickUpFinger.this,ConfirmDrink.class));
-                } else if (msg.equals("$FPIDEN,ERR")) {
-                    tView.setText("ERROR");
+                } else if (msg.equals("$FP.FAILED")) {
                     failureCount++;
-                    if(failureCount > 5) {
-                        nextState = FingerState.IDLE;
-                        tView.setText("Please Try Again");
-                        PiComm.writeString("$FPIDEN,START");
-                    }else{
-                        tView.setText("Please Come Back Another Time");
+                    if(failureCount > 3) {
                         nextState = FingerState.WARNING;
-
-                        startActivity(new Intent(PickUpFinger.this,IdleMenu.class));
+                    }else{
+                        nextState = FingerState.FAILED;
                     }
                 }
                 break;
@@ -218,7 +175,7 @@ public class PickUpFinger extends Activity {
             case WARNING:
                 break;
             default:
-                Toast.makeText(getApplicationContext(), "Unknown state.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Unknown state", Toast.LENGTH_SHORT).show();
                 Log.d("SM", "Unknown State");
         }
         currentState = nextState;

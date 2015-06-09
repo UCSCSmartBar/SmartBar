@@ -7,7 +7,7 @@
     android:textColor="@color/white"
     android:orientation = "vertical"
 
-    android:background="@drawable/cityscape"
+    android:background="@drawable/smart_bar_background"
     tools:context="com.example.tylerrider.raspgui.PickUp">
 
     <ImageView
@@ -19,14 +19,14 @@
         android:id="@+id/usbCon1" />
 
     <TextView android:text="@string/finger_print_instructions"
-        android:id="@+id/puf_tView"
         android:textSize="40dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 
-    <LinearLayout
+
+<LinearLayout
     android:layout_width="wrap_content"
     android:orientation="horizontal"
     android:layout_height="wrap_content">
@@ -45,12 +45,6 @@
         android:text="Skip"
         android:onClick="SkipFingerPrint"
         android:id="@+id/skipPrint" />
-
-        <TextView
-            android:layout_width="50dp"
-            android:layout_height="100dp"
-            android:text=""
-            android:id="@+id/puf_text" />
-    </LinearLayout>
+</LinearLayout>
 
 </LinearLayout>

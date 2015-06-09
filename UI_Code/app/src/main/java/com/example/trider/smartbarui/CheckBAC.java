@@ -20,13 +20,13 @@ public class CheckBAC extends Activity {
         PASSED,
         RETRY,
         FAILED,
-        WARNING,
+        WARNINING,
     }
 
-//    public void onResume(){
-//        super.onResume();
-//        hideSystemUI();
-//    }
+    public void onResume(){
+        super.onResume();
+        hideSystemUI();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +94,9 @@ public class CheckBAC extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
