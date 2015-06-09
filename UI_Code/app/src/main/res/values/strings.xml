@@ -89,8 +89,7 @@
     <string name="title_activity_idle_menu">IdleMenu</string>
     <string name="title_activity_pick_up_finger">PickUpFinger</string>
     <string name="title_activity_register_finger_print">RegisterFingerPrint</string>
-    <string name="register_finger_print_prompt">Hello Please, Place your finger on the scanner 3 Times
-                                                when the blue light is on.</string>
+    <string name="register_finger_print_prompt">Please hold your finger on the scanner.</string>
     <string name="title_activity_test_activityr">testActivityr</string>
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
@@ -99,7 +98,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_asdf">asdf</string>
     <string name="title_activity_system_status2">SystemStatus2</string>
-    <string name="bac_prompt">Hello, for your safety please breathe into the Sensor for your BAC</string>
+    <string name="bac_prompt">Please Breathe Into the Sensor for Your BAC</string>
     <string name="Ishmael">Call me Ishmael. Some years ago--never mind how long precisely--having
         little or no money in my purse, and nothing particular to interest me on shore, I thought I
         would sail about a little and see the watery part of the world. It is a way I have of driving
@@ -166,5 +165,84 @@
 
     <string name="title_activity_container__screen">Container_Screen</string>
     <string name="title_activity_test_key_board">TestKeyBoard</string>
+    <string name="title_activity_finger_pick_up">FingerPickUp</string>
+    <string name="title_activity_order_drink_menu">OrderDrinkMenu</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+    <!-- Lauren's App String Resources -->
+    <string name="smart_bar">SMART BAR</string>
+
+    <!-- Startup Activity -->
+    <string name="smart_bar_actionbar">Smart Bar</string>
+    <string name="login_button">Login</string>
+    <string name="new_user_button">New User</string>
+
+    <!-- Login Activity -->
+    <string name="login_actionbar">Log In</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="enter_login">User Login</string>
+    <string name="enter_password">Password</string>
+    <string name="email_hint">Username</string>
+
+    <!-- New User Activity -->
+    <string name="new_user_actionbar">Create Account</string>
+    <string name="welcome_new_user1">Welcome to Smart Bar!</string>
+    <string name="welcome_new_user2">Please enter a user login and password.</string>
+    <string name="verify_button">Register</string>
+    <string name="enter_age">Age</string>
+    <string name="enter_weight">Weight</string>
+    <string name="enter_sex">Sex</string>
+
+    <!-- Welcome Activity -->
+    <string name="welcome">Hello!</string>
+    <string name="welcome_prompt">Click ORDER to see what\'s currently in the Smart Bar inventory!</string>
+    <string name="order_button">Order</string>
+
+    <!-- Library Browse Activity -->
+    <string name="library_browse_actionbar">Choose Drink</string>
+    <string name="enter_drink">What would you like to drink?</string>
+    <string name="drink_hint">ex: Whiskey Ginger</string>
+
+    <!-- Confirmation Activity -->
+    <string name="confirmation_actionbar">Confirm Order</string>
+    <string name="order_confirmation1">So, you\'d like to order a</string>
+    <string name="order_confirmation">{drink_order}</string>
+    <string name="order_confirmation2">Is this correct?</string>
+    <string name="order_drink_button">Yes, Order Drink</string>
+    <string name="change_order_button">Change Order</string>
+    <string name="customize">Customize Drink</string>
+    <string name="tequila">Tequila</string>
+    <string name="rum">Rum</string>
+    <string name="vodka">Vodka</string>
+    <string name="gin">Gin</string>
+
+    <!-- Order Confirmed Activity -->
+    <string name="done">Done!</string>
+    <string name="drink_sent">Your order has been sent to the Smart Bar!
+        When you\'re ready, enter your phone number into the touch screen interface.</string>
+    <string name="thank_you">Thank you!</string>
+    <string name="back_to_library_button">Back to Drink Library</string>
+
+    <!-- ActionBar Menu -->
+    <string name="action_logout">Logout</string>
+    <string name="action_pin">Display Number</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="action_forgot_user">Forgot Username</string>
+    <string name="action_forgot_pass">Forgot Password</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_library_browse">LibraryBrowseActivity</string>
+    <string name="title_activity_confirmation">ConfirmationActivity</string>
+    <string name="title_activity_customize_drink">CustomizeDrinkActivity</string>
+    <string name="title_activity_drink_ordered">DrinkOrderedActivity</string>
+    <string name="title_activity_mnew_user">MNewUserActivity</string>
+    <string name="title_activity_test_key_board2">TestKeyBoard2</string>
+    <string name="title_activity_venmo_web_view">VenmoWebViewActivity</string>
+    <string name="title_activity_dispensing_screen">DispensingScreen</string>
+    <string name="title_activity_maintenance_menu">MaintenanceMenu</string>
+    <string name="title_activity_tabbed">TabbedActivity</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>

@@ -1,82 +1,148 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="horizontal"
+android:background="@drawable/cityscape"
+android:id="@+id/topView"
+tools:context="com.example.trider.smartbarui.IdleMenu">
+
+
+
+
+    <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:background="@drawable/cityscape"
-    tools:context="com.example.trider.smartbarui.IdleMenu">
-
-
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#aa818583"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:background="#44818583"
+    android:paddingLeft="0dp"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
     android:orientation="vertical"
-    >
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="40dp"
-        android:background="@drawable/usb_connection"
-        android:backgroundTint="@color/white"
-        android:rotation="90"
-        android:id="@+id/usbCon" />
+    android:weightSum="1">
+        <ImageButton
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/gear_icon"
+
+            android:id="@+id/imageButton" />
+        <View
+            android:layout_width="fill_parent"
+            android:paddingLeft="16dp"
+            android:layout_height="2dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginStart="16dp"
+
+            android:background="#ffffffff" />
+
+    <TextView
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:text="smartbar"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:gravity="start"
+        android:textSize = "75sp"
+        android:textColor = "@color/white"
+        android:id="@+id/smart_bar_title"
+         />
 
     <TextClock
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="150sp"
+        android:textSize="0sp"
         android:textStyle="bold"
         android:textColor="#ffffffff"
         android:id="@+id/textClock"
         android:layout_gravity="center_horizontal" />
+    <!--
+        <Button
+            android:layout_width="400dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="0dp"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:background="@drawable/cust_butt"
+            style="@style/CityTheme"
+            android:text="Pickup Drink                    >"
+            android:onClick="onPickUpClick"
+            android:id="@+id/button8"/>
+    -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#19000f60"
+        android:layout_marginStart="180dp"
+        android:layout_gravity="center_horizontal">
+
+        <Button
+            android:layout_width="400dp"
+            android:layout_height="200dp"
+            android:padding="10dp"
+            android:background="@drawable/cust_butt"
+            style="@style/CityTheme"
+            android:text="Pick Up Drink"
+            android:onClick="FingerPickUp"
+            android:id="@+id/pick_up_drink_button"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+        <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#19000f60"
+        android:layout_marginStart="180dp"
+        android:layout_gravity="center_horizontal">
+        <Button
+            android:layout_width="400dp"
+            android:layout_height="200dp"
+            android:background="@drawable/cust_butt"
+            style="@style/CityTheme"
+            android:text="Order Drink"
+            android:onClick="GoToOrderDrink"
+            android:id="@+id/order_drink_button"
+            android:layout_weight="0.39"
+            android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+</LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="-600dp"
+            android:layout_marginTop="300dp"
+            android:id="@+id/idle_progress"
+            android:layout_gravity="center_horizontal" />
+    </RelativeLayout>
+
+
+
+    <SurfaceView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/surfaceView"
+        android:layout_gravity="bottom" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
-        android:layout_gravity="center_horizontal"
         android:padding="10dp"
-
         android:background="@drawable/cust_butt"
         style="@style/CityTheme"
-
-        android:text="Pickup Drink                       >"
-        android:onClick="onPickUpClick"
-        android:id="@+id/button8"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25dp"
-        android:padding="10dp"
-
-        android:background="@drawable/cust_butt"
-        style="@style/CityTheme"
-
-        android:text="Register Finger Print   >"
-        android:onClick="GoToNewUser"
-        android:id="@+id/button7" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25dp"
-        android:padding="10dp"
-
-        android:background="@drawable/cust_butt"
-        style="@style/CityTheme"
-
-        android:text="Current Drink Queue    >"
+        android:text="DQ"
         android:onClick="GetQueue"
-        android:id="@+id/button19" />
-
-</LinearLayout>
+        android:id="@+id/goToQ"
+        android:layout_gravity="bottom" />
 
 </LinearLayout>

@@ -12,11 +12,29 @@ import android.util.Log;
  */
 public class DrinkOrder {
 
-
+    //Public Drink Order Variables that get passed from user login to drink dispension.
     public static String InDrinkString = null;
-    public String OutDrinkString;
+    public static String InDrinkNameString = null;
     public static String InUserPinString = null;
+    public static String CurDrinkQueue = null;
+    public static Boolean CupReady = false;
+    public static String InBrainID = null;
+    public static double InDrinkPrice = 0.00;
 
+
+    public static String ADMIN_PIN_1 = "18313940478";
+    public static String ADMIN_PIN_2 = "16507935981";
+
+    public static String OrderStatus(){
+        String Status = String.format("_UserNum"+InUserPinString+"\n_IDS:"+InDrinkString+","+
+                                        InDrinkNameString+"\nQ:"+CurDrinkQueue+"CR:"+CupReady+"\nBID:"+InBrainID);
+        return Status;
+    }
+
+
+
+
+    //Private Drink Order Variables
     private static final String StartOfDString = "$DO";
     private static final Byte EndOfDString = '*';
     private LiquorObj[] liquors;
@@ -35,18 +53,18 @@ public class DrinkOrder {
 
         public static class LiquorObj {
                 private static final byte StartOfLString = '@';
-                public byte Type;
-                public byte Brand;
-                public byte Oz;
+                public String Type;
+                public String Brand;
+                public String Oz;
                 public byte[] LiquorBytes;
                 //Constructor of one element of the that contains
                 //one specific type of liquor of a specific quantity
-                LiquorObj(int type, int brand, int oz) {
-                    if (type < 256 && brand < 256 && oz < 256) {
-                        Type = (byte) type;
-                        Brand = (byte) brand;
-                        Oz = (byte) oz;
-                        LiquorBytes = new byte[]{StartOfLString,Type,Brand,Oz};
+                LiquorObj(String type, String brand, String oz) {
+                    if (type!=null && brand!=null && oz!=null) {
+                        Type =  type;
+                        Brand =  brand;
+                        Oz =  oz;
+                        //LiquorBytes = new byte[]{StartOfLString,Type.getBytes(),Brand.getBytes(),Oz.getBytes()};
                     } else {
                         Log.d("Liq", "Failed creating liquor object");
                         return;
@@ -54,9 +72,9 @@ public class DrinkOrder {
                 }
                 //Data dump on liquor object
                 public String toString(){
-                        return "Type :" + Byte.toString(Type)   + "\n"+
-                               "Brand:" + Byte.toString(Brand)  + "\n"+
-                               "Oz:" + Byte.toString(Oz)+ "\n";
+                        return "Type :" + Type   + "\n"+
+                               "Brand:" +Brand  + "\n"+
+                               "Oz:" + Oz+ "\n";
                 }
 
                 /**serString
@@ -65,8 +83,8 @@ public class DrinkOrder {
                  * @return a string in the form "@[Type][Brand][Oz]"
                  */
                 public String serString(){
-                    String ser = Byte.toString(StartOfLString) +  Byte.toString(Type) +
-                            Byte.toString(Brand)+  Byte.toString(Oz);
+                    String ser = Byte.toString(StartOfLString) +  Type +
+                            Brand+  Oz;
                     Log.d("Ser","Mixer:" + ser);
                     return ser;
                 }
@@ -78,25 +96,21 @@ public class DrinkOrder {
      * but are only useful to adding to a drink order.
      */
         public static class MixerObj {
-                private static final byte StartOfMString = '&';
-                public byte Type;
-                public byte Brand;
-                public byte Oz;
-                public byte carbonated;
+                private static final byte StartOfMString = '@';
+                public String Type;
+                public String Brand;
+                public String Oz;
+                public String carbonated;
                 public byte[] MixerBytes;
                 /*Constructor*/
 
-                MixerObj(int type, int brand, boolean carb, int oz) {
-                    if (type < 256 && brand < 256 && oz < 256) {
-                        Type = (byte) type;
-                        Brand = (byte) brand;
-                        Oz = (byte) oz;
-                        if(carb){
-                            carbonated = (byte) 1;}
-                        else{
-                            carbonated = 0;
-                        }
-                        MixerBytes = new byte[]{StartOfMString,Type,Brand,carbonated,Oz};
+                MixerObj(String type, String brand, String carb, String oz) {
+                    if (type!=null && brand!=null && oz!=null) {
+                        Type =  type;
+                        Brand =  brand;
+                        Oz =  oz;
+                        carbonated = carb;
+                        //MixerBytes = new byte[]{StartOfMString,Type.getBytes(),Brand.getBytes(),carbonated.getBytes(),Oz.getBytes()};
                     } else {
                         Log.d("Mix", "Failed creating mixer object");
                         return;
@@ -104,10 +118,10 @@ public class DrinkOrder {
                 }
 
             public String toString(){
-                return "Type :" + Byte.toString(Type)     +"\n"+
-                        "Brand:" + Byte.toString(Brand)   +"\n"+
-                        "Oz:" + Byte.toString(Oz) +"\n"+
-                        "Cab:" + Byte.toString(carbonated)+"\n";
+                return "Type :" + Type     +"\n"+
+                        "Brand:" + Brand   +"\n"+
+                        "Oz:" + Oz +"\n"+
+                        "Cab:" + carbonated+"\n";
             }
                 /**serString
                  * Converts MixerObj into a serializable form, to be concatinated with the rest of
@@ -116,8 +130,8 @@ public class DrinkOrder {
                  */
                 public String serString(){
 
-                    String ser = Byte.toString(StartOfMString) +  Byte.toString(Type) +
-                            Byte.toString(Brand)+  Byte.toString(Oz)+ Byte.toString(carbonated);
+                    String ser = Byte.toString(StartOfMString) +  Type +
+                           Brand+  Oz+ carbonated;
                     Log.d("Ser","Mixer:" + Byte.toString(MixerBytes[1])+ ser);
                     return ser;
                 }
@@ -125,12 +139,12 @@ public class DrinkOrder {
 
     //Declares new DrinkOrder that can have multiple items added to it
     public DrinkOrder(){
-        liquors = new LiquorObj[MAX_INGREDIENTS ];
-        mixers = new MixerObj[MAX_INGREDIENTS ];
+        liquors = new LiquorObj[MAX_INGREDIENTS];
+        mixers = new MixerObj[MAX_INGREDIENTS];
         lIndex = 0;
         mIndex = 0;
     }
-    public DrinkOrder(int nMixers,int nLiquors){
+    public DrinkOrder(int nLiquors,int nMixers){
         if((nMixers > MAX_INGREDIENTS) || (nMixers > MAX_INGREDIENTS) ||(nLiquors < 0) || (nMixers < 0)) {
             Log.d("DO","Invalid dimensions");
     }
@@ -161,12 +175,13 @@ public class DrinkOrder {
      * @param brand Brand of Liquor
      * @param oz The volume
      */
-    public void AddLiqDrinkOrder(int type, int brand, int oz){
+    public void AddLiqDrinkOrder(String type, String brand, String oz){
         if((lIndex + mIndex) >= 18){
             Log.d("DO","Tried adding too much to order");
             return;
         }
-
+        Log.d("DO","type, brand,oz:"+type+" "+brand+" "+oz);
+        Log.d("DO","liquors size:"+liquors.length+" ");
         liquors[lIndex] = new LiquorObj(type,brand,oz);
         lIndex++;
         numLiquors++;
@@ -192,11 +207,12 @@ public class DrinkOrder {
      * @param brand Brand of Liquor
      * @param oz The volume
      */
-    public void AddMixDrinkOrder(int type, int brand, Boolean carbonated, int oz){
+    public void AddMixDrinkOrder(String type, String brand, String carbonated, String oz){
         if((lIndex + mIndex) >= 18){
             return;
         }
-
+        Log.d("DO","type, brand,oz:"+type+" "+brand+" "+oz);
+        Log.d("DO","mixers size:"+liquors.length+" ");
         mixers[mIndex] = new MixerObj(type,brand,carbonated,oz);
         mIndex++;
         numMixers++;
@@ -248,8 +264,16 @@ public class DrinkOrder {
     public String getCurrentDrinkOrder(){
         return InDrinkString;
     }
-//@TODO decode string before forwarding it to Raspberry Pi to check if feasible drink.
+    //@TODO decode string before forwarding it to Raspberry Pi to check if feasible drink.
 
+    public static String getDrinkPriceString(){
+        if(InDrinkPrice > 0.0){
+            return String.format("%.2f",DrinkOrder.InDrinkPrice);
+        }else{
+            return "2.00";
+        }
+
+    }
     /**
      * Parses Up an incoming string into a drink order, and a table of information about drink
      * @param s
@@ -259,9 +283,11 @@ public class DrinkOrder {
         if(s == null){return null;}
 
         Log.d("DParse","Incoming String:" +s);
+        s = s.replace("$DO,","");
         int NOL;
         int NOM;
         float vol = 0;
+        float price = 0;
         String outGoingTable;
         String[] tokens;
 
@@ -271,6 +297,7 @@ public class DrinkOrder {
 
         outGoingTable = "Spirits:\n";
         //Number of Mixers/Liquors Identifiers
+
         Log.d("DParse","Token[0]:"+tokens[0] + "\n");
         String[] aTokens =  tokens[0].split("[,*+]");
 
@@ -285,28 +312,40 @@ public class DrinkOrder {
 
         DrinkOrder newOrder = new DrinkOrder(NOL,NOM);
 
-        outGoingTable = "Spirit:\n";
+        if(NOL>0){outGoingTable = "Spirit:\n";}
         int i = 1;
-        //Todo Convert the strings incoming strings to the approriate drink order code.
+        //Todo Convert the strings incoming strings to the appropriate drink order code.
         for(; i < tokens.length - NOM; i++){
            Log.d("Dparse","Tokens["+i+"] Liquor{"+tokens[i] + "}\n");
            String[] lTokens = tokens[i].split("[,+]");
                Log.d("Dparse","Spirit:" + lTokens[0]);
-               Log.d("Dparse","Brand:" + lTokens[1]);
-               Log.d("Dparse","Volume" + lTokens[2]);
-           outGoingTable+=lTokens[0] + ":" + lTokens[1]+":" +lTokens[2]+"\n";
+               Log.d("Dparse","Brand:"  + lTokens[1]);
+               Log.d("Dparse","Volume"  + lTokens[2]);
 
+            newOrder.AddLiqDrinkOrder(lTokens[0],lTokens[1],lTokens[2]);
+            //Not sure if want to add brand yet.
+           //outGoingTable+=DrinkStrings.CodeToString(lTokens[0]) + ":" + lTokens[1]+":\t" +lTokens[2] + "oz"+"\n";
+           outGoingTable+=DrinkStrings.CodeToString(lTokens[0]) + ":\t" +lTokens[2] + "oz"+"\n";
            //Adds to total volume of drink
            try {
                vol += Float.parseFloat(lTokens[2].trim());
+               Inventory INV = new Inventory();
+               Inventory.LiquidContainerObj LCO = INV.searchInventory(lTokens[0], lTokens[1]);
+               double dolPoz = LCO.getPricePerOz();
+                       Log.d("Dparse","$/oz:"+dolPoz);
+               double noz = Float.parseFloat(lTokens[2]);
+               Log.d("Dparse","oz:"+noz);
+               price += dolPoz*noz;
            }catch(NumberFormatException e){
                e.printStackTrace();
+           }catch(NullPointerException npe){
+               npe.printStackTrace();
            }
 
            }
 
 
-         outGoingTable +="Mixers:\n";
+         if(NOM > 0){outGoingTable +="Mixers:\n";}
         //Loop through Mixers and print out individual components
         for(;i < tokens.length;i++) {
            Log.d("Dparse", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
@@ -316,12 +355,23 @@ public class DrinkOrder {
                    Log.d("Dparse","Brand:" + mTokens[1]);
                    Log.d("Dparse","Carb:" +  mTokens[2]);
                    Log.d("Dparse","Volume" + mTokens[3]);
-               outGoingTable+=mTokens[0] + ":" + mTokens[1]+":"+ mTokens[3]+"\n";
 
-
+               newOrder.AddMixDrinkOrder(mTokens[0], mTokens[1], mTokens[2], mTokens[3]);
+               //Same as above,not sure if we want to display brand name
+               //outGoingTable+= DrinkStrings.CodeToString(mTokens[0]) + ":" + mTokens[1]+":\t"+ mTokens[3] + "oz"+"\n";
+               outGoingTable+= DrinkStrings.CodeToString(mTokens[0])+":\t"+ mTokens[3] + "oz"+"\n";
                vol += Float.parseFloat(mTokens[3]);
-           }catch(NumberFormatException e){
+               Inventory INV = new Inventory();
+               Inventory.LiquidContainerObj LCO = INV.searchInventory(mTokens[0], mTokens[1]);
+               double dolPoz = LCO.getPricePerOz();
+               Log.d("Dparse","$/oz:"+dolPoz);
+               double noz = Float.parseFloat(mTokens[3]);
+               Log.d("Dparse","oz:"+noz);
+               price += dolPoz*noz;
+           }catch(NumberFormatException e) {
                e.printStackTrace();
+           }catch(ArrayIndexOutOfBoundsException AOoB){
+               AOoB.printStackTrace();
            }catch(NullPointerException npe){
                 npe.printStackTrace();
 
@@ -329,12 +379,113 @@ public class DrinkOrder {
         }
 
         Log.d("Dparse","Total Volume["+vol+"]");
+        Log.d("Dparse","Total Price["+price+"]");
+        InDrinkPrice = price;
 
         return outGoingTable;
     }
 
+    public double GetDrinkPrice(){
+        if(InDrinkString == null){return 0;}
+            return InDrinkPrice;
+    }
+
+    public static double ParseDrinkForPrice(String s){
 
 
+        if(s == null){return 0.0;}
 
+        Log.d("DO_PD","Incoming String:" +s);
+        s = s.replace("$DO,","");
+        int NOL;
+        int NOM;
+        float vol = 0;
+        float price = 0;
+        String outGoingTable;
+        String[] tokens;
+
+        //Takes a String of 1,2@V,0,.1@ ...... and converts it to [0,0,1] [1,2,3]
+        tokens = s.split("[@*+]");
+
+
+        outGoingTable = "Spirits:\n";
+        //Number of Mixers/Liquors Identifiers
+
+        Log.d("DO_PD","Token[0]:"+tokens[0] + "\n");
+        String[] aTokens =  tokens[0].split("[,*+]");
+
+        try{
+            NOL = Integer.valueOf(aTokens[0].trim());
+            NOM = Integer.valueOf(aTokens[1].trim());
+            Log.d("DO_PD","NOL["+NOL+"] NOM["+NOM+"]\n");
+        }catch(NumberFormatException i){
+            i.printStackTrace();
+            return 0;
+        }
+
+
+        if(NOL>0){outGoingTable = "Spirit:\n";}
+        int i = 1;
+        //Todo Convert the strings incoming strings to the appropriate drink order code.
+        for(; i < tokens.length - NOM; i++){
+            Log.d("DO_PD","Tokens["+i+"] Liquor{"+tokens[i] + "}\n");
+            String[] lTokens = tokens[i].split("[,+]");
+            Log.d("DO_PD","Spirit:" + lTokens[0]);
+            Log.d("DO_PD","Brand:"  + lTokens[1]);
+            Log.d("DO_PD", "Volume" + lTokens[2]);
+
+            //Not sure if want to add brand yet.
+            //Adds to total volume of drink
+            try {
+                vol += Float.parseFloat(lTokens[2].trim());
+                Inventory INV = new Inventory();
+                Inventory.LiquidContainerObj LCO = INV.searchInventory(lTokens[0], lTokens[1]);
+                double dolPoz = LCO.getPricePerOz();
+                Log.d("DO_PD","$/oz:"+dolPoz);
+                double noz = Float.parseFloat(lTokens[2]);
+                Log.d("DO_PD","oz:"+noz);
+                price += dolPoz*noz;
+            }catch(NumberFormatException e){
+                e.printStackTrace();
+            }catch(NullPointerException npe){
+                npe.printStackTrace();
+            }
+
+        }
+
+        //Loop through Mixers and print out individual components
+        for(;i < tokens.length;i++) {
+            Log.d("DO_PD", "Tokens[" + i + "] Mixer{" + tokens[i] + "}\n");
+            try {
+                String[] mTokens = tokens[i].split("[,+]");
+                Log.d("DO_PD","Mixer:" + mTokens[0]);
+                Log.d("DO_PD","Brand:" + mTokens[1]);
+                Log.d("DO_PD","Carb:" +  mTokens[2]);
+                Log.d("DO_PD","Volume" + mTokens[3]);
+
+                vol += Float.parseFloat(mTokens[3]);
+                Inventory INV = new Inventory();
+                Inventory.LiquidContainerObj LCO = INV.searchInventory(mTokens[0], mTokens[1]);
+
+                double dolPoz = LCO.getPricePerOz();
+                Log.d("DO_PD","$/oz:"+dolPoz);
+                double noz = Float.parseFloat(mTokens[3]);
+                Log.d("DO_PD","oz:"+noz);
+                price += dolPoz*noz;
+            }catch(NumberFormatException e) {
+                e.printStackTrace();
+            }catch(ArrayIndexOutOfBoundsException AOoB){
+                AOoB.printStackTrace();
+            }catch(NullPointerException npe){
+                npe.printStackTrace();
+
+            }
+        }
+
+        Log.d("DO_PD","Total Volume["+vol+"]");
+        Log.d("DO_PD","Total Price["+price+"]");
+        return price;
+
+    }
 
 }

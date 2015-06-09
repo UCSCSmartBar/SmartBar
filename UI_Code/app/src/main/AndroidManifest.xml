@@ -4,18 +4,19 @@
 
     <uses-sdk
         android:minSdkVersion="15"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="20" />
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+        android:maxSdkVersion="20" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+        android:maxSdkVersion="20" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -42,6 +43,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+                <action android:name="android.intent.category.HOME" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -61,6 +63,7 @@
         <activity
             android:name=".IdleMenu"
             android:label="@string/title_activity_idle_menu"
+            android:noHistory="true"
             android:parentActivityName=".MainMenu" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -105,14 +108,16 @@
         <activity
             android:name=".NewUser"
             android:label="@string/title_activity_new_user"
+            android:noHistory="true"
             android:parentActivityName=".IdleMenu" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.trider.smartbarui.IdleMenu" />
         </activity>
         <activity
-            android:name=".RegisterFingerPrint"
+            android:name=".NewUserFinger"
             android:label="@string/title_activity_register_finger_print"
+            android:noHistory="true"
             android:parentActivityName=".NewUser" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -135,18 +140,6 @@
                 android:value="com.example.trider.smartbarui.IdleMenu" />
         </activity>
         <activity
-            android:name=".LiquidLevels"
-            android:label="@string/title_activity_liquid_levels"
-            android:parentActivityName=".SystemStatus" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.trider.smartbarui.SystemStatus" />
-        </activity>
-        <activity
-            android:name=".SmartBarLoadingScreen"
-            android:label="@string/title_activity_smart_bar_loading_screen" >
-        </activity>
-        <activity
             android:name=".Container_Screen"
             android:label="@string/title_activity_container__screen"
             android:parentActivityName=".SystemStatus" >
@@ -157,6 +150,101 @@
         <activity
             android:name=".TestKeyBoard"
             android:label="@string/title_activity_test_key_board"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".FingerPickUp"
+            android:label="@string/title_activity_finger_pick_up"
+            android:noHistory="true"
+            android:parentActivityName=".IdleMenu" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.IdleMenu" />
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:noHistory="true"
+            android:parentActivityName=".IdleMenu" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.IdleMenu" />
+        </activity>
+        <activity
+            android:name=".WelcomeActivity"
+            android:label="@string/title_activity_welcome"
+            android:noHistory="true"
+            android:parentActivityName=".LoginActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.LoginActivity" />
+        </activity>
+        <activity
+            android:name=".LibraryBrowseActivity"
+            android:label="@string/title_activity_library_browse"
+            android:noHistory="true" >
+        </activity>
+        <activity
+            android:name=".ConfirmationActivity"
+            android:label="@string/title_activity_confirmation"
+            android:noHistory="true"
+            android:parentActivityName=".LibraryBrowseActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.LibraryBrowseActivity" />
+        </activity>
+        <activity
+            android:name=".CustomizeDrinkActivity"
+            android:label="@string/title_activity_customize_drink"
+            android:noHistory="true"
+            android:parentActivityName=".ConfirmationActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.ConfirmationActivity" />
+        </activity>
+        <activity
+            android:name=".DrinkOrderedActivity"
+            android:label="@string/title_activity_drink_ordered"
+            android:noHistory="true" >
+        </activity>
+        <activity
+            android:name=".NUserActivity"
+            android:label="@string/title_activity_mnew_user" >
+        </activity>
+        <activity
+            android:name=".TestKeyBoard2"
+            android:label="@string/title_activity_test_key_board2"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".VenmoWebViewActivity"
+            android:label="@string/title_activity_venmo_web_view" >
+        </activity>
+        <activity
+            android:name=".DispensingScreen"
+            android:label="@string/title_activity_dispensing_screen"
+            android:parentActivityName=".MainMenu" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.MainMenu" />
+        </activity>
+        <activity
+            android:name=".MaintenanceMenu"
+            android:label="@string/title_activity_maintenance_menu"
+            android:parentActivityName=".DispensingScreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.trider.smartbarui.DispensingScreen" />
+        </activity>
+        <activity
+            android:name=".TabbedActivity"
+            android:label="@string/title_activity_tabbed"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

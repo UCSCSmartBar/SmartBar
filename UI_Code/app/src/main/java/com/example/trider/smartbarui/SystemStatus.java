@@ -24,7 +24,7 @@ public class SystemStatus extends Activity {
     private static final String Vs ="ValveState";
     private static final String Ll ="LiquidLevels";
 
-    public Inventory INV = new Inventory();
+    public Inventory INV;
 
     private Spinner cList;
     private TextView mText;
@@ -35,13 +35,7 @@ public class SystemStatus extends Activity {
 
     //Append Text onto textView after Decoding and Parsing Message;
     //TODO: Use the parsed up input to display on text view.
-    Runnable mUpdateUI = new Runnable() {
-        @Override
-        public void run() {
-            SCP.DecodeAccessoryMessage(InMessage);
-            mText.append("->"+InMessage+ "\n");
-        }
-    };
+
 
 
 
@@ -54,14 +48,22 @@ public class SystemStatus extends Activity {
         cList = (Spinner) findViewById(R.id.command_spinner);
         mText = (TextView) findViewById(R.id.status_log);
         PiComm = new CommStream();
-        SCP = new SystemCodeParser();
-        if(PiComm.isInitialized()) {
-            new Thread(mListenerTask).start();
-        }
+        //SCP = new SystemCodeParser();
 
+        INV = new Inventory();
+
+        PiComm.PiLog(this.getLocalClassName(),DrinkOrder.OrderStatus());
+
+//        if(PiComm.isInitialized()) {
+//            new Thread(mListenerTask).start();
+//        }
 
     }
 
+    /**
+     * Sends a command to the Pi requesting information about it.
+     * @param view
+     */
     public void SendCommand(View view){
         //if(!PiComm.isInitialized()){return;}
 
@@ -84,6 +86,7 @@ public class SystemStatus extends Activity {
             case Ll:
                 PiComm.writeString(CommandStrings.RequestLiquid_Levels);
                 mText.setText(INV.PrintInventory());
+                Sound.playInventory(getApplicationContext());
 
                 break;
         }
@@ -108,25 +111,24 @@ public class SystemStatus extends Activity {
      * @description: The background thread that receives serial communication from the raspberry pi,
      *
      */
-    Runnable mListenerTask = new Runnable() {
-        @Override
-        public void run() {
-            InMessage = PiComm.readString();
-            if(InMessage != null){
-                mText.post(mUpdateUI);
-            }
-            //Waits for new input communication
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            //Restarts this thread.
-            new Thread(this).start();
-        }
-    };
 
 
+
+
+    private void hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the system bars hide and show.
+        View mDecorView;
+        mDecorView = getWindow().getDecorView();
+        mDecorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
 
 
 

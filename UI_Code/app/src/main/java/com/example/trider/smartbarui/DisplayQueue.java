@@ -2,6 +2,7 @@ package com.example.trider.smartbarui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -26,8 +27,6 @@ public class DisplayQueue extends Activity {
 
 
     //Server request data
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/getQ.php";
-    private static final String DELETE_URL = "http://www.ucscsmartbar.com/delQ.php";
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_MESSAGE = "message";
     Boolean searchFailure = false;
@@ -39,12 +38,27 @@ public class DisplayQueue extends Activity {
 
     TextView qView;
 
+
+
+    @Override
+    public void onBackPressed()
+    {
+        // code here to show dialog
+        super.onBackPressed();  // optional depending on your needs
+
+        startActivity(new Intent(DisplayQueue.this,IdleMenu.class));
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_queue);
 
         qView = (TextView) findViewById(R.id.queue_view);
+
+        Sound.playDrinkQ(getApplicationContext());
+
 
         new AttemptGetQ().execute();
         long count= System.currentTimeMillis();
@@ -55,7 +69,7 @@ public class DisplayQueue extends Activity {
     }
 
     public void UpdateQueue(View view){
-        QueueList = SA.GetQueue();
+        //QueueList = SA.GetQueue();
         long count= System.currentTimeMillis();
 //        while(System.currentTimeMillis() < count +3000 );
 //        ParseQ();
@@ -121,7 +135,7 @@ public class DisplayQueue extends Activity {
 
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("pin", "1"));
-                JSONObject json = jsonParser.makeHttpRequest(LOGIN_URL, "POST", params);
+                JSONObject json = jsonParser.makeHttpRequest(ServerAccess.LOGIN_URL, "POST", params);
 
                 // check your log for json response
                 Log.d("Q", json.toString());
@@ -181,8 +195,8 @@ public class DisplayQueue extends Activity {
                 Log.d("DelQ","Pin getting Posted:" + PinToDelete);
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("pin", PinToDelete));
-                Log.d("DelQ","HTTP getting Posted:" + DELETE_URL);
-                JSONObject json = jsonParser.makeHttpRequest(DELETE_URL, "POST", params);
+                Log.d("DelQ","HTTP getting Posted:" + ServerAccess.DELETE_URL);
+                JSONObject json = jsonParser.makeHttpRequest(ServerAccess.DELETE_URL, "POST", params);
 
                 // check your log for json response
                 Log.d("DelQ", json.toString());

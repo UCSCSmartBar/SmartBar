@@ -1,0 +1,67 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/cityscape_fullblur"
+    android:orientation="vertical"
+    tools:context="com.example.trider.smartbarui.NewUserFinger">
+
+    <TextView
+        android:text="@string/register_finger_print_prompt"
+        android:id="@+id/nuf_tView"
+        android:textSize="40dp"
+        android:textColor="#ff0000ff"
+        android:background="#aa000000"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center_vertical|center_horizontal" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#33ffffff">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            style="@style/PinKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="NewFingerGoBack"
+            android:text="Back"
+            android:id="@+id/newfinger_back" />
+        <Button
+            style="@style/PinKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Skip"
+            android:onClick="SkipToBAC"
+            android:id="@+id/nuf_skip"
+            android:layout_gravity="right" />
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/fingerView"
+        android:layout_gravity="right" />
+
+        <LinearLayout
+            android:layout_width="500dp"
+            android:layout_height="wrap_content"
+            android:background="#aa000000"
+            android:layout_marginStart="200dp">
+
+        <ImageView
+             android:id="@+id/newFingerImg"
+            android:layout_width="400dp"
+            android:layout_height="600dp"
+
+
+            android:src="@drawable/fingerprint"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

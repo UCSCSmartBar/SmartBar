@@ -6,7 +6,7 @@
     android:paddingRight="16dp"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:background="@color/DullRed"
+    android:background="#440099"
     tools:context="com.example.trider.smartbarui.SystemStatus">
 
 
@@ -40,6 +40,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/PinKey"
                     android:text="Send"
                     android:onClick="SendCommand"
                     android:id="@+id/button18"
@@ -49,7 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text= "Check/Replace Liquids  >"
-            android:onClick="CheckLiquidLevels"/>
+            android:onClick="CheckLiquidLevels"
+            style="@style/PinKey"/>
 
 
         <SeekBar

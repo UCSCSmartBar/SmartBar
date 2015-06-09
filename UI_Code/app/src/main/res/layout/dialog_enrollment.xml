@@ -1,0 +1,34 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="400dp"
+    android:layout_height="200dp"
+    android:background="#22000000">
+
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="50dp"
+        android:textSize="20sp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:text="Fingerprint enrollment takes three scans"
+        android:textColor="@color/white"
+        android:id="@+id/textView_enroll" />
+    <View
+        android:id="@+id/bar_separator_enroll"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="1dp"
+        android:background="#ff000000"/>
+
+    <Button
+        style="@style/PinKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Continue"
+        android:textAllCaps="true"
+        android:id="@+id/enroll_back"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

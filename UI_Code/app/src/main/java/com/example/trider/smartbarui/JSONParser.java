@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -105,6 +107,12 @@ public class JSONParser {
 
             // check for request method
             if(method == "POST"){
+
+                //TODO Added this morning
+
+                //CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+
                 // request method is POST
                 // defaultHttpClient
                 DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -121,7 +129,6 @@ public class JSONParser {
                 String paramString = URLEncodedUtils.format(params, "utf-8");
                 url += "?" + paramString;
                 HttpGet httpGet = new HttpGet(url);
-
                 HttpResponse httpResponse = httpClient.execute(httpGet);
                 HttpEntity httpEntity = httpResponse.getEntity();
                 is = httpEntity.getContent();
@@ -129,12 +136,15 @@ public class JSONParser {
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("AGD","Failed AGD");
+            Log.d("AGD", "Failed AGD");
+//        } catch (CertificateException ce){
+//            ce.printStackTrace();
+//            Log.d("AGD","FAILED security");
         }
+
+
         Log.d("JSON_POST","Passed call");
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -155,6 +165,7 @@ public class JSONParser {
             jObj = new JSONObject(json);
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
+            jObj = null;
         }
 
         // return JSON String

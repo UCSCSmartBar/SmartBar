@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,8 +39,6 @@ public class PickUpDrink extends Activity {
 
 
     //php login script location:
-
-
     //Objects
     public DrinkOrder testDrink;
     private CommStream PiComm;
@@ -55,51 +54,69 @@ public class PickUpDrink extends Activity {
     //Variables
     boolean searching = false;
     boolean searchFailure = true;
+
     String pinString = "";
-    String IncomingString;
+    String IncomingString = "";
     String OutMessage;
     String[] ParsedString;
 
 
     //Login tags
-    private static final String LOGIN_URL = "http://www.ucscsmartbar.com/getDrink.php";
     //JSON element ids from response of php script:
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_MESSAGE = "message";
 
-
-
-    public void onResume(){
-        super.onResume();
-        hideSystemUI();
+//Listens to Pi
+    boolean isActive = true;
+    class ListenTask extends TimerTask {
+        @Override
+        public void run(){
+            PickUpDrink.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isActive) {
+                        /**
+                         * @subTimeTask
+                         */
+                        String t = CommStream.ReadBuffer();
+                        if(t!=null) {
+                            String rMessage =new SystemCodeParser().DecodeAccessoryMessage(t);
+                        }
+                    }
+                }
+            });
+        }
     }
 
-
+    @Override
+    public void onStop(){
+        super.onStop();
+        isActive =false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_up_drink);
-        hideSystemUI();
         //Creates a "virtual drink order"
         testDrink = new DrinkOrder();
+
+
         //Checks and maintains connection with R-Pi
         PiComm = new CommStream();
-
+        if(PiComm.getOStream() != null) {
+            CommStream.writeString("PickUpDrink");
+            //new Thread(PUDListenerTask).start();
+        }
         //Hides a progress bar that will be used to indicate there order is being searched for
         pBar = (ProgressBar) findViewById(R.id.findUserProgress);
         pBar.setVisibility(View.INVISIBLE);
 
         hideSystemUI();
         new Timer().scheduleAtFixedRate(HideTask,100,100);
-        //EText Replaced
-//        EditText eText = (EditText) findViewById(R.id.txtPin);
-//        eText.setFilters(new InputFilter[] { filter,new InputFilter.LengthFilter(11)});
-        //startWatch(5000);
+        new Timer().scheduleAtFixedRate(new ListenTask(),100,100);
     }
-
-
 
     /**
      * Checks for valid pin. Displays warnings if the pin entered is too Long/Short or not numeric.
@@ -150,17 +167,23 @@ public class PickUpDrink extends Activity {
                         }
                         //Otherwise write the drink order to the Pi
                         //PiComm.writeString("$DO,"+ IncomingString );
+
+                        if(!isInQueue(DrinkOrder.InUserPinString)){
+                            Toast.makeText(getApplicationContext(),"You do not have a drink on the Queue",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         DrinkOrder t = new DrinkOrder();
-                        t.DecodeString(IncomingString);
-                        t.storeDrinkOrder(IncomingString);
-                        PiComm.writeString("$FPQ," +pinString);
+                        t.DecodeString(IncomingString); // For Debugging Purposes
+                        t.storeDrinkOrder(IncomingString); //Stores for later use
+
+                        //PiComm.writeString("$FPQ," +pinString);
                         intent.putExtra("tString",IncomingString);
                         startActivity(intent);
                     }
                 });
             }
         },5000);
-
 
     }
 
@@ -172,10 +195,7 @@ public class PickUpDrink extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(PickUpDrink.this);
-//            pDialog.setMessage("Attempting to get drink...");
-//            pDialog.setIndeterminate(false);
-//            pDialog.setCancelable(true);
-//            pDialog.show();
+
             Log.d("AGD","Pre-Exec");
         }
 
@@ -186,7 +206,7 @@ public class PickUpDrink extends Activity {
             int success;
 //            String userpin = eText.getText().toString();
             String userpin = pinString;
-            new DrinkOrder().InUserPinString = userpin;
+            DrinkOrder.InUserPinString = userpin;
             try {
                 Log.d("AGD","Mid-Execute");
                 // Building Parameters
@@ -196,20 +216,20 @@ public class PickUpDrink extends Activity {
                 Log.d("request!", "starting");
                 // getting product details by making HTTP request
                 JSONObject json = jsonParser.makeHttpRequest(
-                        LOGIN_URL, "POST", params);
+                        ServerAccess.GET_DRINK_URL, "POST", params);
 
                 // check your log for json response
-                Log.d("Drink retrieve attempt", json.toString());
+                Log.d("GetDQ","Drink retrieve attempt"+ json.toString());
 
                 // json success tag
                 success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
-                    Log.d("Drink found Successful!", json.toString());
+                    Log.d("GetDQ", "Drink found Successful!"+json.toString());
                     searchFailure = false;
                     //Intent i = new Intent(Login.this, ReadComments.class);
                     return json.getString(TAG_MESSAGE);
                 }else{
-                    Log.d("Login Failure!", json.getString(TAG_MESSAGE));
+                    Log.d("GetDQ","Login Failure!"+ json.getString(TAG_MESSAGE));
                     searchFailure = true;
                     return json.getString(TAG_MESSAGE);
                 }
@@ -231,6 +251,7 @@ public class PickUpDrink extends Activity {
             if (file_url != null){
                Toast.makeText(PickUpDrink.this, file_url, Toast.LENGTH_LONG).show();
                IncomingString = file_url;
+                Log.d("GetDQ","Success url is !"+ file_url);
 
             }else{
                 Toast.makeText(PickUpDrink.this,"Failure to Access Server. Check Internet Connection"
@@ -250,25 +271,33 @@ public class PickUpDrink extends Activity {
 
     }
 
-////Fitlers anyother input than 11 phone numbers+
-//    InputFilter filter = new InputFilter() {
-//        public CharSequence filter(CharSequence source, int start, int end,
-//                                   Spanned dest, int dstart, int dend) {
-//            for (int i = start; i < end; i++) {
-//                if (!Character.isDigit(source.charAt(i))) {
-//                    return "";
-//                }
-//            }
-//            return null;
-//        }
-//    };
+    public Boolean isInQueue(String userPin){
 
+        if(DrinkOrder.CurDrinkQueue!=null){
+            Log.d("Q","Q is:"+DrinkOrder.CurDrinkQueue);
+        }else{return false;}
+
+        String[] tokens = DrinkOrder.CurDrinkQueue.split("[@,]");
+        Log.d("Q", "In:"+"userPin:");
+        Log.d("Q", "tokens:"+ tokens);
+        for(int i = 0; i < tokens.length; i++){
+            Log.d("Q","token"+tokens[i]);
+            if(tokens[i].equals(userPin)){
+                Log.d("Q"," found it equal");
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 
     /***********System Level Functions*******/
     /**Manuel Keyboard**/
     //@TODO Make into a custom fragment
     public void EnterPin(View view){
+        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
         switch(view.getId()){
             case R.id.keyOne:
                 pinString+="1";
@@ -306,11 +335,11 @@ public class PickUpDrink extends Activity {
                 break;
             case R.id.keyEnter:
                 if(pinString.length() < 11){
-                    Toast.makeText(getApplicationContext(),"Hey not long enough",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Please Enter Full 11-Digits",Toast.LENGTH_SHORT).show();
                 }else if(pinString.length()> 11){
-                    Toast.makeText(getApplicationContext(),"Hey too long ",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Phone Number Entered is Too Long",Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(getApplicationContext(),"Hey... Ok",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"Hey... Ok",Toast.LENGTH_SHORT).show();
                     CheckPin(view);
                 }
                 break;
@@ -319,6 +348,10 @@ public class PickUpDrink extends Activity {
         tView.setText(pinString);
     }
 
+    public void GoBack(View view){
+        finish();
+        //startActivity(new Intent(PickUpDrink.this,IdleMenu.class));
+    }
 
     public void startWatch(int watch_t) {
         new Timer().schedule(new TimerTask() {
@@ -377,7 +410,6 @@ public class PickUpDrink extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
 
