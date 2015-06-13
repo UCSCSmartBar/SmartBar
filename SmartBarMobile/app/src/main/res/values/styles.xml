@@ -1,0 +1,16 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name= "PinKey" >
+        <item name ="android:layout_width" type="id">90dp</item>
+        <item name ="android:layout_height" type="id">90dp</item>
+        <item name = "android:textColor" type="id">#ff000000</item>
+        <item name = "android:layout_margin" type="id">5dp</item>
+        <item name ="android:background">@drawable/cust_keypad_butt</item>
+    </style>
+
+</resources>

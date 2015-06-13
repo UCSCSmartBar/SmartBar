@@ -1,0 +1,388 @@
+
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.trider.smartbarui.TestKeyBoard"
+    android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:orientation="vertical">
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            style="@style/LetterKey"
+            android:text="q"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key1"
+            android:layout_column="0"
+            android:layout_row="0"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:text="w"
+            android:id="@+id/key2"
+            />
+
+        <Button
+            android:textAllCaps="false"
+            style="@style/LetterKey"
+            android:layout_column="2"
+            android:layout_row="0"
+            android:onClick="EnterLetter"
+            android:id="@+id/key3"
+            android:text="e"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="r"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key4"
+            android:layout_column="3"
+            android:layout_row="0"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:layout_column="4"
+            android:layout_row="0"
+            android:text="t"
+            android:id="@+id/key5"
+            />
+
+        <Button
+            android:textAllCaps="false"
+            style="@style/LetterKey"
+            android:layout_column="5"
+            android:layout_row="0"
+            android:onClick="EnterLetter"
+            android:id="@+id/key6"
+            android:text="y"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="u"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key7"
+            android:layout_column="6"
+            android:layout_row="0"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="i"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key8"
+            android:layout_column="7"
+            android:layout_row="0"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="o"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key9"
+            android:layout_column="8"
+            android:layout_row="0"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="p"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key10"
+            android:layout_column="9"
+            android:layout_row="0"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/BackKey"
+            android:layout_column="10"
+            android:layout_row="0"
+            />
+
+    </GridLayout>
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp">
+        <Button
+            style="@style/LetterKey"
+            android:text="a"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key11"
+            android:layout_column="0"
+            android:layout_row="1"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="s"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key12"
+            android:layout_column="1"
+            android:layout_row="1"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="d"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key13"
+            android:layout_column="2"
+            android:layout_row="1"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="f"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key14"
+            android:layout_column="3"
+            android:layout_row="1"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="g"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key15"
+            android:layout_column="4"
+            android:layout_row="1"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="h"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key16"
+            android:layout_column="5"
+            android:layout_row="1"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="j"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key17"
+            android:layout_column="6"
+            android:layout_row="1"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="k"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key18"
+            android:layout_column="7"
+            android:layout_row="1"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="l"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key19"
+            android:layout_column="8"
+            android:layout_row="1"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="Enter"
+            android:layout_width="100dp"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/EnterKey"
+            android:layout_column="9"
+            android:layout_row="1"
+            />
+
+    </GridLayout>
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="55dp">
+        <Button
+            style="@style/LetterKey"
+            android:layout_width="100dp"
+            android:text="SHIFT"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/shiftKey"
+            android:layout_column="0"
+            android:layout_row="2"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="z"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key20"
+            android:layout_column="1"
+            android:layout_row="2"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="x"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key21"
+            android:layout_column="2"
+            android:layout_row="2"
+            />
+
+
+        <Button
+            style="@style/LetterKey"
+            android:text="c"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key22"
+            android:layout_column="3"
+            android:layout_row="2"
+            />
+
+        <Button
+            style="@style/LetterKey"
+            android:text="v"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key23"
+            android:layout_column="4"
+            android:layout_row="2"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="b"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key24"
+            android:layout_column="5"
+            android:layout_row="2"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="n"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key25"
+            android:layout_column="6"
+            android:layout_row="2"
+            />
+        <Button
+            style="@style/LetterKey"
+            android:text="m"
+            android:textAllCaps="false"
+            android:onClick="EnterLetter"
+            android:id="@+id/key26"
+            android:layout_column="7"
+            android:layout_row="2"
+            />
+
+    </GridLayout>
+    </LinearLayout>
+    <TextView
+        android:text=""
+        android:layout_width="200dp"
+        android:textSize="30sp"
+        android:layout_height="50dp"
+        android:hint="Type Here"
+        android:id="@+id/letterField" />
+
+<GridLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/topleft"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_row="0"
+        android:background="@drawable/shape1" >
+
+        <ImageView
+            android:id="@+id/myimage1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/topright"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:background="@drawable/shape1" >
+
+        <ImageView
+            android:id="@+id/myimage2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/bottomleft"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:background="@drawable/shape1" >
+
+        <ImageView
+            android:id="@+id/myimage3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomright"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:orientation="vertical"
+        android:background="@drawable/shape1" >
+
+        <ImageView
+            android:id="@+id/myimage4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+    </LinearLayout>
+
+</GridLayout>
+
+</LinearLayout>

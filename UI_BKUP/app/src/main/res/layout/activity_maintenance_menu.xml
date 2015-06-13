@@ -1,0 +1,375 @@
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"-->
+    <!--android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingTop="@dimen/activity_vertical_margin"-->
+    <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
+    <!--tools:context="com.example.trider.smartbarui.MaintenanceMenu">-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:background="#ff440099"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.trider.smartbarui.DispensingScreen">
+
+    <ScrollView
+        android:layout_width="500dp"
+        android:layout_height="550dp"
+        android:background="@drawable/inv_backdrop"
+        android:id="@+id/scrollView2"
+        android:fillViewport="false">
+
+        <GridLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp"
+
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            tools:context="com.example.trider.smartbarui.Container_Screen">
+
+            <Button
+                style="@style/Container"
+                android:id="@+id/con1_button"
+                android:onClick="onContainerClick"
+                android:text="Container One"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con2_button"
+                android:onClick="onContainerClick"
+                android:text="Container Two"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con3_button"
+                android:onClick="onContainerClick"
+                android:text="Container Three"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con4_button"
+                android:onClick="onContainerClick"
+                android:text="Container Four"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con5_button"
+                android:onClick="onContainerClick"
+                android:text="Container Five"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con6_button"
+                android:onClick="onContainerClick"
+                android:text="Container Six"
+                android:layout_row="2"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con7_button"
+                android:onClick="onContainerClick"
+                android:text="Container Seven"
+                android:layout_row="3"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con8_button"
+                android:onClick="onContainerClick"
+                android:text="Container Eight"
+                android:layout_row="3"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con9_button"
+                android:onClick="onContainerClick"
+                android:text="Container Nine"
+                android:layout_row="4"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con10_button"
+                android:onClick="onContainerClick"
+                android:text="Container Ten"
+                android:layout_row="4"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con11_button"
+                android:onClick="onContainerClick"
+                android:text="Container Eleven"
+                android:layout_row="5"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con12_button"
+                android:onClick="onContainerClick"
+                android:text="Container Twelve"
+                android:layout_row="5"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con13_button"
+                android:onClick="onContainerClick"
+                android:text="Container Thirteen"
+                android:layout_row="6"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con14_button"
+                android:onClick="onContainerClick"
+                android:text="Container Fourteen"
+                android:layout_row="6"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con15_button"
+                android:onClick="onContainerClick"
+                android:text="Container Fifteen"
+                android:layout_row="7"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con16_button"
+                android:onClick="onContainerClick"
+                android:text="Container Sixteen"
+                android:layout_row="7"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con17_button"
+                android:onClick="onContainerClick"
+                android:text="Container Seventeen"
+                android:layout_row="8"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con18_button"
+                android:onClick="onContainerClick"
+                android:text="Container Eighteen"
+                android:layout_row="8"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con19_button"
+                android:onClick="onContainerClick"
+                android:text="Water"
+                android:layout_row="9"
+                android:layout_column="0"
+                android:layout_height="50dp"
+                />
+            <Button
+                style="@style/Container"
+                android:id="@+id/con20_button"
+                android:onClick="onContainerClick"
+                android:text="Carbonated Water"
+                android:layout_row="9"
+                android:layout_height="50dp"
+                />
+
+        </GridLayout>
+    </ScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/scrollView2"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            style="@style/CityTheme"
+            android:onClick="CalibrateClick"
+            android:layout_width="380dp"
+            android:layout_height="70dp"
+            android:text="Calibrate"
+            android:id="@+id/Calibrate"
+            android:background="@drawable/cust_butt"
+            android:layout_gravity="center_horizontal|top" />
+
+        <Button
+            style="@style/CityTheme"
+            android:id="@+id/Purge"
+            android:onClick="PurgeClick"
+            android:background="@drawable/cust_butt"
+            android:layout_width="340dp"
+            android:layout_height="70dp"
+            android:padding="20dp"
+            android:text="Purge"
+            android:layout_below="@+id/calibrate_button"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="90dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+
+
+        <Button
+            style="@style/CityTheme"
+            android:text="Open Valve"
+            android:id="@+id/OpenValveButton"
+            android:background="@drawable/cust_butt"
+            android:layout_width="340dp"
+            android:layout_height="70dp"
+            android:padding="20dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/calibrate_button"
+            android:layout_marginTop="180dp" />
+        <GridLayout
+            android:layout_width="340dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="270dp">
+            <Button
+                style="@style/SmallPinKey"
+                android:text="1"
+                android:onClick="EnterPin"
+                android:id="@+id/keyOne"
+                android:layout_column="0"
+                android:layout_row="0"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:onClick="EnterPin"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:text="2"
+                android:id="@+id/keyTwo"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:layout_column="2"
+                android:layout_row="0"
+                android:onClick="EnterPin"
+                android:id="@+id/keyThree"
+                android:text="3"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="4"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:onClick="EnterPin"
+                android:id="@+id/keyFour"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="5"
+                android:layout_column="1"
+                android:layout_row="1"
+                android:onClick="EnterPin"
+                android:id="@+id/keyFive"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="6"
+                android:onClick="EnterPin"
+                android:layout_column="2"
+                android:layout_row="1"
+                android:id="@+id/keySix"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="7"
+                android:layout_column="0"
+                android:layout_row="2"
+                android:onClick="EnterPin"
+                android:id="@+id/keySeven"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="8"
+                android:layout_column="1"
+                android:layout_row="2"
+                android:onClick="EnterPin"
+                android:id="@+id/keyEight"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="9"
+                android:layout_column="2"
+                android:layout_row="2"
+                android:onClick="EnterPin"
+                android:id="@+id/keyNine"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="0"
+                android:onClick="EnterPin"
+                android:layout_column="1"
+                android:layout_row="3"
+                android:id="@+id/keyZero"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="Del"
+                android:onClick="EnterPin"
+                android:layout_column="0"
+                android:layout_row="3"
+                android:id="@+id/keyDelete"
+                />
+            <Button
+                style="@style/SmallPinKey"
+                android:text="Clr"
+                android:layout_column="2"
+                android:onClick="EnterPin"
+                android:layout_row="3"
+                android:id="@+id/keyClear"
+                />
+
+            <TextView
+                style="@style/CityTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 Seconds"
+                android:id="@+id/KeypadValueText"
+                android:layout_row="0"
+                android:layout_column="4"/>
+
+        </GridLayout>
+
+    </FrameLayout>
+
+
+</RelativeLayout>

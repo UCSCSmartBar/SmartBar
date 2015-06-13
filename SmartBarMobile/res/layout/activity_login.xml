@@ -35,6 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_login"
+            android:labelFor="@+id/type_email"
             android:layout_marginTop="20dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -44,14 +45,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:layout_marginTop="20dp"
-            android:hint="@string/email_hint" />
+            android:layout_marginTop="20dp" />
 
         <TextView
             android:id="@+id/enter_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/enter_password"
+            android:text="@string/enter_pw"
+            android:labelFor="@+id/type_password"
             android:layout_marginTop="20dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -61,8 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:layout_marginTop="20dp"
-            android:hint="@string/enter_password" />
+            android:layout_marginTop="20dp" />
 
         <Button
             android:id="@+id/login_button"

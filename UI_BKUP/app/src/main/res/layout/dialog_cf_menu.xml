@@ -1,0 +1,35 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="500dp"
+    android:layout_height="200dp"
+    android:background="#99000000">
+
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="100dp"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:text="This is embarrassing. Smartbar had an error pouring your drink properly, please come back to pick your drink up later."
+        android:textColor="@color/white"
+        android:id="@+id/textView_failed_pour" />
+    <View
+        android:id="@+id/bar_separator_bac"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="1dp"
+        android:background="#ff000000"/>
+
+    <Button
+        style="@style/PinKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Exit"
+        android:textAllCaps="true"
+        android:id="@+id/diag_pour_back"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

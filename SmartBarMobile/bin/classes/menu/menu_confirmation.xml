@@ -7,6 +7,11 @@
         android:showAsAction="never" />
 
     <item
+        android:id="@+id/action_resetFP"
+        android:title="@string/action_resetFP"
+        android:showAsAction="never" />
+
+    <item
         android:id="@+id/action_logout"
         android:title="@string/action_logout"
         android:showAsAction="never" />

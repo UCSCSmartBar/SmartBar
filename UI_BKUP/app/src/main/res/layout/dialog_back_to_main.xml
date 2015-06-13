@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="400dp"
+    android:layout_height="200dp"
+    android:background="@drawable/cust_dialog">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:textSize="20sp"
+        android:text="Return to Main Menu?"
+        android:textAlignment="center"
+        android:layout_marginStart="40dp"
+        android:textColor="@color/white"
+        android:id="@+id/diag_btm_view" />
+    <View
+        android:id="@+id/bar_btm"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="1dp"
+        android:background="#ff000000"/>
+
+    <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp">
+
+        <Button
+            style="@style/PinKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MainMenu"
+            android:id="@+id/dialog_btm_back"/>
+
+        <Button
+            style="@style/PinKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Return"
+            android:id="@+id/dialog_btm_exit"/>
+        <!---->
+        <!--<EditText-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+
+    </LinearLayout>
+</LinearLayout>

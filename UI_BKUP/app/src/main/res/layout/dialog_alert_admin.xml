@@ -1,0 +1,24 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="400dp"
+    android:layout_height="200dp"
+    android:background="#22000000">
+
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="50dp"
+        android:textSize="20sp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:text="Please Wait for System Administrator"
+        android:textColor="@color/white"
+        android:id="@+id/textView_admin" />
+    <View
+        android:id="@+id/bar_separator2"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="1dp"
+        android:background="#ff000000"/>
+</LinearLayout>

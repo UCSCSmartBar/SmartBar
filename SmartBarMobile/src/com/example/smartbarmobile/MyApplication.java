@@ -12,16 +12,25 @@ import android.view.inputmethod.InputMethodManager;
 public class MyApplication extends Application {
 
     boolean loggedIn = false;
-    String myUsername = "lp";
-    String myPin = "12345678901";
-    String myPassword = "lp";
+    boolean gSignIn = false;
+    String myUsername = "";
+    String myPin = "";
+    String myPassword = "";
+    String myAge = "";
+    String myGender = "";
+    String myEmail = "";
 
     public void setLoggedIn(boolean setLogIn) {
         loggedIn = setLogIn;
+        myPin = getNumber();
+    }
+    
+    public String getNumber() {
         myPin = getMy10DigitPhoneNumber();
         while (myPin.length() < 11) {
             myPin = "1" + myPin;
         }
+        return myPin;
     }
 
     // method to hide keyboard when user clicks outside of edit text area

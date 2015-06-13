@@ -6,17 +6,25 @@ package com.example.smartbarmobile;
  * @author davydewaele
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.Toast;
-
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -34,6 +42,16 @@ import com.google.android.gms.plus.model.people.Person;
  * Directs user to create account, login via SmartBar, login via Google.
  */
 public class StartupActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener, OnClickListener, ResultCallback<LoadPeopleResult> {
+
+	boolean noAge;
+	boolean noGender;
+	
+    JSONParser jsonParser = new JSONParser();
+    private ProgressDialog pDialog;             // Progress Dialog
+
+    //JSON element ids from response of php script:
+    private static final String TAG_SUCCESS = "success";
+    private static final String TAG_MESSAGE = "message";
 	
 	private static final String TAG = "smartbar GoogleAPiClient";
 	
@@ -72,8 +90,11 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
     private PendingIntent mSignInIntent;
 
     private SignInButton mSignInButton;
-    private Button mSignOutButton;
-    private Button mRevokeButton;
+    
+    private Person currentUser;
+    private String mEmail;
+    
+    boolean prevIntent, tooYoung;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +105,8 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
         ((MyApplication)this.getApplication()).setLoggedIn(false);	
 
         mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        mSignOutButton = (Button) findViewById(R.id.sign_out_button);
-        mRevokeButton = (Button) findViewById(R.id.revoke_access_button);
 
         mSignInButton.setOnClickListener(this);
-        mSignOutButton.setOnClickListener(this);
-        mRevokeButton.setOnClickListener(this);
         
         if (savedInstanceState != null) {
         	mSignInProgress = savedInstanceState.getInt(SAVED_PROGRESS, STATE_DEFAULT);
@@ -105,6 +122,10 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
         		.addApi(Plus.API, Plus.PlusOptions.builder().build())
         		.addScope(Plus.SCOPE_PLUS_LOGIN)
         		.build();
+        
+        Intent intent = getIntent();
+        tooYoung = intent.getBooleanExtra("tooYoung", true);
+        prevIntent = intent.getBooleanExtra("prevIntent", false);
 	}
 	
     @Override
@@ -123,7 +144,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
         Intent intent = new Intent(this, NewUserActivity.class);
         startActivity(intent);
     }
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 	
 	@Override
 	protected void onStart() {
@@ -155,29 +176,6 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 					Toast.makeText(this, "Signing in...", Toast.LENGTH_SHORT).show();
 				    resolveSignInError();
 				    break;
-				case R.id.sign_out_button:
-					Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show();
-					// Clear the default account on sign out so that Google Play services will not return an onConnected
-					// callback without user interaction.
-					Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-					mGoogleApiClient.disconnect();
-					mGoogleApiClient.connect();
-					break;
-				case R.id.revoke_access_button:
-					// After we revoke permissions for the user with a GoogleApiClient instance, we must discard it and
-					// create a new one.
-					Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-					// Want to normally register a callback on revokeAccessAndDisconnect to delete user data so that
-					// we comply with Google developer policies.
-					Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
-			        mGoogleApiClient = new GoogleApiClient.Builder(this)
-			        		.addConnectionCallbacks(this)
-			        		.addOnConnectionFailedListener(this)
-			        		.addApi(Plus.API, Plus.PlusOptions.builder().build())
-			        		.addScope(Plus.SCOPE_PLUS_LOGIN)
-			        		.build();
-			        mGoogleApiClient.connect();
-			        break;
 		        default:
 		        	break;
 			}
@@ -192,18 +190,26 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		Log.v(TAG, "onConnected reached");
-		Toast.makeText(this, "User is Connected!", Toast.LENGTH_SHORT).show();
+		
+		if (prevIntent && tooYoung) {
+			if (mGoogleApiClient.isConnected()) {
+				if (Plus.AccountApi.getAccountName(mGoogleApiClient) == ((MyApplication)this.getApplication()).myEmail) {
+					Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+					mGoogleApiClient.disconnect();
+					mGoogleApiClient.connect();
+				} else {
+					tooYoung = false;
+				}
+			}
+			return;
+		}
 
 	    // Update the user interface to reflect that the user is signed in.
 	    mSignInButton.setEnabled(false);
-	    mSignOutButton.setEnabled(true);
-	    mRevokeButton.setEnabled(true);
 		
 		// Retrieve some profile information to personalize our app for the user
-		Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-		String mEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
-		((MyApplication)this.getApplication()).myUsername = mEmail;
-		((MyApplication)this.getApplication()).myPassword = mEmail;
+		currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+		mEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
 		
 		Log.v(TAG, "Signed in as " + currentUser.getDisplayName());
 		Plus.PeopleApi.loadVisible(mGoogleApiClient, null).setResultCallback(this);
@@ -211,11 +217,45 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 		// Indicate that the sign in process is complete.
 		mSignInProgress = STATE_DEFAULT;
 		
-		// Proceed to normal application flow
-		Intent intent = new Intent(this, WelcomeActivity.class);
-		startActivity(intent);
+		// Proceed to register user with smart bar
+		configureParams();
+		
+		new AttemptLogin().execute();
 	}
 	
+	private void configureParams() {
+		
+		((MyApplication)this.getApplication()).myUsername = mEmail;
+		((MyApplication)this.getApplication()).myPassword = mEmail;
+		((MyApplication)this.getApplication()).myEmail = mEmail;
+
+		// if user hasAgeRange(), verify over 21
+		if (currentUser.hasAgeRange()) {
+			int minAge = currentUser.getAgeRange().getMin();
+			if (minAge < 21) {
+				Toast.makeText(this, "Sorry, you must be 21 to use the SmartBar!", Toast.LENGTH_LONG).show();
+				return;
+			}
+			((MyApplication)this.getApplication()).myAge = String.valueOf(minAge);
+			noAge = false;
+		} else {
+			noAge = true;
+		}
+		
+		// If currentUser hasGender(), assign correct gender
+		if (currentUser.hasGender()) {
+			switch (currentUser.getGender()) {
+				case 0: ((MyApplication)this.getApplication()).myGender = "Male"; break;
+				case 1: ((MyApplication)this.getApplication()).myGender = "Female"; break;
+				case 2: ((MyApplication)this.getApplication()).myGender = "Other"; break;
+				default: break;
+			}
+			noGender = false;
+		} else {
+			noGender = true;
+		}
+	}
+
 	/**
 	 * onConnectionFailed is called when our Activity could not connect to Google Play Services. onConnectionFailed indicates that
 	 * the user needs to select an account, grant permissions or resolve an error in order for sign in.
@@ -311,8 +351,6 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	private void onSignedOut() {
 		// Update the UI to reflect that the user signed out
 	    mSignInButton.setEnabled(true);
-	    mSignOutButton.setEnabled(false);
-	    mRevokeButton.setEnabled(false);
 	}
 	
 	public void onConnectionSuspended(int cause) {
@@ -320,4 +358,92 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 		// ConnectionResult that we can attempt to resolve.
 		mGoogleApiClient.connect();
 	}
+
+
+    /*
+     * Class to attempt login, call PHP script to query database
+     */
+    class AttemptLogin extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        boolean failure = false;
+        int success;
+
+        // set progress dialog
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(StartupActivity.this);
+            pDialog.setMessage("Attempting login...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        // query database method
+        @Override
+        protected String doInBackground(String... args) {
+            // Check for success tag
+            String username = ((MyApplication)StartupActivity.this.getApplication()).myUsername;
+            String password = ((MyApplication)StartupActivity.this.getApplication()).myPassword;
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("user_name", username));
+                params.add(new BasicNameValuePair("user_password", password));
+
+                Log.d("request!", "starting");
+                // getting product details by making HTTP request
+                JSONObject json = jsonParser.makeHttpRequest(
+                        ServerAccess.LOGIN_URL, "POST", params);
+                
+                if (json == null) {
+                	Toast.makeText(StartupActivity.this, "Cannot connect to server. Please check internet connection.", Toast.LENGTH_SHORT).show();
+                	return null;
+                }
+
+                // check your log for json response
+                Log.d("Login attempt", json.toString());
+
+                // json success tag
+                success = json.getInt(TAG_SUCCESS);
+                if (success == 1) {
+                    Log.d("Login Successful!", json.toString());
+                    ((MyApplication)StartupActivity.this.getApplication()).setLoggedIn(true);
+                    return json.getString(TAG_MESSAGE);
+                }else{
+                    Log.d("Login Failure!", json.getString(TAG_MESSAGE));
+                    return json.getString(TAG_MESSAGE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            if (file_url != null){
+            	pDialog.dismiss();
+                if (success == 1) {
+                    Toast.makeText(StartupActivity.this, file_url, Toast.LENGTH_SHORT).show();
+                    ((MyApplication)StartupActivity.this.getApplication()).gSignIn = true;
+                    Intent welcome = new Intent(StartupActivity.this, WelcomeActivity.class);
+                    finish();
+                    startActivity(welcome);
+                } else {
+                	Intent missingParams = new Intent(StartupActivity.this, MissingParamsActivity.class);
+            		missingParams.putExtra("noAge", noAge);
+            		missingParams.putExtra("noGender", noGender);
+                	finish();
+                	startActivity(missingParams);
+                }
+            }
+        }
+    }
+	
 }

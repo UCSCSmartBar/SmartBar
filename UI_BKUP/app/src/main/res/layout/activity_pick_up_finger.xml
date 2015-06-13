@@ -1,0 +1,58 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:textColor="@color/white"
+    android:orientation = "vertical"
+
+    android:background="@drawable/cityscape"
+    tools:context="com.example.tylerrider.raspgui.PickUp">
+<!--
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="40dp"
+        android:background="@drawable/usb_connection"
+        android:backgroundTint="@color/white"
+        android:rotation="90"
+        android:id="@+id/usbCon1" />
+-->
+    <TextView android:text=""
+        android:id="@+id/puf_tView"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:background="#aa000000"
+        android:layout_marginStart="0dp"
+        android:layout_width="1000dp"
+        android:layout_height="100dp" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="300dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/fingerImg"
+            android:src="@drawable/science_fingerprint"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="350dp"
+            android:text="Skip"
+            android:onClick="SkipFingerPrint"
+            android:id="@+id/skipPrint" />
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:text=""
+            android:id="@+id/puf_text" />
+    </LinearLayout>
+
+</LinearLayout>
