@@ -306,6 +306,7 @@ public class DrinkOrderedActivity extends Activity implements ConnectionCallback
     @Override
     protected void onResume () {
         super.onResume();
+        mGoogleApiClient.connect();
         new FindUser().execute();
     }
 	

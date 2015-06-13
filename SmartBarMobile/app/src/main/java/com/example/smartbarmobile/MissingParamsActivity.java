@@ -290,6 +290,12 @@ public class MissingParamsActivity extends Activity implements ConnectionCallbac
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		mGoogleApiClient.connect();
+	}
+
+	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt(SAVED_PROGRESS, mSignInProgress);

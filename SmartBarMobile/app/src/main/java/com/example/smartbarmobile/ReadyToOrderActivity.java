@@ -102,7 +102,7 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /** Inflate the menu; this adds items to the action bar if it is present. **/
+        /* Inflate the menu; this adds items to the action bar if it is present. */
         getMenuInflater().inflate(R.menu.menu_ready_to_order, menu);
         return true;
     }
@@ -115,7 +115,7 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        /** ActionBar display pin sequence **/
+        /* ActionBar display pin sequence */
         if (id == R.id.action_pin) {
             pin = MyApplication.myPin + '1';
             tempCountry = pin.substring(0,1);
@@ -186,7 +186,7 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
             builder.show();
         }
 
-        /** ActionBar logout sequence **/
+        /* ActionBar logout sequence */
         if (id == R.id.action_logout) {
             Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show();
             if (((MyApplication)this.getApplication()).gSignIn) {
@@ -212,14 +212,14 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
     public void onBackPressed() {
     }
 
-    /** Logout (not G+) **/
+    /* Logout (not G+) */
     public void logout() {
         ((MyApplication)this.getApplication()).loggedIn = false;
         Intent intent = new Intent(this, StartupActivity.class);
         startActivity(intent);
     }
 
-    /** Go to library browse screen **/
+    /* Go to library browse screen */
     public void goToLibraryBrowse(View view) {
         Intent libraryBrowse = new Intent(this, LibraryBrowseActivity.class);
         startActivity(libraryBrowse);
@@ -229,15 +229,22 @@ public class ReadyToOrderActivity extends Activity implements GoogleApiClient.Co
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+        new FindUser().execute();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+        new FindUser().execute();
     }
 
     @Override

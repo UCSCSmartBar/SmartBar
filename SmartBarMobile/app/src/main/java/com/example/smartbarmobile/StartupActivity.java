@@ -133,18 +133,15 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
     /* Start Smartbar Login screen */
     public void startupToLogin(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
-		finish();
         startActivity(intent);
     }
 
     /* Start Create Smartbar account screen */
     public void startupToNewUser(View view) {
         Intent intent = new Intent(this, NewUserActivity.class);
-		finish();
         startActivity(intent);
     }
 
-	
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -154,10 +151,15 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 	@Override
 	protected void onStop() {
 		super.onStop();
-		
 		if (mGoogleApiClient.isConnected()) {
 			mGoogleApiClient.disconnect();
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mGoogleApiClient.connect();
 	}
 
 	@Override
@@ -377,7 +379,7 @@ public class StartupActivity extends Activity implements ConnectionCallbacks, On
 				personBuffer.close();
 			}
 		} else {
-			Log.e(TAG, "Error requesting visible circiles: " + peopleData.getStatus());
+			Log.e(TAG, "Error requesting visible circles: " + peopleData.getStatus());
 		}
 	}
 

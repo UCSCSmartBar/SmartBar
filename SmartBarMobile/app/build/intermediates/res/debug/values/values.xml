@@ -117,7 +117,7 @@
     <string name="done">Done!</string>
     <string name="drink_hint">ex: Whiskey Ginger</string>
     <string name="drink_sent">Your drink order has been sent!
-        Proceed to the SmartBar touch screen interface to pick up your order.</string>
+        Proceed to the SmartBar touchscreen interface to pick up your order.</string>
     <string name="email_hint">Username</string>
     <string name="empty"/>
     <string name="enter_age">Age</string>

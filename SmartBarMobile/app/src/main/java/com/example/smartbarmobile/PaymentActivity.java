@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+
 /*
  * This class defines the behavior of the welcome screen which essentially just directs the user to
  * logout of a signed in account
@@ -147,7 +148,6 @@ public class PaymentActivity extends Activity implements ConnectionCallbacks, On
                 logout();
             }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -170,29 +170,30 @@ public class PaymentActivity extends Activity implements ConnectionCallbacks, On
     /* Gets called when Braintree Payment Activity returns with verification */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!multPass) {
-            if (requestCode == DROP_IN_REQUEST) {
-                if (resultCode == BraintreePaymentActivity.RESULT_OK) {
-                    String paymentMethodNonce = data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
-                    createCust(paymentMethodNonce);
-                }
+        if (requestCode == DROP_IN_REQUEST) {
+            if (resultCode == BraintreePaymentActivity.RESULT_OK) {
+                String paymentMethodNonce = data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
+                createCust(paymentMethodNonce);
             }
-        } else {
-            Intent readyToOrder = new Intent(PaymentActivity.this, ReadyToOrderActivity.class);
-            finish();
-            startActivity(readyToOrder);
         }
     }
 
     void createCust(String nonce) {
-        paymentNonce = nonce;
-        new CreateBraintreeCust().execute();
+        if (!multPass) {
+            paymentNonce = nonce;
+            new CreateBraintreeCust().execute();
+        } else {
+            Intent readyToOrder = new Intent(this, ReadyToOrderActivity.class);
+            finish();
+            startActivity(readyToOrder);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+        new FindUser().execute();
     }
 
     @Override
@@ -201,6 +202,13 @@ public class PaymentActivity extends Activity implements ConnectionCallbacks, On
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+        new FindUser().execute();
     }
 
     @Override
@@ -245,7 +253,7 @@ public class PaymentActivity extends Activity implements ConnectionCallbacks, On
      */
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        /**
+         /**
          * Refer to the JavaDoc for ConnectionResult to see what error codes might be returned in
          * onConnectionFailed.
          */
@@ -413,6 +421,7 @@ public class PaymentActivity extends Activity implements ConnectionCallbacks, On
         @Override
         protected String doInBackground(String... args) {
 
+            multPass = true;
             Log.d("CreateBraintreeCust", "starting...");
             String phone = MyApplication.myPin;
             try {
@@ -457,7 +466,6 @@ public class PaymentActivity extends Activity implements ConnectionCallbacks, On
         protected void onPostExecute(String file_url) {
             if (file_url != null){
                 if (success == 1) {
-                    multPass = true;
                     Intent readyToOrder = new Intent(PaymentActivity.this, ReadyToOrderActivity.class);
                     finish();
                     startActivity(readyToOrder);

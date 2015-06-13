@@ -258,7 +258,8 @@ public class ConfirmationActivity extends Activity implements ConnectionCallback
          * Check if the user has a drink on the queue already. If not, send new order. If they do,
          * then display a dialog to confirm the drink order change.
          */
-        new CheckQueue().execute();
+//        new CheckQueue().execute();
+        new DrinkOrder().execute();
     }
 
 	@Override
@@ -280,6 +281,7 @@ public class ConfirmationActivity extends Activity implements ConnectionCallback
     @Override
     protected void onResume() {
         super.onResume();
+        mGoogleApiClient.connect();
         new FindUser().execute();
     }
 
@@ -465,31 +467,29 @@ public class ConfirmationActivity extends Activity implements ConnectionCallback
         protected void onPostExecute(final String file_url) {
             if (file_url != null){
                 if (success == 1) {
-                    if (file_url.equals("")) {
+                    /** Success means a drink was found already on the queue. */
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ConfirmationActivity.this);
+                    builder.setTitle("But Wait!");
+                    builder.setMessage("You seem to have a drink order on the queue already. Would you " +
+                            "like to override your order: \n\n" + file_url);
+                    builder.setPositiveButton("Override", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            new DrinkOrder().execute();
+                        }
+                    });
+                    builder.setNegativeButton("Keep Current", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogInterface, int ids) {
+                            Toast.makeText(ConfirmationActivity.this, "You got it! Smartbar is ready" +
+                                    "whenever you are to retrieve your " + file_url, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(ConfirmationActivity.this, DrinkOrderedActivity.class);
+                            finish();
+                            startActivity(intent);
+                        }
+                    });
+                    builder.show();
+                } else {
                     /* No drink on queue. Add the drink. */
-                        new DrinkOrder().execute();
-                    } else {
-                        /** Success means a drink was found already on the queue. */
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ConfirmationActivity.this);
-                        builder.setTitle("But Wait!");
-                        builder.setMessage("You seem to have a drink order on the queue already. Would you " +
-                                "like to override your order: \n\n" + file_url);
-                        builder.setPositiveButton("Override", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                new DrinkOrder().execute();
-                            }
-                        });
-                        builder.setNegativeButton("Keep Current", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogInterface, int ids) {
-                                Toast.makeText(ConfirmationActivity.this, "You got it! Smartbar is ready" +
-                                        "whenever you are to retrieve your " + file_url, Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(ConfirmationActivity.this, DrinkOrderedActivity.class);
-                                finish();
-                                startActivity(intent);
-                            }
-                        });
-                        builder.show();
-                    }
+                    new DrinkOrder().execute();
                 }
             }
         }

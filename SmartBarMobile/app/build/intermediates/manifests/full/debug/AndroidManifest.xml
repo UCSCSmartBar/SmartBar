@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="@string/app_name"
     package="com.example.smartbarmobile"
     android:label="@string/app_name"
     android:versionCode="1"
@@ -66,6 +67,7 @@
         <activity
             android:name="com.example.smartbarmobile.LibraryBrowseActivity"
             android:label="@string/library_browse_actionbar"
+            android:noHistory="true"
             android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
@@ -82,7 +84,10 @@
             android:name="com.example.smartbarmobile.MissingParamsActivity"
             android:label="@string/new_user_actionbar" >
         </activity>
-        <activity android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity" />
+        <activity
+            android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity"
+            android:noHistory="true" >
+        </activity>
         <activity
             android:name="com.example.smartbarmobile.ReadyToOrderActivity"
             android:label="@string/empty" >

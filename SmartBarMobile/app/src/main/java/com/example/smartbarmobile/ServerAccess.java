@@ -3,11 +3,10 @@ package com.example.smartbarmobile;
 /**
  * Static class to hold server access variables.
  * @author lamperry
- *
  */
 public class ServerAccess {
 
-    //JSON element ids from response of php script:
+    /* JSON element ids from response of php script: */
     public static final String TAG_SUCCESS = "success";
     public static final String TAG_MESSAGE = "message";
 

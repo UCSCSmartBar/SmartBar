@@ -349,7 +349,6 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
     public void onClick(View v) {
     }
 
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         /* Grab the drink selected from the library and display in EditText */
@@ -418,7 +417,6 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
 
         drinkList.setAdapter(drinkAdapter);
         drinkList.setOnItemClickListener(this);
-
     }
 
 	@Override
@@ -439,6 +437,7 @@ public class LibraryBrowseActivity extends Activity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+        mGoogleApiClient.connect();
         new FindUser().execute();
     }
 	
