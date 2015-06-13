@@ -9,9 +9,9 @@
 ******************************************************************/
 
     // These variables define the connection information for your MySQL database 
-	$host = "localhost"; 
-	$dbname = "treeloy_smartbar";     
-	$username = "treeloy_admin"; 
+	$host = "smartbar.soe.ucsc.edu"; 
+	$dbname = "smartbar";     
+	$username = "smartbar"; 
     $password = "Smartbar2014"; 
 
     //http://en.wikipedia.org/wiki/UTF-8 
@@ -68,12 +68,12 @@
      
     // This tells the web browser that your content is encoded using UTF-8 
     // and that it should submit content back to you using UTF-8 
-    header('Content-Type: text/html; charset=utf-8'); 
+    //header('Content-Type: text/html; charset=utf-8'); 
      
     // This initializes a session.  Sessions are used to store information about 
     // a visitor from one web page visit to the next. 
     // http://us.php.net/manual/en/book.session.php 
-    session_start(); 
+    //session_start(); 
 
 
 
