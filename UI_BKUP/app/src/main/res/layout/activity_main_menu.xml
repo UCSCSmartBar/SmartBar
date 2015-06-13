@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="#ff440099"
+    tools:context="com.example.trider.smartbarui.MainMenu">
+
+    <TextView
+        android:text=""
+        android:id="@+id/testView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        style="@style/CityTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Smart Bar UI       >"
+        android:padding="20dp"
+        android:background="@drawable/cust_butt"
+        android:onClick="StartUIClicked"
+        android:id="@+id/button3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"/>
+
+       <Button
+        style="@style/CityTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inventory            >"
+        android:padding="20dp"
+        android:background="@drawable/cust_butt"
+        android:onClick="InventoryClicked"
+        android:id="@+id/button4"
+        android:layout_margin="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/button3"/>
+
+<!--
+    <Button
+        style="@style/CityTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="System Halt                 >"
+        android:padding="10dp"
+        android:background="@drawable/cust_butt"
+        android:onClick="SystemHalt"
+        android:id="@+id/button5"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="400dp"/>
+-->
+    <Button
+        style="@style/CityTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cust_butt"
+        android:text="Back"
+        android:onClick="MMgoBack"
+        android:id="@+id/main_menu_back"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

@@ -1,0 +1,52 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:andoird="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:textColor="@color/white"
+    android:background="@drawable/smart_bar_background"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+
+    tools:context="com.example.tylerrider.raspgui.UserNotFound">
+
+    <TextView android:text="@string/user_not_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize = "30sp"
+        />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Try Again"
+        android:id="@+id/button12"
+        android:textSize="30dp"
+        android:layout_marginTop="50dp"
+        android:onClick="goBack"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView android:text="@string/mobile_app_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize = "30sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="50dp"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No"
+
+        android:id="@+id/button13"
+        android:textSize="30dp"
+        android:layout_marginTop="50dp"
+        android:onClick="goToIdle"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>
