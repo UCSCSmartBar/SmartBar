@@ -17,15 +17,46 @@ require("config.inc.php");
 if (!empty($_POST)) {
     //If the username or password is empty when the user submits
     //the form, the page will die.
-    if (empty($_POST['username']) || empty($_POST['password'])) {
-
+	    if (empty($_POST['username'])) {
+	
         //JSON response 
         $response["success"] = 0;
-        $response["message"] = "Please Enter Both a Username and Password.";
+        $response["message"] = "Please Enter a Username.";
         
         die(json_encode($response));
     }
-    
+    if (strlen($_POST['password']) < 6) {
+	
+        //JSON response 
+        $response["success"] = 0;
+        $response["message"] = "Please Enter a password of at least 6 characters.";
+        
+        die(json_encode($response));
+    }
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+	
+        //JSON response 
+        $response["success"] = 0;
+        $response["message"] = "Your email is not of valid format.";
+        
+        die(json_encode($response));
+    }
+	if (strlen($_POST['phone']) != 11) {
+	
+        //JSON response 
+        $response["success"] = 0;
+        $response["message"] = "Please Enter an 11 digit phone number.";
+        
+        die(json_encode($response));
+    }
+	if ($_POST['age'] < 21) {
+	
+        //JSON response 
+        $response["success"] = 0;
+        $response["message"] = "You must be 21 years of age to legally drink and use our Bar.";
+        
+        die(json_encode($response));
+    }
     //Check to see if the username exists
 	
     //":user" is just a blank variable that we will change before we execute the query.
@@ -57,15 +88,17 @@ if (!empty($_POST)) {
     }
     
     //If username isnt in use now we can create a new one
-    $query = "INSERT INTO users ( userName, passWord, age, weight, sex ) VALUES ( :user, :pass, :age, :weight, :sex ) ";
+    $query = "INSERT INTO users ( userName, passWord, email, userPin, age, sex ) VALUES ( :user, :pass, :email, :pin, :age, :sex ) ";
     
     //Update tokens with the data:
+
     $query_params = array(
         ':user' => $_POST['username'],
-        ':pass' => $_POST['password'],
+        ':pass' => password_hash($_POST['password'], PASSWORD_DEFAULT),
 		':age' => $_POST['age'],
-		':weight' => $_POST['weight'],
-		':sex' => $_POST['sex']
+		':sex' => $_POST['sex'],
+		':email' => $_POST['email'],
+		':pin' => $_POST['phone'],
     );
     
     //run our query, and create the user
@@ -75,7 +108,7 @@ if (!empty($_POST)) {
     }
     catch (PDOException $ex) {
         $response["success"] = 0;
-        $response["message"] = "Database Error2. Please Try Again!";
+        $response["message"] = "Create user failed.";
         die(json_encode($response));
     }
     
@@ -91,25 +124,33 @@ if (!empty($_POST)) {
     
 } else {
 ?>
-	<h1>Register</h1> 
-	<form action="register.php" method="post"> 
-	    Username:<br /> 
-	    <input type="text" name="username" value="" /> 
-	    <br /><br /> 
-	    Password:<br /> 
-	    <input type="password" name="password" value="" /> 
-        <br /><br /> 
-	    Age:<br /> 
-	    <input type="text" name="age" value="" /> 
-	    <br /><br /> 
-        Weight:<br /> 
-	    <input type="text" name="weight" value="" /> 
-	    <br /><br /> 
-        Sex:<br /> 
-	    <input type="text" name="sex" value="" /> 
-	    <br /><br /> 
-	    <input type="submit" value="Register New User" /> 
-	</form>
+	<div align="center">
+		
+		<form action="register.php" method="post"> 
+			Username:<br />
+			<input type="text" name="username" value="" style="width:200px;border:1px solid #ccc" /> 
+			<br /><br /> 
+			Password:<br /> 
+			<input type="password" name="password" value="" style="width:200px;border:1px solid #ccc" /> 
+			<br /><br /> 
+			Email:<br /> 
+			<input type="email" name="email" value="" style="width:200px;border:1px solid #ccc" /> 
+			<br /><br /> 
+			Phone Number:<br /> 
+			<input type="text" name="phone" value="" style="width:200px;border:1px solid #ccc" /> 
+			<br /><br /> 
+			Age:<br /> 
+			<input type="text" name="age" value="" style="width:200px;border:1px solid #ccc" /> 
+			<br /><br /> 
+			Weight:<br /> 
+			<input type="text" name="weight" value="" style="width:200px;border:1px solid #ccc" /> 
+			<br /><br /> 
+			Sex:<br /> 
+			<input type="text" name="sex" value="" style="width:200px;border:1px solid #ccc"  /> 
+			<br /><br /> 
+			<input type="submit" value="Register New User" /> 
+		</form>
+	</div>
 	<?php
 }
 
